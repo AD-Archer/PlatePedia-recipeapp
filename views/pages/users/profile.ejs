@@ -31,13 +31,6 @@
                             <p class="card-text text-muted mb-3"><%= profileUser.bio %></p>
                         <% } %>
 
-                        <!-- Edit Profile Button (Only shows for profile owner) -->
-                        <% if (locals.user && locals.user.id === profileUser.id) { %>
-                            <button class="btn btn-outline-secondary mb-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                <i class="bi bi-pencil-square"></i> Edit Profile
-                            </button>
-                        <% } %>
-
                         <div class="d-flex justify-content-around mb-3">
                             <div class="text-center">
                                 <h5 class="mb-0"><%= stats.recipeCount %></h5>
@@ -68,6 +61,26 @@
             <!-- User's Recipes -->
             <div class="col-md-8">
                 <h4 class="mb-4">Recipes by <%= profileUser.username %></h4>
+                
+                <!-- Settings Section (Only visible to profile owner) -->
+                <% if (isOwnProfile) { %>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Account Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-3">
+                                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                    <i class="bi bi-pencil-square"></i> Edit Profile
+                                </button>
+                                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    <i class="bi bi-key"></i> Change Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+
                 <div class="row row-cols-1 row-cols-md-2 g-4">
                     <% if (profileUser.recipes && profileUser.recipes.length > 0) { %>
                         <% profileUser.recipes.forEach(recipe => { %>
@@ -100,9 +113,7 @@
 
     <!-- Edit Profile Modal -->
     <% if (isOwnProfile) { %>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-            Edit Profile
-        </button>
+        
         
         <!-- Edit Profile Modal -->
         <div class="modal fade" id="editProfileModal" tabindex="-1">
@@ -154,7 +165,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="changePasswordForm" method="POST" action="/profile/change-password">
+                    <form id="changePasswordForm" onsubmit="handlePasswordChange(event)">
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="bi bi-info-circle"></i>
+                                Password must be at least 6 characters long
+                            </small>
+                        </div>
                         <div class="mb-3">
                             <label for="currentPassword" class="form-label">Current Password</label>
                             <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
@@ -167,28 +184,14 @@
                             <label for="confirmPassword" class="form-label">Confirm New Password</label>
                             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Change Password</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Recovery Modal -->
-    <div class="modal fade" id="passwordRecoveryModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Reset Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="passwordRecoveryForm" method="POST" action="/profile/reset-password">
-                        <div class="mb-3">
-                            <label for="recoveryEmail" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="recoveryEmail" name="email" required>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Change Password
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Reset Link</button>
                     </form>
                 </div>
             </div>
@@ -263,8 +266,9 @@
             }
         }
 
-        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        async function handlePasswordChange(event) {
+            event.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
@@ -274,21 +278,17 @@
             }
             
             try {
-                const response = await fetch('/profile/change-password', {
+                const response = await fetch(`/users/<%= profileUser.username %>/change-password`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        currentPassword: document.getElementById('currentPassword').value,
-                        newPassword: newPassword
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
                 });
                 
                 const data = await response.json();
+                
                 if (data.success) {
                     alert('Password changed successfully');
-                    document.getElementById('changePasswordForm').reset();
+                    event.target.reset();
                     bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
                 } else {
                     alert(data.error || 'Error changing password');
@@ -297,34 +297,7 @@
                 console.error('Error:', error);
                 alert('Error changing password');
             }
-        });
-
-        document.getElementById('passwordRecoveryForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            try {
-                const response = await fetch('/profile/reset-password', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: document.getElementById('recoveryEmail').value
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    alert('Password reset instructions have been sent to your email');
-                    document.getElementById('passwordRecoveryForm').reset();
-                    bootstrap.Modal.getInstance(document.getElementById('passwordRecoveryModal')).hide();
-                } else {
-                    alert(data.error || 'Error requesting password reset');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error requesting password reset');
-            }
-        });
+        }
     </script>
 </body>
 </html> 

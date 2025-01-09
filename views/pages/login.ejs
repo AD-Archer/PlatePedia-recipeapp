@@ -28,6 +28,12 @@
                             </div>
                         <% } %>
 
+                        <div class="text-end mb-3">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                                Forgot Password?
+                            </a>
+                        </div>
+
                         <form action="/login" method="POST">
                             <div class="mb-3">
                                 <label for="identifier" class="form-label">Email or Username</label>
@@ -62,12 +68,6 @@
                                 <label class="form-check-label" for="remember">Remember me</label>
                             </div>
 
-                            <div class="mb-3 text-end">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#passwordRecoveryModal">
-                                    Forgot password?
-                                </a>
-                            </div>
-
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </div>
@@ -83,5 +83,52 @@
     </div>
 
     <%- include('../partials/footer') %>
+
+    <div class="modal fade" id="resetPasswordModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm" onsubmit="handleResetRequest(event)">
+                        <div class="mb-3">
+                            <label for="resetEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="resetEmail" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Request Reset</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function handleResetRequest(event) {
+            event.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            
+            try {
+                const response = await fetch('/users/reset-password/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('If your email is registered, you will receive reset instructions shortly.');
+                    bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+                } else {
+                    alert(data.error || 'Error requesting password reset');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error requesting password reset');
+            }
+        }
+    </script>
 </body>
 </html>

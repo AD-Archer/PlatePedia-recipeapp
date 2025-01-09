@@ -5,6 +5,7 @@ import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import { Op, Sequelize } from 'sequelize';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -277,6 +278,98 @@ router.delete('/:username/follow', isAuthenticated, asyncHandler(async (req, res
         following: false,
         message: deleted ? 'Successfully unfollowed user' : 'Not following user'
     });
+}));
+
+// Change password
+router.post('/:username/change-password', isAuthenticated, [
+    body('currentPassword').notEmpty().withMessage('Current password is required'),
+    body('newPassword')
+        .isLength({ min: 6 })
+        .withMessage('New password must be at least 6 characters long'),
+], asyncHandler(async (req, res) => {
+    // Ensure user can only change their own password
+    if (req.params.username !== req.session.user.username) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    const user = await User.findByPk(req.session.user.id);
+    const { currentPassword, newPassword } = req.body;
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidPassword) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash and update new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: hashedPassword });
+
+    res.json({ success: true, message: 'Password updated successfully' });
+}));
+
+// Request password reset
+router.post('/reset-password/request', [
+    body('email').isEmail().withMessage('Valid email is required'),
+], asyncHandler(async (req, res) => {
+    const user = await User.findOne({ where: { email: req.body.email } });
+    
+    if (!user) {
+        // Don't reveal if email exists
+        return res.json({ success: true, message: 'If email exists, reset instructions will be sent' });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+    await user.update({
+        resetToken,
+        resetTokenExpiry
+    });
+
+    // TODO: Send email with reset link
+    // For now, just return the token in development
+    if (process.env.NODE_ENV === 'development') {
+        res.json({ 
+            success: true, 
+            message: 'Reset token generated',
+            resetToken // Only include in development
+        });
+    } else {
+        res.json({ success: true, message: 'Reset instructions sent to email' });
+    }
+}));
+
+// Reset password with token
+router.post('/reset-password/reset', [
+    body('token').notEmpty().withMessage('Reset token is required'),
+    body('newPassword')
+        .isLength({ min: 6 })
+        .withMessage('New password must be at least 6 characters long'),
+], asyncHandler(async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    const user = await User.findOne({
+        where: {
+            resetToken: token,
+            resetTokenExpiry: { [Op.gt]: new Date() }
+        }
+    });
+
+    if (!user) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    // Hash and update password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.update({
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null
+    });
+
+    res.json({ success: true, message: 'Password reset successfully' });
 }));
 
 export default router; 
