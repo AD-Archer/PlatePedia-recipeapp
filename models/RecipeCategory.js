@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { getDb } from '../config/db.js';
-
-const sequelize = await getDb();
+import { sequelize } from '../config/db.js';
 
 const RecipeCategory = sequelize.define('RecipeCategory', {
     recipeId: {

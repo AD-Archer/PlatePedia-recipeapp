@@ -4,10 +4,9 @@ import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { Op } from 'sequelize';
-import { getDb } from '../config/db.js';
+import { sequelize } from '../config/db.js';
 
 const router = express.Router();
-const sequelize = await getDb();
 
 // Show signup form
 router.get('/', (req, res) => {

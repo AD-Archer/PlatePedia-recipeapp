@@ -59,9 +59,11 @@
                         <div class="mb-4">
                             <h5>Ingredients</h5>
                             <ul class="list-group list-group-flush">
-                                <% recipe.ingredients.forEach(ingredient => { %>
-                                    <li class="list-group-item"><%= ingredient %></li>
-                                <% }) %>
+                                <% recipe.ingredients.split('\n').forEach(ingredient => { %>
+                                    <% if (ingredient.trim()) { %>
+                                        <li class="list-group-item"><%= ingredient.trim() %></li>
+                                    <% } %>
+                                <% }); %>
                             </ul>
                         </div>
 

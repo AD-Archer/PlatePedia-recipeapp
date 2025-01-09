@@ -25,10 +25,11 @@
             
             <% if (recipe.tags && recipe.tags.length > 0) { %>
                 <div class="mb-2">
-                    <% recipe.tags.forEach(tag => { %>
-                        <a href="/recipes/browse?tag=<%= tag %>" 
+                    <% (Array.isArray(recipe.tags) ? recipe.tags : recipe.tags.split(','))
+                        .forEach(tag => { %>
+                        <a href="/recipes/browse?tag=<%= typeof tag === 'string' ? tag.trim() : tag %>" 
                            class="badge bg-light text-dark text-decoration-none me-1">
-                            <%= tag %>
+                            <%= typeof tag === 'string' ? tag.trim() : tag %>
                         </a>
                     <% }); %>
                 </div>

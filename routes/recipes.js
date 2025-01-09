@@ -5,6 +5,7 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op } from 'sequelize';
 import sequelize from 'sequelize';
+import { addSavedStatus } from '../utils/recipeUtils.js';
 
 const router = express.Router();
 
@@ -396,21 +397,14 @@ router.get('/saved', isAuthenticated, asyncHandler(async (req, res) => {
     delete req.session.success;
 }));
 
-// Helper function to check if recipes are saved
-const addSavedStatus = async (recipes, userId) => {
-    if (!userId) return recipes;
-    
-    const savedRecipes = await SavedRecipe.findAll({
-        where: { userId },
-        attributes: ['recipeId']
-    });
-    
-    const savedRecipeIds = new Set(savedRecipes.map(sr => sr.recipeId));
-    
-    return recipes.map(recipe => ({
-        ...recipe.toJSON(),
-        isSaved: savedRecipeIds.has(recipe.id)
-    }));
+// Helper function to format recipe data
+const formatRecipeData = (recipe) => {
+    const data = recipe.toJSON();
+    // Ensure tags are always an array
+    data.tags = Array.isArray(data.tags) ? 
+        data.tags : 
+        (data.tags ? data.tags.split(',').map(tag => tag.trim()) : []);
+    return data;
 };
 
 // 1. Public routes first (no authentication required)
@@ -460,11 +454,15 @@ router.get('/browse', asyncHandler(async (req, res) => {
             order: [['createdAt', 'DESC']]
         });
 
+        const formattedRecipes = recipes.map(formatRecipeData);
+        const recipesWithSaveStatus = await addSavedStatus(
+            formattedRecipes,
+            req.session.user?.id
+        );
+
         const categories = await Category.findAll({
             order: [['name', 'ASC']]
         });
-
-        const recipesWithSaveStatus = await addSavedStatus(recipes, req.session.user?.id);
 
         res.render('pages/recipes/browse', {
             recipes: recipesWithSaveStatus,
@@ -543,8 +541,15 @@ router.post('/create', [
             return res.status(400).json({ error: errors.array()[0].msg });
         }
 
-        const recipe = await Recipe.create({
+        const recipeData = {
             ...req.body,
+            tags: Array.isArray(req.body.tags) ? 
+                req.body.tags.join(',') : 
+                req.body.tags
+        };
+
+        const recipe = await Recipe.create({
+            ...recipeData,
             userId: req.session.user.id
         });
 

@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { getDb } from '../config/db.js';
-
-const sequelize = await getDb();
+import { sequelize } from '../config/db.js';
 
 const Category = sequelize.define('Category', {
     name: {
@@ -11,19 +9,15 @@ const Category = sequelize.define('Category', {
     },
     type: {
         type: DataTypes.STRING,
-        allowNull: true,
-        validate: {
-            isIn: [['meal', 'ingredient', 'course', 'dish', 'dietary']]
-        }
+        allowNull: false,
+        defaultValue: 'meal'
     },
     imageUrl: {
         type: DataTypes.STRING,
         allowNull: true
     }
 }, {
-    tableName: 'categories',
-    modelName: 'Category',
-    timestamps: true
+    tableName: 'categories'
 });
 
 export default Category; 

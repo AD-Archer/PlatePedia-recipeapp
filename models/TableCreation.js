@@ -4,7 +4,7 @@ import Category from './Category.js';
 import UserFollows from './UserFollows.js';
 import SavedRecipe from './SavedRecipe.js';
 import RecipeCategory from './RecipeCategory.js';
-import sequelize from '../config/db.js';
+import { sequelize } from '../config/db.js';
 
 // User-Recipe relationship (authorship)
 User.hasMany(Recipe, { 

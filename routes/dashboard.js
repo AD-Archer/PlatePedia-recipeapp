@@ -2,95 +2,74 @@ import express from 'express';
 import { Recipe, User, Category } from '../models/TableCreation.js';
 import { Op } from 'sequelize';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { sequelize } from '../config/db.js';
+import { addSavedStatus } from '../utils/recipeUtils.js';
 
 const router = express.Router();
 
 // Dashboard home - accessible to all
 router.get('/', asyncHandler(async (req, res) => {
     try {
-        // Get popular recipes
-        const popularRecipes = await Recipe.findAll({
-            include: [{
-                model: User,
-                as: 'author',
-                attributes: ['id', 'username', 'profileImage']
-            }],
-            limit: 6,
-            order: [['createdAt', 'DESC']]
+        // Get latest recipes
+        const latestRecipes = await Recipe.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'author',
+                    attributes: ['username', 'profileImage']
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: 8
         });
 
-        // Only get suggested users if user is logged in
-        let suggestedUsers = [];
-        if (req.session.user) {
-            const users = await User.findAll({
-                where: {
-                    id: { [Op.ne]: req.session.user.id }
-                },
-                limit: 8,
-                include: [
-                    {
-                        model: User,
-                        as: 'followers',
-                        where: { id: req.session.user.id },
-                        required: false
-                    },
-                    {
-                        model: Recipe,
-                        as: 'recipes',
-                        attributes: ['id']
-                    }
-                ],
-                order: [[{ model: Recipe, as: 'recipes' }, 'id', 'DESC']]
-            });
-
-            // Add isFollowing property to each user
-            suggestedUsers = users.map(user => ({
-                ...user.toJSON(),
-                isFollowing: user.followers.some(follower => follower.id === req.session.user.id),
-                recipeCount: Array.isArray(user.recipes) ? user.recipes.length : 0
-            }));
-        }
+        // Get popular recipes (most saved)
+        const popularRecipes = await Recipe.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'author',
+                    attributes: ['username', 'profileImage']
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: 8
+        });
 
         // Get categories with recipe counts
-        console.log('Fetching categories...');
         const categories = await Category.findAll({
-            include: {
-                model: Recipe,
-                as: 'recipes',
-                through: { attributes: [] },
-                required: false
-            },
-            raw: true,
-            nest: true
+            attributes: [
+                'id',
+                'name',
+                'type',
+                'imageUrl',
+                [
+                    sequelize.literal('(SELECT COUNT(*) FROM recipe_categories WHERE recipe_categories."categoryId" = "Category".id)'),
+                    'recipeCount'
+                ]
+            ],
+            order: [
+                ['type', 'ASC'],
+                ['name', 'ASC']
+            ]
         });
 
-        console.log('Raw categories:', JSON.stringify(categories, null, 2));
+        // Group categories by type
+        const groupedCategories = {
+            meal: categories.filter(cat => cat.type === 'meal'),
+            ingredient: categories.filter(cat => cat.type === 'ingredient'),
+            course: categories.filter(cat => cat.type === 'course'),
+            dish: categories.filter(cat => cat.type === 'dish'),
+            dietary: categories.filter(cat => cat.type === 'dietary')
+        };
 
-        // Add recipe count to each category
-        const categoriesWithCount = categories.map(category => ({
-            ...category,
-            recipeCount: Array.isArray(category.recipes) ? category.recipes.length : 0
-        }));
-
-        console.log('Categories with count:', JSON.stringify(categoriesWithCount, null, 2));
-
-        // Get recent recipes
-        const recentRecipes = await Recipe.findAll({
-            include: [{
-                model: User,
-                as: 'author',
-                attributes: ['id', 'username', 'profileImage']
-            }],
-            limit: 8,
-            order: [['createdAt', 'DESC']]
-        });
+        const latestRecipesWithStatus = await addSavedStatus(latestRecipes, req.session.user?.id);
+        const popularRecipesWithStatus = await addSavedStatus(popularRecipes, req.session.user?.id);
 
         res.render('pages/dashboard', {
-            user: req.session.user || null,
-            popularRecipes,
-            recentRecipes,
-            categories: categoriesWithCount,
-            suggestedUsers,
+            latestRecipes: latestRecipesWithStatus,
+            popularRecipes: popularRecipesWithStatus,
+            groupedCategories,
             error: req.session.error,
             success: req.session.success
         });
@@ -99,7 +78,6 @@ router.get('/', asyncHandler(async (req, res) => {
         delete req.session.success;
     } catch (error) {
         console.error('Dashboard error:', error);
-        req.session.error = 'Error loading dashboard';
         res.redirect('/');
     }
 }));

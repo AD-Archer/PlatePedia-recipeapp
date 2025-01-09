@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import { sequelize } from '../config/db.js';
 
 class Recipe extends Model {}
 
@@ -7,58 +7,77 @@ Recipe.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
     },
     title: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
     },
     description: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: false
     },
     ingredients: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
-        allowNull: false,
-        defaultValue: []
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     instructions: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: false
     },
     cookingTime: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     servings: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false
     },
     imageUrl: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: true
     },
     difficulty: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         validate: {
             isIn: [['easy', 'medium', 'hard']]
         }
     },
     calories: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: false
     },
     tags: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: []
+        get() {
+            const rawValue = this.getDataValue('tags');
+            if (Array.isArray(rawValue)) return rawValue;
+            return rawValue ? rawValue.split(',').map(tag => tag.trim()) : [];
+        },
+        set(val) {
+            if (Array.isArray(val)) {
+                this.setDataValue('tags', val.filter(Boolean).join(','));
+            } else if (typeof val === 'string') {
+                this.setDataValue('tags', val.split(',').filter(Boolean).map(tag => tag.trim()).join(','));
+            } else {
+                this.setDataValue('tags', '');
+            }
+        }
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     }
 }, {
     sequelize,
     modelName: 'Recipe',
-    tableName: 'recipes',
-    timestamps: true
+    tableName: 'recipes'
 });
 
 export default Recipe;

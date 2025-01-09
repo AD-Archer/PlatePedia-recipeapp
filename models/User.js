@@ -1,10 +1,10 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
-import { getDb } from '../config/db.js';
+import { sequelize } from '../config/db.js';
 
-const sequelize = await getDb();
+class User extends Model {}
 
-const User = sequelize.define('User', {
+User.init({
     username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -83,8 +83,9 @@ const User = sequelize.define('User', {
         allowNull: true
     }
 }, {
-    tableName: 'users',
+    sequelize,
     modelName: 'User',
+    tableName: 'users',
     timestamps: true,
     underscored: true
 });

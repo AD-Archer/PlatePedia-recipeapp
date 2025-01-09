@@ -1,52 +1,23 @@
-import { sql } from '@vercel/postgres';
 import { Sequelize } from 'sequelize';
 import 'dotenv/config';
 
-let sequelize;
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    logging: false
+});
 
-const initializeDb = async () => {
-    if (!sequelize) {
-        const databaseUrl = process.env.DATABASE_URL;
-        
-        if (!databaseUrl) {
-            console.error('No database URL found in environment variables');
-            throw new Error('Database configuration is missing');
-        }
-
-        // Dynamically import pg
-        const pg = await import('pg');
-
-        sequelize = new Sequelize(databaseUrl, {
-            dialect: 'postgres',
-            dialectModule: pg.default,
-            dialectOptions: {
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false
-                }
-            },
-            logging: console.log // Temporarily enable logging for debugging
-        });
-    }
-    return sequelize;
-};
-
-export const getDb = async () => {
-    return await initializeDb();
-};
-
-// Simple connection test
-export const testConnection = async () => {
+// Initialize database connection
+const initDb = async () => {
     try {
-        const db = await getDb();
-        await db.authenticate();
+        await sequelize.authenticate();
         console.log('Database connection successful');
-        return true;
+        return sequelize;
     } catch (error) {
-        console.error('Database connection error:', error);
-        return false;
+        console.error('Unable to connect to the database:', error);
+        throw error;
     }
 };
 
-const db = await initializeDb();
-export default db;
+export { initDb as getDb };
+export { sequelize };
+export default sequelize;
