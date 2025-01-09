@@ -416,7 +416,7 @@ const addSavedStatus = async (recipes, userId) => {
 // 1. Public routes first (no authentication required)
 router.get('/browse', asyncHandler(async (req, res) => {
     try {
-        const { search, category, difficulty } = req.query;
+        const { search, category, difficulty, tags } = req.query;
         let whereClause = {};
         let includeClause = [
             {
@@ -432,13 +432,10 @@ router.get('/browse', asyncHandler(async (req, res) => {
         ];
 
         if (search) {
-            whereClause = {
-                [Op.or]: [
-                    { title: { [Op.iLike]: `%${search}%` } },
-                    { description: { [Op.iLike]: `%${search}%` } },
-                    sequelize.literal(`ingredients::text ILIKE '%${search}%'`)
-                ]
-            };
+            whereClause[Op.or] = [
+                { title: { [Op.iLike]: `%${search}%` } },
+                { description: { [Op.iLike]: `%${search}%` } }
+            ];
         }
 
         if (category) {
@@ -447,6 +444,14 @@ router.get('/browse', asyncHandler(async (req, res) => {
 
         if (difficulty) {
             whereClause.difficulty = difficulty;
+        }
+
+        if (tags) {
+            const selectedTags = Array.isArray(tags) ? tags : [tags];
+            whereClause[Op.and] = [
+                ...whereClause[Op.and] || [],
+                { tags: { [Op.overlap]: selectedTags } }
+            ];
         }
 
         const recipes = await Recipe.findAll({
@@ -467,6 +472,7 @@ router.get('/browse', asyncHandler(async (req, res) => {
             searchQuery: search || '',
             selectedCategory: category || '',
             selectedDifficulty: difficulty || '',
+            selectedTags: tags || [],
             error: req.session.error,
             success: req.session.success
         });
@@ -492,11 +498,23 @@ router.get('/create', asyncHandler(async (req, res) => {
     }
 
     const categories = await Category.findAll({
-        order: [['name', 'ASC']]
+        order: [
+            ['type', 'ASC'],
+            ['name', 'ASC']
+        ]
     });
     
+    // Group categories by type
+    const groupedCategories = {
+        meal: categories.filter(cat => cat.type === 'meal'),
+        ingredient: categories.filter(cat => cat.type === 'ingredient'),
+        course: categories.filter(cat => cat.type === 'course'),
+        dish: categories.filter(cat => cat.type === 'dish'),
+        dietary: categories.filter(cat => cat.type === 'dietary')
+    };
+    
     res.render('pages/recipes/create', {
-        categories,
+        groupedCategories,
         error: req.session.error,
         success: req.session.success
     });

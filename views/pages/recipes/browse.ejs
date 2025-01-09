@@ -45,6 +45,47 @@
                     <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
                 </form>
             </div>
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Filters</h5>
+                        <form action="/recipes/browse" method="GET">
+                            <div class="mb-3">
+                                <label class="form-label">Meal Types</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <% categories.filter(cat => cat.type === 'meal').forEach(category => { %>
+                                         <div class="form-check">
+                                             <input class="form-check-input" type="checkbox" 
+                                                    name="tags[]" value="<%= category.name %>" 
+                                                    id="tag<%= category.name %>"
+                                                    <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
+                                             <label class="form-check-label" for="tag<%= category.name %>">
+                                                 <%= category.name %>
+                                             </label>
+                                         </div>
+                                     <% }); %>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Main Ingredients</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <% categories.filter(cat => cat.type === 'ingredient').forEach(category => { %>
+                                         <div class="form-check">
+                                             <input class="form-check-input" type="checkbox" 
+                                                    name="tags[]" value="<%= category.name %>" 
+                                                    id="tag<%= category.name %>"
+                                                    <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
+                                             <label class="form-check-label" for="tag<%= category.name %>">
+                                                 <%= category.name %>
+                                             </label>
+                                         </div>
+                                     <% }); %>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Results Section -->

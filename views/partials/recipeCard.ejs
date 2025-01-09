@@ -1,0 +1,80 @@
+<div class="col">
+    <div class="card h-100 shadow-sm">
+        <% if (recipe.imageUrl) { %>
+            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" 
+                 style="height: 200px; object-fit: cover;">
+        <% } else { %>
+            <div class="bg-light d-flex align-items-center justify-content-center" 
+                 style="height: 200px;">
+                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+            </div>
+        <% } %>
+        
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="/recipes/<%= recipe.id %>" class="text-decoration-none text-dark">
+                    <%= recipe.title %>
+                </a>
+            </h5>
+            
+            <% if (recipe.description) { %>
+                <p class="card-text text-muted small">
+                    <%= recipe.description.length > 100 ? recipe.description.substring(0, 100) + '...' : recipe.description %>
+                </p>
+            <% } %>
+            
+            <% if (recipe.tags && recipe.tags.length > 0) { %>
+                <div class="mb-2">
+                    <% recipe.tags.forEach(tag => { %>
+                        <a href="/recipes/browse?tag=<%= tag %>" 
+                           class="badge bg-light text-dark text-decoration-none me-1">
+                            <%= tag %>
+                        </a>
+                    <% }); %>
+                </div>
+            <% } %>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="small text-muted">
+                    <% if (recipe.cookingTime) { %>
+                        <i class="bi bi-clock me-1"></i><%= recipe.cookingTime %> mins
+                    <% } %>
+                    <% if (recipe.servings) { %>
+                        <span class="mx-2">•</span>
+                        <i class="bi bi-people me-1"></i><%= recipe.servings %> servings
+                    <% } %>
+                </div>
+                
+                <% if (recipe.difficulty) { %>
+                    <span class="badge bg-<%= recipe.difficulty === 'easy' ? 'success' : 
+                        recipe.difficulty === 'medium' ? 'warning' : 'danger' %>">
+                        <%= recipe.difficulty %>
+                    </span>
+                <% } %>
+            </div>
+        </div>
+        
+        <div class="card-footer bg-white border-top-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="/users/<%= recipe.author?.username %>" class="text-decoration-none text-muted small">
+                    <% if (recipe.author?.profileImage) { %>
+                        <img src="<%= recipe.author.profileImage %>" 
+                             class="rounded-circle me-1" 
+                             style="width: 24px; height: 24px; object-fit: cover;">
+                    <% } else { %>
+                        <i class="bi bi-person-circle me-1"></i>
+                    <% } %>
+                    <%= recipe.author?.username || 'Unknown' %>
+                </a>
+                
+                <div>
+                    <% if (recipe.calories) { %>
+                        <small class="text-muted">
+                            <i class="bi bi-fire me-1"></i><%= recipe.calories %> cal
+                        </small>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

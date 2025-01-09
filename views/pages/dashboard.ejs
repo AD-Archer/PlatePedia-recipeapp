@@ -37,23 +37,124 @@
         <section class="mb-5">
             <h2 class="mb-4">Popular Recipes</h2>
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                <% popularRecipes.forEach(recipe => { %>
-                    <%- include('../partials/recipeCard', { recipe }) %>
-                <% }); %>
+                <% if (popularRecipes && popularRecipes.length > 0) { %>
+                    <% popularRecipes.forEach(recipe => { %>
+                        <%- include('../partials/recipeCard', { recipe }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No recipes yet. Be the first to create one!</p>
+                    </div>
+                <% } %>
             </div>
         </section>
 
         <!-- Categories Section -->
         <section class="mb-5">
             <h2 class="mb-4">Browse Categories</h2>
-            <div class="row row-cols-2 row-cols-md-4 g-4">
-                <% categories.forEach(category => { %>
+            <!-- Meal Types -->
+            <h5 class="mb-3">Meal Types</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-4 mb-4">
+                <% categories.filter(cat => cat.type === 'meal').forEach(category => { %>
                     <div class="col">
-                        <a href="/recipes/category/<%= category.id %>" class="text-decoration-none">
+                        <a href="/recipes/browse?tags=<%= category.name %>" class="text-decoration-none">
                             <div class="card h-100 text-center">
+                                <% if (category.imageUrl) { %>
+                                    <img src="<%= category.imageUrl %>" 
+                                         class="card-img-top p-3" 
+                                         alt="<%= category.name %>"
+                                         style="height: 140px; object-fit: contain;">
+                                <% } %>
                                 <div class="card-body">
                                     <h5 class="card-title"><%= category.name %></h5>
-                                    <p class="text-muted"><%= category.recipeCount %> recipes</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <!-- Main Ingredients -->
+            <h5 class="mb-3">Main Ingredients</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-4 mb-4">
+                <% categories.filter(cat => cat.type === 'ingredient').forEach(category => { %>
+                    <div class="col">
+                        <a href="/recipes/browse?tags=<%= category.name %>" class="text-decoration-none">
+                            <div class="card h-100 text-center">
+                                <% if (category.imageUrl) { %>
+                                    <img src="<%= category.imageUrl %>" 
+                                         class="card-img-top p-3" 
+                                         alt="<%= category.name %>"
+                                         style="height: 140px; object-fit: contain;">
+                                <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= category.name %></h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <!-- Course Types -->
+            <h5 class="mb-3">Course Types</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-4 mb-4">
+                <% categories.filter(cat => cat.type === 'course').forEach(category => { %>
+                    <div class="col">
+                        <a href="/recipes/browse?tags=<%= category.name %>" class="text-decoration-none">
+                            <div class="card h-100 text-center">
+                                <% if (category.imageUrl) { %>
+                                    <img src="<%= category.imageUrl %>" 
+                                         class="card-img-top p-3" 
+                                         alt="<%= category.name %>"
+                                         style="height: 140px; object-fit: contain;">
+                                <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= category.name %></h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <!-- Dish Types -->
+            <h5 class="mb-3">Dish Types</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-4 mb-4">
+                <% categories.filter(cat => cat.type === 'dish').forEach(category => { %>
+                    <div class="col">
+                        <a href="/recipes/browse?tags=<%= category.name %>" class="text-decoration-none">
+                            <div class="card h-100 text-center">
+                                <% if (category.imageUrl) { %>
+                                    <img src="<%= category.imageUrl %>" 
+                                         class="card-img-top p-3" 
+                                         alt="<%= category.name %>"
+                                         style="height: 140px; object-fit: contain;">
+                                <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= category.name %></h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <!-- Dietary -->
+            <h5 class="mb-3">Dietary</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-4">
+                <% categories.filter(cat => cat.type === 'dietary').forEach(category => { %>
+                    <div class="col">
+                        <a href="/recipes/browse?tags=<%= category.name %>" class="text-decoration-none">
+                            <div class="card h-100 text-center">
+                                <% if (category.imageUrl) { %>
+                                    <img src="<%= category.imageUrl %>" 
+                                         class="card-img-top p-3" 
+                                         alt="<%= category.name %>"
+                                         style="height: 140px; object-fit: contain;">
+                                <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= category.name %></h5>
                                 </div>
                             </div>
                         </a>
@@ -78,9 +179,15 @@
         <section class="mb-5">
             <h2 class="mb-4">Recent Recipes</h2>
             <div class="row row-cols-1 row-cols-md-4 g-4">
-                <% recentRecipes.forEach(recipe => { %>
-                    <%- include('../partials/recipeCard', { recipe }) %>
-                <% }); %>
+                <% if (recentRecipes && recentRecipes.length > 0) { %>
+                    <% recentRecipes.forEach(recipe => { %>
+                        <%- include('../partials/recipeCard', { recipe }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No recipes yet. Be the first to create one!</p>
+                    </div>
+                <% } %>
             </div>
         </section>
     </div>

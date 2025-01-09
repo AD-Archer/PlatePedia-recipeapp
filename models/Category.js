@@ -8,6 +8,17 @@ const Category = sequelize.define('Category', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
+    },
+    type: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            isIn: [['meal', 'ingredient', 'course', 'dish', 'dietary']]
+        }
+    },
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'categories',

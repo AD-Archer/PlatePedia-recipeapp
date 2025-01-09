@@ -48,6 +48,11 @@ Recipe.init({
     calories: {
         type: DataTypes.INTEGER,
         allowNull: false,
+    },
+    tags: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+        defaultValue: []
     }
 }, {
     sequelize,

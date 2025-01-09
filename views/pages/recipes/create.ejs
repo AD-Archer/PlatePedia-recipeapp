@@ -55,18 +55,79 @@
 
                             <!-- Categories -->
                             <div class="mb-3">
-                                <label class="form-label">Categories*</label>
-                                <div class="row g-2">
-                                    <% categories.forEach(category => { %>
-                                        <div class="col-md-4">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" 
-                                                       name="categories[]" value="<%= category.id %>" 
-                                                       id="category<%= category.id %>">
-                                                <label class="form-check-label" for="category<%= category.id %>">
-                                                    <%= category.name %>
-                                                </label>
-                                            </div>
+                                <label class="form-label">Recipe Categories</label>
+                                
+                                <!-- Meal Types -->
+                                <h6 class="mt-3 mb-2">Meal Type</h6>
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <% groupedCategories.meal.forEach(category => { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>">
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                                
+                                <!-- Main Ingredients -->
+                                <h6 class="mt-3 mb-2">Main Ingredient</h6>
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <% groupedCategories.ingredient.forEach(category => { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>">
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                                
+                                <!-- Course Types -->
+                                <h6 class="mt-3 mb-2">Course Type</h6>
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <% groupedCategories.course.forEach(category => { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>">
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                                
+                                <!-- Dish Types -->
+                                <h6 class="mt-3 mb-2">Dish Type</h6>
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <% groupedCategories.dish.forEach(category => { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>">
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                                
+                                <!-- Dietary Restrictions -->
+                                <h6 class="mt-3 mb-2">Dietary</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <% groupedCategories.dietary.forEach(category => { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>">
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
                                         </div>
                                     <% }); %>
                                 </div>
