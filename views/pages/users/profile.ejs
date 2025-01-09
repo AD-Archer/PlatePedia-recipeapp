@@ -99,41 +99,51 @@
     <%- include('../../partials/footer') %>
 
     <!-- Edit Profile Modal -->
-    <div class="modal fade" id="editProfileModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Profile</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editProfileForm" method="POST" action="/profile/update">
-                        <!-- Username -->
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   value="<%= profileUser.username %>" required>
+    <% if (isOwnProfile) { %>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            Edit Profile
+        </button>
+        
+        <!-- Edit Profile Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="editProfileForm" onsubmit="handleEditProfile(event)">
+                        <div class="modal-body">
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" 
+                                       name="username" value="<%= profileUser.username %>" required>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" 
+                                       name="email" value="<%= profileUser.email %>" required>
+                            </div>
+                            
+                            <!-- Bio -->
+                            <div class="mb-3">
+                                <label for="bio" class="form-label">Bio</label>
+                                <textarea class="form-control" id="bio" name="bio" 
+                                          rows="3"><%= profileUser.bio || '' %></textarea>
+                            </div>
                         </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   value="<%= profileUser.email %>" required>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
-
-                        <!-- Bio -->
-                        <div class="mb-3">
-                            <label for="bio" class="form-label">Bio</label>
-                            <textarea class="form-control" id="bio" name="bio" rows="3"><%= profileUser.bio || '' %></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    <% } %>
 
     <!-- Change Password Modal -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1">
@@ -216,25 +226,34 @@
             }
         }
 
-        // Form submission handling
-        document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        async function handleEditProfile(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
             try {
-                const response = await fetch('/profile/update', {
+                const response = await fetch(`/users/<%= profileUser.username %>/edit`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        username: document.getElementById('username').value,
-                        email: document.getElementById('email').value,
-                        bio: document.getElementById('bio').value
+                        username: formData.get('username'),
+                        email: formData.get('email'),
+                        bio: formData.get('bio'),
+                        profileImage: formData.get('profileImage')
                     })
                 });
                 
                 const data = await response.json();
+                
                 if (data.success) {
-                    window.location.reload();
+                    // Hide modal
+                    bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+                    
+                    // Refresh the page to show updated info
+                    window.location.href = `/users/${data.user.username}`;
                 } else {
                     alert(data.error || 'Error updating profile');
                 }
@@ -242,7 +261,7 @@
                 console.error('Error:', error);
                 alert('Error updating profile');
             }
-        });
+        }
 
         document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();

@@ -1,131 +1,190 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import User from '../models/User.js';
+import { User } from '../models/TableCreation.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { isAuthenticated } from '../middleware/authMiddleware.js';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
+import { Recipe } from '../models/TableCreation.js';
 
 const router = express.Router();
 
 // Middleware to ensure user is authenticated
-const isAuthenticated = (req, res, next) => {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'Not authenticated' });
-    }
-    next();
-};
+router.use(isAuthenticated);
 
-// Update profile
-router.post('/update', isAuthenticated, [
-    body('username').trim().isLength({ min: 3, max: 30 }),
-    body('email').isEmail().normalizeEmail(),
-    body('bio').trim().optional({ nullable: true, checkFalsy: true })
-], async (req, res) => {
+// Show edit profile form
+router.get('/edit', asyncHandler(async (req, res) => {
+    const user = await User.findByPk(req.session.user.id);
+    res.render('pages/profile/edit', {
+        user,
+        error: req.session.error,
+        success: req.session.success
+    });
+    delete req.session.error;
+    delete req.session.success;
+}));
+
+// Handle profile update
+router.post('/edit', [
+    body('username')
+        .trim()
+        .isLength({ min: 3, max: 30 })
+        .withMessage('Username must be between 3 and 30 characters')
+        .matches(/^[a-zA-Z0-9_]+$/)
+        .withMessage('Username can only contain letters, numbers, and underscores')
+        .toLowerCase(),
+    body('email')
+        .trim()
+        .isEmail()
+        .withMessage('Please enter a valid email address')
+        .normalizeEmail(),
+    body('currentPassword')
+        .optional({ checkFalsy: true })
+        .isLength({ min: 6 })
+        .withMessage('Current password must be at least 6 characters'),
+    body('newPassword')
+        .optional({ checkFalsy: true })
+        .isLength({ min: 6 })
+        .withMessage('New password must be at least 6 characters'),
+    body('confirmPassword')
+        .optional({ checkFalsy: true })
+        .custom((value, { req }) => {
+            if (value !== req.body.newPassword) {
+                throw new Error('Password confirmation does not match new password');
+            }
+            return true;
+        }),
+    body('bio')
+        .optional({ checkFalsy: true })
+        .trim()
+        .isLength({ max: 500 })
+        .withMessage('Bio must not exceed 500 characters'),
+    body('profileImage')
+        .optional({ checkFalsy: true })
+        .isURL()
+        .withMessage('Please enter a valid URL for profile image')
+], asyncHandler(async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ error: errors.array()[0].msg });
+            req.session.error = errors.array()[0].msg;
+            return res.redirect('/profile/edit');
         }
 
-        const { username, email, bio } = req.body;
-        const userId = req.session.user.id;
+        const user = await User.findByPk(req.session.user.id);
+        if (!user) {
+            req.session.error = 'User not found';
+            return res.redirect('/login');
+        }
 
         // Check if username or email is already taken
-        const existingUser = await User.findOne({
-            where: {
-                id: { [Op.ne]: userId },
-                [Op.or]: [{ username }, { email }]
+        if (req.body.username !== user.username) {
+            const existingUsername = await User.findOne({
+                where: { username: req.body.username }
+            });
+            if (existingUsername) {
+                req.session.error = 'Username is already taken';
+                return res.redirect('/profile/edit');
             }
+        }
+
+        if (req.body.email !== user.email) {
+            const existingEmail = await User.findOne({
+                where: { email: req.body.email }
+            });
+            if (existingEmail) {
+                req.session.error = 'Email is already registered';
+                return res.redirect('/profile/edit');
+            }
+        }
+
+        // Handle password change if requested
+        if (req.body.currentPassword && req.body.newPassword) {
+            const isValidPassword = await bcrypt.compare(req.body.currentPassword, user.password);
+            if (!isValidPassword) {
+                req.session.error = 'Current password is incorrect';
+                return res.redirect('/profile/edit');
+            }
+            // Hash the new password
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+            req.body.password = hashedPassword;
+        }
+
+        // Update user data
+        await user.update({
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password || user.password,
+            bio: req.body.bio,
+            profileImage: req.body.profileImage
         });
 
-        if (existingUser) {
-            return res.status(400).json({
-                error: 'Username or email already taken'
-            });
-        }
+        // Update session data
+        req.session.user = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            profileImage: user.profileImage
+        };
 
-        // Update user
-        await User.update(
-            { username, email, bio },
-            { where: { id: userId } }
-        );
-
-        // Update session
-        const updatedUser = await User.findByPk(userId);
-        req.session.user = updatedUser;
-
-        res.json({ success: true });
+        req.session.success = 'Profile updated successfully';
+        res.redirect('/profile');
     } catch (error) {
         console.error('Profile update error:', error);
-        res.status(500).json({ error: 'Error updating profile' });
+        req.session.error = 'Error updating profile';
+        res.redirect('/profile/edit');
     }
-});
+}));
 
-// Change password
-router.post('/change-password', isAuthenticated, [
-    body('currentPassword').notEmpty(),
-    body('newPassword').isLength({ min: 6 })
-], async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ error: errors.array()[0].msg });
-        }
+// View profile
+router.get('/', asyncHandler(async (req, res) => {
+    const user = await User.findByPk(req.session.user.id, {
+        include: [
+            {
+                model: Recipe,
+                as: 'recipes',
+                limit: 5,
+                order: [['createdAt', 'DESC']],
+                include: [
+                    {
+                        model: User,
+                        as: 'author',
+                        attributes: ['username']
+                    }
+                ]
+            },
+            {
+                model: Recipe,
+                as: 'savedRecipes',
+                limit: 5,
+                order: [['createdAt', 'DESC']],
+                include: [
+                    {
+                        model: User,
+                        as: 'author',
+                        attributes: ['username']
+                    }
+                ]
+            },
+            {
+                model: User,
+                as: 'followers'
+            }
+        ]
+    });
 
-        const { currentPassword, newPassword } = req.body;
-        const user = await User.findByPk(req.session.user.id);
-
-        // Verify current password
-        const isValid = await user.validatePassword(currentPassword);
-        if (!isValid) {
-            return res.status(400).json({ error: 'Current password is incorrect' });
-        }
-
-        // Update password
-        user.password = newPassword;
-        await user.save();
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Password change error:', error);
-        res.status(500).json({ error: 'Error changing password' });
+    if (!user) {
+        req.session.error = 'User not found';
+        return res.redirect('/login');
     }
-});
 
-// Request password reset
-router.post('/reset-password', [
-    body('email').isEmail().normalizeEmail()
-], async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ error: errors.array()[0].msg });
-        }
+    res.render('pages/profile', {
+        user,
+        error: req.session.error,
+        success: req.session.success
+    });
 
-        const { email } = req.body;
-        const user = await User.findOne({ where: { email } });
-
-        if (!user) {
-            // Return success even if user not found (security)
-            return res.json({ success: true });
-        }
-
-        // Generate reset token
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
-
-        // Save token to user
-        user.resetToken = resetToken;
-        user.resetTokenExpiry = resetTokenExpiry;
-        await user.save();
-
-        // TODO: Send reset email
-        console.log('Reset token:', resetToken);
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Password reset request error:', error);
-        res.status(500).json({ error: 'Error requesting password reset' });
-    }
-});
+    delete req.session.error;
+    delete req.session.success;
+}));
 
 export default router; 

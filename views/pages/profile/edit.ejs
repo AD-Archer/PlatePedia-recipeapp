@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Edit Profile</title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+
+    <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h1 class="text-center mb-4">Edit Profile</h1>
+                        
+                        <form action="/profile/edit" method="POST" class="needs-validation" novalidate>
+                            <!-- Profile Image -->
+                            <div class="mb-4 text-center">
+                                <% if (user.profileImage) { %>
+                                    <img src="<%= user.profileImage %>" alt="Profile" 
+                                         class="rounded-circle mb-3" 
+                                         style="width: 150px; height: 150px; object-fit: cover;">
+                                <% } else { %>
+                                    <div class="bg-secondary rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
+                                         style="width: 150px; height: 150px;">
+                                        <span class="text-white display-4">
+                                            <%= user.username.charAt(0).toUpperCase() %>
+                                        </span>
+                                    </div>
+                                <% } %>
+                                
+                                <div class="mb-3">
+                                    <label for="profileImage" class="form-label">Profile Image URL</label>
+                                    <input type="url" class="form-control" id="profileImage" 
+                                           name="profileImage" value="<%= user.profileImage || '' %>">
+                                </div>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username*</label>
+                                <input type="text" class="form-control" id="username" 
+                                       name="username" value="<%= user.username %>" required>
+                                <div class="form-text">
+                                    Username must be between 3 and 30 characters and can only contain letters, numbers, and underscores.
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email*</label>
+                                <input type="email" class="form-control" id="email" 
+                                       name="email" value="<%= user.email %>" required>
+                            </div>
+
+                            <!-- Bio -->
+                            <div class="mb-3">
+                                <label for="bio" class="form-label">Bio</label>
+                                <textarea class="form-control" id="bio" name="bio" 
+                                          rows="3" maxlength="500"><%= user.bio || '' %></textarea>
+                                <div class="form-text">
+                                    Maximum 500 characters
+                                </div>
+                            </div>
+
+                            <!-- Change Password Section -->
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    Change Password (optional)
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" 
+                                               id="currentPassword" name="currentPassword">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" 
+                                               id="newPassword" name="newPassword">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" 
+                                               id="confirmPassword" name="confirmPassword">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="/profile" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+</html> 

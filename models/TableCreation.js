@@ -49,14 +49,14 @@ User.belongsToMany(User, {
 User.belongsToMany(Recipe, { 
     through: SavedRecipe,
     as: 'savedRecipes',
-    foreignKey: 'user_id',
-    otherKey: 'recipe_id'
+    foreignKey: 'userId',
+    otherKey: 'recipeId'
 });
 Recipe.belongsToMany(User, { 
     through: SavedRecipe,
     as: 'savedBy',
-    foreignKey: 'recipe_id',
-    otherKey: 'user_id'
+    foreignKey: 'recipeId',
+    otherKey: 'userId'
 });
 
 // HasMany associations for SavedRecipe

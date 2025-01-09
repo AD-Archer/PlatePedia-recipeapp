@@ -2,6 +2,8 @@ import express from 'express';
 import { User, Recipe, UserFollows, Category } from '../models/TableCreation.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
+import { body, validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
 import { Op, Sequelize } from 'sequelize';
 
 const router = express.Router();
@@ -65,79 +67,163 @@ router.get('/', asyncHandler(async (req, res) => {
     delete req.session.success;
 }));
 
-// View user profile - Public access
+// View user profile
 router.get('/:username', asyncHandler(async (req, res) => {
+    const username = req.params.username;
+    
+    // First get the user's basic info
+    let user = await User.findOne({
+        where: { username },
+        attributes: ['id', 'username', 'email', 'bio', 'profileImage', 'createdAt']
+    });
+
+    if (!user) {
+        req.session.error = 'User not found';
+        return res.redirect('/');
+    }
+
+    // Then get their recipes and other data
+    const [recipes, savedRecipes, followers, following] = await Promise.all([
+        Recipe.findAll({
+            where: { userId: user.id },
+            limit: 5,
+            order: [['createdAt', 'DESC']]
+        }),
+        user.getSavedRecipes({
+            limit: 5,
+            order: [['createdAt', 'DESC']]
+        }),
+        user.getFollowers(),
+        user.getFollowing()
+    ]);
+
+    // Combine all the data
+    user = user.toJSON();
+    user.recipes = recipes;
+    user.savedRecipes = savedRecipes;
+    user.followers = followers;
+    user.following = following;
+
+    // Calculate stats
+    const stats = {
+        recipeCount: recipes.length,
+        followerCount: followers.length,
+        followingCount: following.length
+    };
+
+    // Check if logged-in user is following this user
+    let isFollowing = false;
+    if (req.session.user && req.session.user.id !== user.id) {
+        const followRelation = await UserFollows.findOne({
+            where: {
+                followerId: req.session.user.id,
+                followingId: user.id
+            }
+        });
+        isFollowing = !!followRelation;
+    }
+
+    // Check if this is the logged-in user viewing their own profile
+    const isOwnProfile = req.session.user && req.session.user.id === user.id;
+
+    res.render('pages/users/profile', {
+        profileUser: user,
+        isOwnProfile,
+        isFollowing,
+        stats,
+        error: req.session.error,
+        success: req.session.success
+    });
+
+    delete req.session.error;
+    delete req.session.success;
+}));
+
+// Handle profile update
+router.post('/:username/edit', isAuthenticated, [
+    body('username')
+        .trim()
+        .isLength({ min: 3, max: 30 })
+        .withMessage('Username must be between 3 and 30 characters')
+        .matches(/^[a-zA-Z0-9_]+$/)
+        .withMessage('Username can only contain letters, numbers, and underscores')
+        .toLowerCase(),
+    body('email')
+        .trim()
+        .isEmail()
+        .withMessage('Please enter a valid email address')
+        .normalizeEmail(),
+    body('bio')
+        .optional({ checkFalsy: true })
+        .trim()
+        .isLength({ max: 500 })
+        .withMessage('Bio must not exceed 500 characters'),
+    body('profileImage')
+        .optional({ checkFalsy: true })
+        .isURL()
+        .withMessage('Please enter a valid URL for profile image')
+], asyncHandler(async (req, res) => {
+    // Ensure user can only edit their own profile
+    if (req.params.username !== req.session.user.username) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     try {
-        const username = req.params.username;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: errors.array()[0].msg });
+        }
+
+        const user = await User.findByPk(req.session.user.id);
         
-        // Check if username exists
-        const user = await User.findOne({
-            where: { 
-                username: username
-            },
-            include: [
-                {
-                    model: Recipe,
-                    as: 'recipes',
-                    include: [{
-                        model: Category,
-                        as: 'categories',
-                        through: { attributes: [] }
-                    }],
-                    order: [['createdAt', 'DESC']]
-                },
-                {
-                    model: User,
-                    as: 'followers',
-                    attributes: ['id', 'username', 'profileImage']
-                },
-                {
-                    model: User,
-                    as: 'following',
-                    attributes: ['id', 'username', 'profileImage']
-                }
-            ]
+        // Check if username or email is already taken
+        if (req.body.username !== user.username) {
+            const existingUsername = await User.findOne({
+                where: { username: req.body.username }
+            });
+            if (existingUsername) {
+                return res.status(400).json({ error: 'Username is already taken' });
+            }
+        }
+
+        if (req.body.email !== user.email) {
+            const existingEmail = await User.findOne({
+                where: { email: req.body.email }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ error: 'Email is already registered' });
+            }
+        }
+
+        // Update user data
+        await user.update({
+            username: req.body.username,
+            email: req.body.email,
+            bio: req.body.bio,
+            profileImage: req.body.profileImage
         });
 
-        if (!user) {
-            req.session.error = 'User not found';
-            return res.redirect('/users');
-        }
-
-        // Check if the logged-in user is following this user
-        let isFollowing = false;
-        if (req.session.user) {
-            const followRelation = await UserFollows.findOne({
-                where: {
-                    followerId: req.session.user.id,
-                    followingId: user.id
-                }
-            });
-            isFollowing = !!followRelation;
-        }
-
-        // Get user's stats
-        const stats = {
-            recipeCount: user.recipes.length,
-            followerCount: user.followers.length,
-            followingCount: user.following.length
+        // Update session data
+        req.session.user = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            profileImage: user.profileImage
         };
 
-        res.render('pages/users/profile', {
-            profileUser: user,
-            isFollowing,
-            stats,
-            error: req.session.error,
-            success: req.session.success
+        res.json({ 
+            success: true, 
+            message: 'Profile updated successfully',
+            user: {
+                username: user.username,
+                email: user.email,
+                bio: user.bio,
+                profileImage: user.profileImage
+            }
         });
-
-        delete req.session.error;
-        delete req.session.success;
-
     } catch (error) {
-        console.error('Error loading user profile:', error);
-        req.session.error = 'Error loading user profile';
-        res.redirect('/users');
+        console.error('Profile update error:', error);
+        res.status(500).json({ error: 'Error updating profile' });
     }
 }));
 

@@ -16,7 +16,6 @@ import signup from './routes/signup.js';
 import login from './routes/login.js';
 import dashboard from './routes/dashboard.js';
 import logout from './routes/logout.js';
-import profileRoutes from './routes/profile.js';
 import recipes from './routes/recipes.js';
 import users from './routes/users.js';
 
@@ -196,7 +195,6 @@ app.use('/signup', signup);
 app.use('/login', login);
 app.use('/dashboard', dashboard);
 app.use('/logout', logout);
-app.use('/profile', profileRoutes);
 app.use('/recipes', recipes);
 app.use('/users', users);
 
