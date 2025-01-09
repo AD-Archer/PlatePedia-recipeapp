@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - <%= recipe.title %></title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow-sm">
+                    <% if (recipe.imageUrl) { %>
+                        <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 400px; object-fit: cover;">
+                    <% } %>
+                    <div class="card-body p-4">
+                        <h1 class="card-title mb-3"><%= recipe.title %></h1>
+                        
+                        <div class="d-flex align-items-center mb-4">
+                            <% if (recipe.author.profileImage) { %>
+                                <img src="<%= recipe.author.profileImage %>" class="rounded-circle me-2" width="40" height="40">
+                            <% } %>
+                            <div>
+                                <p class="mb-0">By <a href="/users/<%= recipe.author.username %>"><%= recipe.author.username %></a></p>
+                                <small class="text-muted">Created on <%= new Date(recipe.createdAt).toLocaleDateString() %></small>
+                                <% if (user && user.id !== recipe.author.id) { %>
+                                    <button 
+                                        class="btn btn-sm btn-<%= isFollowing ? 'outline-' : '' %>primary ms-2" 
+                                        onclick="toggleFollow('<%= recipe.author.username %>', this)"
+                                        data-following="<%= isFollowing %>">
+                                        <%= isFollowing ? 'Unfollow' : 'Follow' %> Chef
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <% if (recipe.description) { %>
+                            <p class="card-text mb-4"><%= recipe.description %></p>
+                        <% } %>
+
+                        <div class="row mb-4">
+                            <div class="col-sm-4">
+                                <h6>Cooking Time</h6>
+                                <p><%= recipe.cookingTime ? `${recipe.cookingTime} minutes` : 'Not specified' %></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <h6>Servings</h6>
+                                <p><%= recipe.servings || 'Not specified' %></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <h6>Difficulty</h6>
+                                <p><%= recipe.difficulty ? recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1) : 'Not specified' %></p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Ingredients</h5>
+                            <ul class="list-group list-group-flush">
+                                <% recipe.ingredients.forEach(ingredient => { %>
+                                    <li class="list-group-item"><%= ingredient %></li>
+                                <% }) %>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Instructions</h5>
+                            <p class="card-text"><%= recipe.instructions %></p>
+                        </div>
+
+                        <% if (recipe.categories && recipe.categories.length > 0) { %>
+                            <div class="mb-2">
+                                <% recipe.categories.forEach(category => { %>
+                                    <span class="badge bg-secondary me-1"><%= category.name %></span>
+                                <% }) %>
+                            </div>
+                        <% } %>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-info"><%= recipe.calories %> calories</span>
+                            </div>
+                            <% if (user && user.id === recipe.author.id) { %>
+                                <div>
+                                    <a href="/recipes/<%= recipe.id %>/edit" class="btn btn-outline-primary me-2">Edit</a>
+                                    <button class="btn btn-outline-danger" onclick="deleteRecipe(<%= recipe.id %>)">Delete</button>
+                                </div>
+                            <% } else if (user) { %>
+                                <button 
+                                    class="btn btn-outline-primary save-recipe" 
+                                    onclick="toggleSave('<%= recipe.id %>', this)"
+                                    data-saved="<%= recipe.isSaved ? 'true' : 'false' %>">
+                                    <%= recipe.isSaved ? 'Unsave Recipe' : 'Save Recipe' %>
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+
+    <% if (user && user.id === recipe.author.id) { %>
+        <script>
+            function deleteRecipe(recipeId) {
+                if (confirm('Are you sure you want to delete this recipe?')) {
+                    fetch(`/recipes/${recipeId}`, {
+                        method: 'DELETE',
+                    }).then(response => {
+                        if (response.ok) {
+                            window.location.href = '/recipes/my-recipes';
+                        }
+                    });
+                }
+            }
+        </script>
+    <% } %>
+
+    <% if (user && user.id === recipe.author.id) { %>
+        <script src="/js/recipe.js"></script>
+    <% } %>
+
+    <script>
+        async function toggleSave(recipeId, button) {
+            const isSaved = button.getAttribute('data-saved') === 'true';
+            try {
+                const response = await fetch(`/recipes/${recipeId}/save`, {
+                    method: isSaved ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    button.setAttribute('data-saved', !isSaved);
+                    button.textContent = isSaved ? 'Save Recipe' : 'Unsave Recipe';
+                    button.className = `btn btn-${isSaved ? 'outline-' : ''}primary save-recipe`;
+                } else {
+                    alert(data.error || 'Error updating save status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating save status');
+            }
+        }
+    </script>
+</body>
+</html> 

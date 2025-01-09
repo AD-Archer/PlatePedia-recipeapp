@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Browse Recipes</title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1>Browse Recipes</h1>
+            </div>
+            <% if (user) { %>
+                <div class="col-md-4 text-end">
+                    <a href="/recipes/new" class="btn btn-primary">Create New Recipe</a>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <% if (recipes && recipes.length > 0) { %>
+                <% recipes.forEach(recipe => { %>
+                    <%- include('../../partials/recipe-card', { recipe }) %>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="lead text-muted">No recipes found</p>
+                    <% if (user) { %>
+                        <a href="/recipes/new" class="btn btn-primary">Create the First Recipe</a>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+</body>
+</html> 

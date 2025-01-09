@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Dashboard</title>
+    <%- include('../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <div class="container py-5">
+        <% if (success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <!-- Welcome Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <% if (user) { %>
+                    <h1 class="display-4 mb-4">Welcome back, <%= user.username %>!</h1>
+                    <p class="lead">What would you like to cook today?</p>
+                <% } else { %>
+                    <h1 class="display-4 mb-4">Welcome to Food Finder!</h1>
+                    <p class="lead">Discover amazing recipes and connect with food lovers.</p>
+                    <div class="mt-4">
+                        <a href="/login" class="btn btn-primary btn-lg me-2">Login</a>
+                        <a href="/signup" class="btn btn-outline-primary btn-lg">Sign Up</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Quick Actions</h2>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/recipes/browse" class="btn btn-primary">Browse All Recipes</a>
+                    <% if (locals.user) { %>
+                        <a href="/recipes/new" class="btn btn-success">Create Recipe</a>
+                        <a href="/recipes/my-recipes" class="btn btn-info">My Recipes</a>
+                        <a href="/recipes/saved" class="btn btn-secondary">Saved Recipes</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Content -->
+        <div class="row g-4">
+            <!-- Popular Recipes -->
+            <div class="col-<%= user ? 'md-8' : '12' %>">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Popular Recipes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            <% if (popularRecipes && popularRecipes.length > 0) { %>
+                                <% popularRecipes.forEach(recipe => { %>
+                                    <div class="col">
+                                        <div class="card h-100 shadow-sm">
+                                            <% if (recipe.imageUrl) { %>
+                                                <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                                            <% } %>
+                                            <div class="card-body">
+                                                <h5 class="card-title"><%= recipe.title %></h5>
+                                                <p class="card-text text-muted">By <%= recipe.author.username %></p>
+                                                
+                                                <% if (recipe.categories && recipe.categories.length > 0) { %>
+                                                    <div class="mb-2">
+                                                        <% recipe.categories.forEach(category => { %>
+                                                            <span class="badge bg-secondary me-1 mb-1"><%= category.name %></span>
+                                                        <% }) %>
+                                                    </div>
+                                                <% } %>
+
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <div>
+                                                        <span class="badge bg-info"><%= recipe.calories %> calories</span>
+                                                        <% if (recipe.difficulty) { %>
+                                                            <span class="badge bg-<%= recipe.difficulty === 'easy' ? 'success' : (recipe.difficulty === 'medium' ? 'warning' : 'danger') %>">
+                                                                <%= recipe.difficulty %>
+                                                            </span>
+                                                        <% } %>
+                                                    </div>
+                                                    <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="col-12">
+                                    <p class="text-muted text-center">No recipes found</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% if (user) { %>
+                <!-- Suggested Users -->
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">Suggested Users to Follow</h5>
+                        </div>
+                        <div class="card-body">
+                            <% if (otherUsers && otherUsers.length > 0) { %>
+                                <div class="list-group">
+                                    <% otherUsers.forEach(otherUser => { %>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <a href="/users/<%= otherUser.username %>" class="d-flex align-items-center text-decoration-none text-dark flex-grow-1">
+                                                <% if (otherUser.profileImage) { %>
+                                                    <img src="<%= otherUser.profileImage %>" class="rounded-circle me-2" width="40" height="40">
+                                                <% } else { %>
+                                                    <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                        <span class="text-white"><%= otherUser.username.charAt(0).toUpperCase() %></span>
+                                                    </div>
+                                                <% } %>
+                                                <div>
+                                                    <h6 class="mb-0 text-dark"><%= otherUser.username %></h6>
+                                                    <small class="text-muted">
+                                                        <span class="recipe-count"><%= otherUser.recipes.length %></span> recipes
+                                                    </small>
+                                                </div>
+                                            </a>
+                                            <button 
+                                                class="btn btn-<%= otherUser.isFollowing ? 'outline-' : '' %>primary btn-sm follow-btn" 
+                                                onclick="toggleFollow('<%= otherUser.username %>', this)"
+                                                data-following="<%= otherUser.isFollowing %>">
+                                                <%= otherUser.isFollowing ? 'Unfollow' : 'Follow' %>
+                                            </button>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <p class="text-muted text-center">No suggestions available</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <!-- Add this script at the bottom of the file -->
+    <script>
+    async function toggleFollow(username, button) {
+        const isFollowing = button.getAttribute('data-following') === 'true';
+        try {
+            const response = await fetch(`/users/${username}/follow`, {
+                method: isFollowing ? 'DELETE' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                button.setAttribute('data-following', !isFollowing);
+                button.textContent = isFollowing ? 'Follow' : 'Unfollow';
+                button.className = `btn btn-${isFollowing ? '' : 'outline-'}primary btn-sm follow-btn`;
+            } else {
+                alert(data.error || 'Error updating follow status');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error updating follow status');
+        }
+    }
+    </script>
+</body>
+</html> 

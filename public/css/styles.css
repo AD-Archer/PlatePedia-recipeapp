@@ -1,0 +1,20 @@
+.badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.badge.bg-secondary:hover {
+    background-color: #5a6268 !important;
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+.form-check {
+    min-width: 120px;
+} 

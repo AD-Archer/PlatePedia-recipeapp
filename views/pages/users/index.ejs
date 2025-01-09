@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Browse Users</title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+
+        <h1 class="mb-4">Popular Chefs</h1>
+        
+        <div class="row g-4">
+            <% users.forEach(user => { %>
+                <div class="col-md-3">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <% if (user.profileImage) { %>
+                                <img src="<%= user.profileImage %>" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                            <% } else { %>
+                                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                    <i class="bi bi-person-circle fs-1"></i>
+                                </div>
+                            <% } %>
+                            
+                            <h5 class="card-title">
+                                <a href="/users/<%= user.username %>" class="text-decoration-none">
+                                    <%= user.username %>
+                                </a>
+                            </h5>
+                            
+                            <p class="text-muted mb-3"><%= user.recipeCount || 0 %> recipes</p>
+                            
+                            <% if (locals.user && locals.user.id !== user.id) { %>
+                                <button 
+                                    class="btn btn-<%= user.isFollowing ? 'outline-' : '' %>primary btn-sm follow-btn" 
+                                    onclick="toggleFollow('<%= user.username %>', this)"
+                                    data-following="<%= user.isFollowing %>">
+                                    <%= user.isFollowing ? 'Unfollow' : 'Follow' %>
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+
+    <script>
+        async function toggleFollow(username, button) {
+            const isFollowing = button.getAttribute('data-following') === 'true';
+            try {
+                const response = await fetch(`/users/${username}/follow`, {
+                    method: isFollowing ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    button.setAttribute('data-following', !isFollowing);
+                    button.textContent = isFollowing ? 'Follow' : 'Unfollow';
+                    button.className = `btn btn-${isFollowing ? '' : 'outline-'}primary btn-sm follow-btn`;
+                } else {
+                    alert(data.error || 'Error updating follow status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating follow status');
+            }
+        }
+    </script>
+</body>
+</html> 

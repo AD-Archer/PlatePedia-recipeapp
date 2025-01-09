@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - <%= profileUser.username %>'s Profile</title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+
+        <div class="row">
+            <!-- Profile Info -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <% if (profileUser.profileImage) { %>
+                            <img src="<%= profileUser.profileImage %>" alt="Profile" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        <% } else { %>
+                            <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                <i class="bi bi-person-circle fs-1"></i>
+                            </div>
+                        <% } %>
+                        
+                        <h3 class="card-title mb-3"><%= profileUser.username %></h3>
+                        
+                        <% if (profileUser.bio) { %>
+                            <p class="card-text text-muted mb-3"><%= profileUser.bio %></p>
+                        <% } %>
+
+                        <div class="d-flex justify-content-around mb-3">
+                            <div class="text-center">
+                                <h5 class="mb-0"><%= stats.recipeCount %></h5>
+                                <small class="text-muted">Recipes</small>
+                            </div>
+                            <div class="text-center">
+                                <h5 class="mb-0"><%= stats.followerCount %></h5>
+                                <small class="text-muted">Followers</small>
+                            </div>
+                            <div class="text-center">
+                                <h5 class="mb-0"><%= stats.followingCount %></h5>
+                                <small class="text-muted">Following</small>
+                            </div>
+                        </div>
+
+                        <% if (locals.user && locals.user.id !== profileUser.id) { %>
+                            <button 
+                                class="btn btn-<%= isFollowing ? 'outline-' : '' %>primary w-100" 
+                                onclick="toggleFollow('<%= profileUser.username %>', this)"
+                                data-following="<%= isFollowing %>">
+                                <%= isFollowing ? 'Unfollow' : 'Follow' %>
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User's Recipes -->
+            <div class="col-md-8">
+                <h4 class="mb-4">Recipes by <%= profileUser.username %></h4>
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    <% if (profileUser.recipes && profileUser.recipes.length > 0) { %>
+                        <% profileUser.recipes.forEach(recipe => { %>
+                            <div class="col">
+                                <div class="card h-100">
+                                    <% if (recipe.imageUrl) { %>
+                                        <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                                    <% } %>
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%= recipe.title %></h5>
+                                        <% if (recipe.description) { %>
+                                            <p class="card-text"><%= recipe.description %></p>
+                                        <% } %>
+                                        <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-12">
+                            <p class="text-muted">No recipes yet</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+
+    <script>
+        async function toggleFollow(username, button) {
+            const isFollowing = button.getAttribute('data-following') === 'true';
+            try {
+                const response = await fetch(`/users/${username}/follow`, {
+                    method: isFollowing ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    button.setAttribute('data-following', !isFollowing);
+                    button.textContent = isFollowing ? 'Follow' : 'Unfollow';
+                    button.className = `btn btn-${isFollowing ? '' : 'outline-'}primary w-100`;
+                    
+                    // Update followers count without refreshing
+                    const followersCount = document.querySelector('.text-center:nth-child(2) h5');
+                    const currentCount = parseInt(followersCount.textContent);
+                    followersCount.textContent = isFollowing ? currentCount - 1 : currentCount + 1;
+                } else {
+                    alert(data.error || 'Error updating follow status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating follow status');
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - My Recipes</title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1>My Recipes</h1>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="/recipes/new" class="btn btn-primary">Create New Recipe</a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <% if (recipes && recipes.length > 0) { %>
+                <% recipes.forEach(recipe => { %>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <% if (recipe.imageUrl) { %>
+                                <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                            <% } else { %>
+                                <div class="bg-light text-center py-5">
+                                    <i class="bi bi-camera fs-1 text-muted"></i>
+                                </div>
+                            <% } %>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= recipe.title %></h5>
+                                
+                                <% if (recipe.categories && recipe.categories.length > 0) { %>
+                                    <div class="mb-2">
+                                        <% recipe.categories.forEach(category => { %>
+                                            <span class="badge bg-secondary me-1"><%= category.name %></span>
+                                        <% }) %>
+                                    </div>
+                                <% } %>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div>
+                                        <% if (recipe.difficulty) { %>
+                                            <span class="badge bg-info me-2"><%= recipe.difficulty %></span>
+                                        <% } %>
+                                        <span class="badge bg-success"><%= recipe.calories %> calories</span>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View</a>
+                                        <a href="/recipes/<%= recipe.id %>/edit" class="btn btn-outline-secondary btn-sm">Edit</a>
+                                        <button onclick="deleteRecipe(<%= recipe.id %>)" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <small>Created <%= new Date(recipe.createdAt).toLocaleDateString() %></small>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="lead text-muted">You haven't created any recipes yet</p>
+                    <a href="/recipes/new" class="btn btn-primary">Create Your First Recipe</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+    <script src="/js/recipe.js"></script>
+</body>
+</html> 

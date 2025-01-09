@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Browse Recipes</title>
+    <%- include('../../partials/bootstrap') %>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <h1 class="mb-4">Browse Recipes</h1>
+
+        <!-- Search and Filter Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <form class="d-flex gap-2" id="searchForm">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        placeholder="Search recipes..." 
+                        id="searchInput"
+                        name="search"
+                        value="<%= locals.searchQuery || '' %>"
+                    >
+                    <select class="form-select w-auto" name="category" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <% categories.forEach(category => { %>
+                            <option 
+                                value="<%= category.id %>" 
+                                <%= locals.selectedCategory == category.id ? 'selected' : '' %>
+                            >
+                                <%= category.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                    <select class="form-select w-auto" name="difficulty" id="difficultyFilter">
+                        <option value="">All Difficulties</option>
+                        <option value="easy" <%= locals.selectedDifficulty === 'easy' ? 'selected' : '' %>>Easy</option>
+                        <option value="medium" <%= locals.selectedDifficulty === 'medium' ? 'selected' : '' %>>Medium</option>
+                        <option value="hard" <%= locals.selectedDifficulty === 'hard' ? 'selected' : '' %>>Hard</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="recipeGrid">
+            <% recipes.forEach(recipe => { %>
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <% if (recipe.imageUrl) { %>
+                            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= recipe.title %></h5>
+                            <p class="card-text text-muted">By <%= recipe.author.username %></p>
+                            
+                            <% if (recipe.categories && recipe.categories.length > 0) { %>
+                                <div class="mb-2">
+                                    <% recipe.categories.forEach(category => { %>
+                                        <span class="badge bg-secondary me-1"><%= category.name %></span>
+                                    <% }) %>
+                                </div>
+                            <% } %>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-info"><%= recipe.calories %> calories</span>
+                                    <% if (recipe.difficulty) { %>
+                                        <span class="badge bg-<%= recipe.difficulty === 'easy' ? 'success' : (recipe.difficulty === 'medium' ? 'warning' : 'danger') %>">
+                                            <%= recipe.difficulty %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+
+        <% if (recipes.length === 0) { %>
+            <div class="text-center py-5">
+                <h3>No recipes found</h3>
+                <p class="text-muted">Try adjusting your search criteria</p>
+            </div>
+        <% } %>
+    </div>
+
+    <%- include('../../partials/footer') %>
+
+    <script>
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            document.getElementById('searchForm').submit();
+        }
+
+        // Debounce function to limit how often the search is performed
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Auto-submit form when filters change
+        document.getElementById('categoryFilter').addEventListener('change', () => {
+            document.getElementById('searchForm').submit();
+        });
+
+        document.getElementById('difficultyFilter').addEventListener('change', () => {
+            document.getElementById('searchForm').submit();
+        });
+
+        // Debounced search input
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', debounce(() => {
+            document.getElementById('searchForm').submit();
+        }, 500));
+    </script>
+</body>
+</html> 
