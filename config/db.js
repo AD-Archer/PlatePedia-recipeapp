@@ -1,23 +1,32 @@
 import { Sequelize } from 'sequelize';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import pg from 'pg';
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+dotenv.config();
+
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+    throw new Error('DATABASE_URL environment variable is not set');
+}
+
+const sequelize = new Sequelize(dbUrl, {
     dialect: 'postgres',
-    logging: false
+    dialectModule: pg,
+    ssl: true,
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
 });
 
-// Initialize database connection
-const initDb = async () => {
-    try {
-        await sequelize.authenticate();
-        console.log('Database connection successful');
-        return sequelize;
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-        throw error;
+export const getDb = async () => {
+    if (!sequelize) {
+        throw new Error('Sequelize instance not initialized');
     }
+    return sequelize;
 };
 
-export { initDb as getDb };
 export { sequelize };
 export default sequelize;
