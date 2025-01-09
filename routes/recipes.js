@@ -521,15 +521,15 @@ router.get('/create', asyncHandler(async (req, res) => {
     delete req.session.success;
 }));
 
-router.post('/create', [
+router.post('/', [
     // Validation middleware
     body('title').trim().notEmpty().withMessage('Title is required'),
-    body('ingredients.*').trim().notEmpty().withMessage('Each ingredient must not be empty'),
+    body('ingredients').isArray().withMessage('Ingredients must be an array'),
     body('instructions').trim().notEmpty().withMessage('Instructions are required'),
     body('calories').isInt({ min: 0 }).withMessage('Calories must be a positive number'),
     body('cookingTime').optional().isInt({ min: 0 }).withMessage('Cooking time must be a positive number'),
     body('servings').optional().isInt({ min: 1 }).withMessage('Servings must be at least 1'),
-    body('difficulty').optional().isIn(['easy', 'medium', 'hard']).withMessage('Invalid difficulty level'),
+    body('difficulty').isIn(['easy', 'medium', 'hard']).withMessage('Invalid difficulty level'),
 ], asyncHandler(async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: 'Please log in to create recipes' });
@@ -541,11 +541,19 @@ router.post('/create', [
             return res.status(400).json({ error: errors.array()[0].msg });
         }
 
+        // Convert ingredients array to string
         const recipeData = {
             ...req.body,
-            tags: Array.isArray(req.body.tags) ? 
-                req.body.tags.join(',') : 
-                req.body.tags
+            ingredients: Array.isArray(req.body.ingredients) 
+                ? req.body.ingredients.filter(i => i.trim()).join('\n')
+                : req.body.ingredients,
+            tags: Array.isArray(req.body.tags) 
+                ? req.body.tags.join(',') 
+                : req.body.tags,
+            difficulty: req.body.difficulty || 'medium', // Default to medium if not provided
+            calories: parseInt(req.body.calories) || 0, // Convert to number and default to 0
+            cookingTime: req.body.cookingTime ? parseInt(req.body.cookingTime) : null,
+            servings: req.body.servings ? parseInt(req.body.servings) : null
         };
 
         const recipe = await Recipe.create({

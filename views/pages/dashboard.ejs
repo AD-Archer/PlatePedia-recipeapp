@@ -9,112 +9,116 @@
 <body>
     <%- include('../partials/header') %>
 
-    <div class="container py-5">
-        <%- include('../partials/alerts') %>
-        
-        <!-- Welcome Section -->
-        <div class="text-center mb-5">
-            <% if (user) { %>
-                <h1>Welcome back, <%= user.username %>!</h1>
-                <div class="mt-3">
-                    <a href="/recipes/create" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Create Recipe
-                    </a>
-                    <a href="/recipes/my-recipes" class="btn btn-outline-primary ms-2">
-                        <i class="bi bi-collection"></i> My Recipes
-                    </a>
+    <div class="page-content">
+        <div class="welcome-section">
+            <div class="container">
+                <div class="text-center">
+                    <% if (user) { %>
+                        <h1 class="display-4 mb-4">Welcome back, <%= user.username %>!</h1>
+                        <div class="mt-3">
+                            <a href="/recipes/create" class="btn btn-light">
+                                <i class="bi bi-plus-circle"></i> Create Recipe
+                            </a>
+                            <a href="/recipes/my-recipes" class="btn btn-outline-light ms-2">
+                                <i class="bi bi-collection"></i> My Recipes
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <h1 class="display-4 mb-4">Welcome to Food Finder!</h1>
+                        <p class="lead">
+                            Discover amazing recipes and connect with food lovers.
+                            <a href="/signup" class="btn btn-light ms-2">Join Now</a>
+                        </p>
+                    <% } %>
                 </div>
-            <% } else { %>
-                <h1>Welcome to Food Finder!</h1>
-                <p class="lead">
-                    Discover amazing recipes and connect with food lovers.
-                    <a href="/signup" class="btn btn-primary ms-2">Join Now</a>
-                </p>
-            <% } %>
+            </div>
         </div>
 
-        <!-- Popular Recipes Section -->
-        <section class="mb-5">
-            <h2 class="mb-4">Popular Recipes</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <% if (popularRecipes && popularRecipes.length > 0) { %>
-                    <% popularRecipes.forEach(recipe => { %>
-                        <%- include('../partials/recipeCard', { recipe }) %>
-                    <% }); %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <p class="text-muted">No recipes yet. Be the first to create one!</p>
-                    </div>
-                <% } %>
-            </div>
-        </section>
-
-        <!-- Browse Categories Section -->
-        <section class="mb-5">
-            <h2 class="mb-4">Browse Categories</h2>
-            <div class="row g-4">
-                <% Object.entries(groupedCategories).forEach(([type, categories]) => { %>
-                    <% if (categories.length > 0) { %>
-                        <div class="col-12 mb-5">
-                            <h3 class="h5 mb-3 text-muted text-capitalize"><%= type %></h3>
-                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-                                <% categories.forEach(category => { %>
-                                    <div class="col">
-                                        <a href="/recipes/browse?category=<%= category.id %>" 
-                                           class="text-decoration-none">
-                                            <div class="card h-100 shadow-sm hover-shadow">
-                                                <% if (category.imageUrl) { %>
-                                                    <img src="<%= category.imageUrl %>" 
-                                                         class="card-img-top" 
-                                                         alt="<%= category.name %>"
-                                                         style="height: 120px; object-fit: cover;">
-                                                <% } %>
-                                                <div class="card-body">
-                                                    <h6 class="card-title text-center mb-1">
-                                                        <%= category.name %>
-                                                    </h6>
-                                                    <p class="text-muted text-center small mb-0">
-                                                        <%= category.dataValues.recipeCount || 0 %> recipes
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                <% }); %>
-                            </div>
+        <div class="container">
+            <%- include('../partials/alerts') %>
+            
+            <!-- Popular Recipes Section -->
+            <section class="mb-5">
+                <h2 class="mb-4">Popular Recipes</h2>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <% if (popularRecipes && popularRecipes.length > 0) { %>
+                        <% popularRecipes.forEach(recipe => { %>
+                            <%- include('../partials/recipeCard', { recipe }) %>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No recipes yet. Be the first to create one!</p>
                         </div>
                     <% } %>
-                <% }); %>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <!-- Suggested Users Section (Only shown to logged-in users) -->
-        <% if (user && suggestedUsers && suggestedUsers.length > 0) { %>
+            <!-- Browse Categories Section -->
             <section class="mb-5">
-                <h2 class="mb-4">Suggested Users</h2>
-                <div class="row row-cols-1 row-cols-md-4 g-4">
-                    <% suggestedUsers.forEach(suggestedUser => { %>
-                        <%- include('../partials/userCard', { user: suggestedUser }) %>
+                <h2 class="section-title">Browse Categories</h2>
+                <div class="row g-4">
+                    <% Object.entries(groupedCategories).forEach(([type, categories]) => { %>
+                        <% if (categories.length > 0) { %>
+                            <div class="col-12 mb-5">
+                                <h3 class="h5 mb-3 text-muted text-capitalize fw-bold"><%= type %></h3>
+                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+                                    <% categories.forEach(category => { %>
+                                        <div class="col">
+                                            <a href="/recipes/browse?category=<%= category.id %>" 
+                                               class="text-decoration-none">
+                                                <div class="card category-card">
+                                                    <% if (category.imageUrl) { %>
+                                                        <img src="<%= category.imageUrl %>" 
+                                                             class="card-img-top" 
+                                                             alt="<%= category.name %>">
+                                                    <% } %>
+                                                    <div class="card-body">
+                                                        <h6 class="card-title text-center">
+                                                            <%= category.name %>
+                                                        </h6>
+                                                        <p class="recipe-count text-center mb-0">
+                                                            <%= category.dataValues.recipeCount || 0 %> recipes
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% } %>
                     <% }); %>
                 </div>
             </section>
-        <% } %>
 
-        <!-- Recent Recipes Section -->
-        <section class="mb-5">
-            <h2 class="mb-4">Recent Recipes</h2>
-            <div class="row row-cols-1 row-cols-md-4 g-4">
-                <% if (latestRecipes && latestRecipes.length > 0) { %>
-                    <% latestRecipes.forEach(recipe => { %>
-                        <%- include('../partials/recipeCard', { recipe }) %>
-                    <% }); %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <p class="text-muted">No recipes yet. Be the first to create one!</p>
+            <!-- Suggested Users Section (Only shown to logged-in users) -->
+            <% if (false) { %> <!-- Temporarily disabled -->
+                <section class="mb-5">
+                    <h2 class="mb-4">Suggested Users</h2>
+                    <div class="row row-cols-1 row-cols-md-4 g-4">
+                        <% suggestedUsers.forEach(suggestedUser => { %>
+                            <%- include('../partials/userCard', { user: suggestedUser }) %>
+                        <% }); %>
                     </div>
-                <% } %>
-            </div>
-        </section>
+                </section>
+            <% } %>
+
+            <!-- Recent Recipes Section -->
+            <section class="mb-5">
+                <h2 class="mb-4">Recent Recipes</h2>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+                    <% if (latestRecipes && latestRecipes.length > 0) { %>
+                        <% latestRecipes.forEach(recipe => { %>
+                            <%- include('../partials/recipeCard', { recipe }) %>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No recipes yet. Be the first to create one!</p>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
+        </div>
     </div>
 
     <%- include('../partials/footer') %>

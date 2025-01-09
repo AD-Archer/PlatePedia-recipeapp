@@ -205,35 +205,44 @@
         document.getElementById('createRecipeForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            const data = {
-                title: formData.get('title'),
-                description: formData.get('description'),
-                ingredients: [...formData.getAll('ingredients[]')].filter(i => i),
-                instructions: formData.get('instructions'),
-                categories: [...formData.getAll('categories[]')].map(Number),
-                cookingTime: formData.get('cookingTime') ? Number(formData.get('cookingTime')) : null,
-                servings: formData.get('servings') ? Number(formData.get('servings')) : null,
-                difficulty: formData.get('difficulty') || null,
-                calories: Number(formData.get('calories')),
-                imageUrl: formData.get('imageUrl') || null
+            // Get all ingredient inputs
+            const ingredientInputs = document.querySelectorAll('[name="ingredients[]"]');
+            const ingredients = Array.from(ingredientInputs).map(input => input.value.trim());
+
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                ingredients: ingredients.filter(i => i), // Remove empty ingredients
+                instructions: document.getElementById('instructions').value,
+                cookingTime: document.getElementById('cookingTime').value,
+                servings: document.getElementById('servings').value,
+                difficulty: document.getElementById('difficulty').value || 'medium', // Default to medium if not selected
+                calories: document.getElementById('calories').value,
+                categories: Array.from(document.querySelectorAll('input[name="categories[]"]:checked')).map(input => input.value),
+                imageUrl: document.getElementById('imageUrl').value
             };
 
+            // Validate required fields
+            if (!formData.title || !formData.ingredients.length || !formData.instructions || !formData.calories) {
+                alert('Please fill in all required fields (Title, Ingredients, Instructions, and Calories)');
+                return;
+            }
+
             try {
-                const response = await fetch('/recipes/create', {
+                const response = await fetch('/recipes', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(formData)
                 });
 
-                const result = await response.json();
-                
-                if (result.success) {
-                    window.location.href = `/recipes/${result.recipeId}`;
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = `/recipes/${data.recipeId}`;
                 } else {
-                    alert(result.error || 'Error creating recipe');
+                    alert(data.error || 'Error creating recipe');
                 }
             } catch (error) {
                 console.error('Error:', error);

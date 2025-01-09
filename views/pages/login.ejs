@@ -34,15 +34,15 @@
                             </a>
                         </div>
 
-                        <form action="/login" method="POST">
+                        <form id="loginForm" class="needs-validation" novalidate>
                             <div class="mb-3">
-                                <label for="identifier" class="form-label">Email or Username</label>
+                                <label for="username" class="form-label">Username</label>
                                 <input 
                                     type="text" 
                                     class="form-control" 
-                                    id="identifier" 
-                                    name="identifier" 
-                                    placeholder="Enter your email or username"
+                                    id="username" 
+                                    name="username" 
+                                    placeholder="Enter your username"
                                     required
                                 >
                             </div>
@@ -129,6 +129,43 @@
                 alert('Error requesting password reset');
             }
         }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/dashboard';
+                } else {
+                    // Show error in the existing alert div if present
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger';
+                    alertDiv.textContent = data.error || 'Login failed';
+                    
+                    // Insert at the top of the form
+                    const form = document.getElementById('loginForm');
+                    form.insertBefore(alertDiv, form.firstChild);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('An error occurred during login');
+            }
+        });
     </script>
 </body>
 </html>

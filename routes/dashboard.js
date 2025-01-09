@@ -20,7 +20,9 @@ router.get('/', asyncHandler(async (req, res) => {
                 }
             ],
             order: [['createdAt', 'DESC']],
-            limit: 8
+            limit: 8,
+            raw: false,
+            nest: true
         });
 
         // Get popular recipes (most saved)
@@ -33,7 +35,9 @@ router.get('/', asyncHandler(async (req, res) => {
                 }
             ],
             order: [['createdAt', 'DESC']],
-            limit: 8
+            limit: 8,
+            raw: false,
+            nest: true
         });
 
         // Get categories with recipe counts
@@ -63,16 +67,55 @@ router.get('/', asyncHandler(async (req, res) => {
             dietary: categories.filter(cat => cat.type === 'dietary')
         };
 
-        const latestRecipesWithStatus = await addSavedStatus(latestRecipes, req.session.user?.id);
-        const popularRecipesWithStatus = await addSavedStatus(popularRecipes, req.session.user?.id);
+        // Get suggested users if user is logged in
+        let suggestedUsers = [];
+        if (req.session.user) {
+            suggestedUsers = await User.findAll({
+                where: {
+                    id: {
+                        [Op.ne]: req.session.user.id
+                    }
+                },
+                attributes: [
+                    'id', 
+                    'username', 
+                    'profileImage',
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM recipes WHERE recipes."userId" = "User"."id")'),
+                        'recipeCount'
+                    ]
+                ],
+                limit: 4,
+                order: sequelize.random()
+            });
 
-        res.render('pages/dashboard', {
-            latestRecipes: latestRecipesWithStatus,
-            popularRecipes: popularRecipesWithStatus,
-            groupedCategories,
-            error: req.session.error,
-            success: req.session.success
-        });
+            // Convert to plain objects
+            suggestedUsers = suggestedUsers.map(user => user.get({ plain: true }));
+        }
+
+        try {
+            const latestRecipesWithStatus = await addSavedStatus(latestRecipes, req.session.user?.id);
+            const popularRecipesWithStatus = await addSavedStatus(popularRecipes, req.session.user?.id);
+
+            res.render('pages/dashboard', {
+                latestRecipes: latestRecipesWithStatus,
+                popularRecipes: popularRecipesWithStatus,
+                groupedCategories,
+                suggestedUsers,
+                error: req.session.error,
+                success: req.session.success
+            });
+        } catch (error) {
+            console.error('Error processing recipes:', error);
+            res.render('pages/dashboard', {
+                latestRecipes: latestRecipes,
+                popularRecipes: popularRecipes,
+                groupedCategories,
+                suggestedUsers,
+                error: 'Error loading some content',
+                success: req.session.success
+            });
+        }
 
         delete req.session.error;
         delete req.session.success;

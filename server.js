@@ -129,25 +129,21 @@ app.use(cookieParser());
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: true,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        sameSite: 'lax'
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     },
-    rolling: true,
-    name: 'foodfinder.sid',
-    store: new session.MemoryStore({
-        checkPeriod: 86400000
-    })
+    store: new session.MemoryStore()
 }));
 
 // User and flash message middleware
 app.use((req, res, next) => {
     res.locals.user = req.session.user;
+    console.log('Session user:', req.session.user);
     next();
 });
 app.use(flashMiddleware);
