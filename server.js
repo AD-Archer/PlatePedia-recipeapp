@@ -32,40 +32,39 @@ async function initializeDatabase() {
         await sequelize.authenticate();
         console.log('Database connection successful');
 
-        // Drop existing tables in correct order
-        console.log('Dropping existing tables...');
-        await sequelize.query('DROP SCHEMA public CASCADE');
-        await sequelize.query('CREATE SCHEMA public');
-
         // Sync all models with the database
         console.log('Syncing database models...');
         // Create tables in correct order
-        await User.sync({ force: true });
-        await Category.sync({ force: true });
-        await Recipe.sync({ force: true });
-        await RecipeCategory.sync({ force: true });
-        await UserFollows.sync({ force: true });
-        await SavedRecipe.sync({ force: true });
+        await User.sync({ alter: true });
+        await Category.sync({ alter: true });
+        await Recipe.sync({ alter: true });
+        await RecipeCategory.sync({ alter: true });
+        await UserFollows.sync({ alter: true });
+        await SavedRecipe.sync({ alter: true });
 
         // Add some initial data
         console.log('Adding initial data...');
 
-        // Create test user
-        const testUser = await User.create({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'password123'  // This will be hashed by the model hooks
-        });
+        // Check if we need to create initial data
+        const categoryCount = await Category.count();
+        if (categoryCount === 0) {
+            // Create test user
+            const testUser = await User.create({
+                username: 'testuser',
+                email: 'test@example.com',
+                password: 'password123'  // This will be hashed by the model hooks
+            });
 
-        // Create some categories
-        const categories = await Category.bulkCreate([
-            { name: 'Breakfast' },
-            { name: 'Lunch' },
-            { name: 'Dinner' },
-            { name: 'Dessert' },
-            { name: 'Vegetarian' },
-            { name: 'Vegan' }
-        ]);
+            // Create some categories
+            const categories = await Category.bulkCreate([
+                { name: 'Breakfast' },
+                { name: 'Lunch' },
+                { name: 'Dinner' },
+                { name: 'Dessert' },
+                { name: 'Vegetarian' },
+                { name: 'Vegan' }
+            ]);
+        }
 
         console.log('Database sync complete');
     } catch (error) {

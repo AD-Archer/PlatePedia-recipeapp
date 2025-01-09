@@ -481,10 +481,72 @@ router.get('/browse', asyncHandler(async (req, res) => {
     }
 }));
 
-// 2. Authentication middleware for all protected routes
+// 2. Authentication middleware for protected routes
 router.use(['/new', '/my-recipes', '/saved', '/:id/edit', '/:id/save'], isAuthenticated);
 
-// 3. Protected routes with specific paths
+// 3. Create recipe routes (must be before dynamic routes)
+router.get('/create', asyncHandler(async (req, res) => {
+    if (!req.session.user) {
+        req.session.error = 'Please log in to create recipes';
+        return res.redirect('/login');
+    }
+
+    const categories = await Category.findAll({
+        order: [['name', 'ASC']]
+    });
+    
+    res.render('pages/recipes/create', {
+        categories,
+        error: req.session.error,
+        success: req.session.success
+    });
+    
+    delete req.session.error;
+    delete req.session.success;
+}));
+
+router.post('/create', [
+    // Validation middleware
+    body('title').trim().notEmpty().withMessage('Title is required'),
+    body('ingredients.*').trim().notEmpty().withMessage('Each ingredient must not be empty'),
+    body('instructions').trim().notEmpty().withMessage('Instructions are required'),
+    body('calories').isInt({ min: 0 }).withMessage('Calories must be a positive number'),
+    body('cookingTime').optional().isInt({ min: 0 }).withMessage('Cooking time must be a positive number'),
+    body('servings').optional().isInt({ min: 1 }).withMessage('Servings must be at least 1'),
+    body('difficulty').optional().isIn(['easy', 'medium', 'hard']).withMessage('Invalid difficulty level'),
+], asyncHandler(async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Please log in to create recipes' });
+    }
+
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: errors.array()[0].msg });
+        }
+
+        const recipe = await Recipe.create({
+            ...req.body,
+            userId: req.session.user.id
+        });
+
+        // Add categories
+        if (req.body.categories && req.body.categories.length > 0) {
+            await recipe.setCategories(req.body.categories);
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Recipe created successfully!',
+            recipeId: recipe.id
+        });
+    } catch (error) {
+        console.error('Recipe creation error:', error);
+        res.status(500).json({ error: 'Error creating recipe' });
+    }
+}));
+
+// 4. Protected routes with specific paths
 router.get('/new', asyncHandler(async (req, res) => {
     const categories = await Category.findAll({
         order: [['name', 'ASC']]
@@ -499,86 +561,6 @@ router.get('/new', asyncHandler(async (req, res) => {
     
     delete req.session.error;
     delete req.session.success;
-}));
-
-router.post('/new', [
-    // Validation middleware
-    body('title').trim().notEmpty().withMessage('Title is required'),
-    body('ingredients.*').trim().notEmpty().withMessage('Each ingredient must not be empty'),
-    body('instructions').trim().notEmpty().withMessage('Instructions are required'),
-    body('calories').isInt({ min: 0 }).withMessage('Calories must be a positive number'),
-    body('cookingTime').optional().isInt({ min: 0 }).withMessage('Cooking time must be a positive number'),
-    body('servings').optional().isInt({ min: 1 }).withMessage('Servings must be at least 1'),
-    body('difficulty').optional().isIn(['easy', 'medium', 'hard']).withMessage('Invalid difficulty level'),
-], asyncHandler(async (req, res) => {
-    console.log('Received recipe data:', req.body);
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.log('Validation errors:', errors.array());
-        return res.status(400).json({
-            success: false,
-            error: errors.array()[0].msg
-        });
-    }
-
-    try {
-        const {
-            title,
-            description,
-            ingredients,
-            instructions,
-            cookingTime,
-            servings,
-            difficulty,
-            calories,
-            categories
-        } = req.body;
-
-        // Ensure ingredients is always an array
-        const ingredientsArray = Array.isArray(ingredients) ? ingredients : [ingredients];
-        const cleanedIngredients = ingredientsArray.filter(ingredient => ingredient.trim() !== '');
-
-        if (cleanedIngredients.length === 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'At least one ingredient is required'
-            });
-        }
-
-        // Create recipe
-        const recipe = await Recipe.create({
-            title,
-            description,
-            ingredients: cleanedIngredients,
-            instructions,
-            cookingTime,
-            servings,
-            difficulty,
-            calories,
-            userId: req.session.user.id
-        });
-
-        // Add categories if provided
-        if (categories && categories.length > 0) {
-            await recipe.setCategories(categories);
-        }
-
-        console.log('Recipe created successfully:', recipe.id);
-
-        res.json({
-            success: true,
-            message: 'Recipe created successfully',
-            recipeId: recipe.id
-        });
-
-    } catch (error) {
-        console.error('Error creating recipe:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message || 'An error occurred while creating the recipe'
-        });
-    }
 }));
 
 router.get('/my-recipes', asyncHandler(async (req, res) => {
@@ -640,7 +622,7 @@ router.get('/saved', asyncHandler(async (req, res) => {
     delete req.session.success;
 }));
 
-// 4. Dynamic routes last
+// 5. Dynamic routes last
 router.get('/:id', asyncHandler(async (req, res) => {
     const recipeId = parseInt(req.params.id);
     if (isNaN(recipeId)) {
