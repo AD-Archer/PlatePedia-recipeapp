@@ -21,24 +21,38 @@ async function seedDatabase() {
         await sequelize.authenticate();
         console.log('Database connected...');
 
-        // Create MealDB user account
-        const hashedPassword = await bcrypt.hash('mealdb123', 10);
-        const [mealdbUser] = await User.findOrCreate({
-            where: { username: 'themealdb' },
-            defaults: {
-                email: 'api@themealdb.com',
-                password: hashedPassword,
-                bio: 'Official TheMealDB recipes collection',
-                profileImage: 'https://www.themealdb.com/images/logo-small.png'
-            }
-        });
-        console.log('MealDB user account created...');
+        // Check if MealDB user exists
+        const existingUser = await User.findOne({ where: { username: 'themealdb' } });
+        if (existingUser) {
+            console.log('MealDB user already exists, using existing account...');
+            var mealdbUser = existingUser;
+        } else {
+            // Create MealDB user account
+            const hashedPassword = await bcrypt.hash('mealdb123', 10);
+            const [mealdbUser] = await User.findOrCreate({
+                where: { username: 'themealdb' },
+                defaults: {
+                    email: 'api@themealdb.com',
+                    password: hashedPassword,
+                    bio: 'Official TheMealDB recipes collection',
+                    profileImage: 'https://www.themealdb.com/images/logo-small.png'
+                }
+            });
+            console.log('MealDB user account created...');
+        }
 
-        // Fetch all categories from MealDB
-        const categoriesResponse = await fetch(`${MEALDB_API}/categories.php`);
-        const categoriesData = await categoriesResponse.json();
+        // Fetch all categories and areas
+        const [categoriesResponse, areasResponse] = await Promise.all([
+            fetch(`${MEALDB_API}/categories.php`),
+            fetch(`${MEALDB_API}/list.php?a=list`)
+        ]);
         
-        // Map categories to your database schema
+        const [categoriesData, areasData] = await Promise.all([
+            categoriesResponse.json(),
+            areasResponse.json()
+        ]);
+
+        // Create categories if they don't exist
         for (const cat of categoriesData.categories) {
             await Category.findOrCreate({
                 where: { name: cat.strCategory },
@@ -48,19 +62,57 @@ async function seedDatabase() {
                 }
             });
         }
-        console.log('Categories seeded...');
+        console.log('Categories checked/seeded...');
 
-        // Fetch meals from each category
+        // Get all existing recipes to avoid duplicates
+        const existingRecipes = await Recipe.findAll({
+            attributes: ['title']
+        });
+        const existingTitles = new Set(existingRecipes.map(r => r.title.toLowerCase()));
+
+        // Fetch recipes from each category and area combination
         const categories = await Category.findAll();
+        const areas = areasData.meals.map(a => a.strArea);
+
         for (const category of categories) {
-            const mealsResponse = await fetch(`${MEALDB_API}/filter.php?c=${category.name}`);
-            const mealsData = await mealsResponse.json();
+            console.log(`Processing category: ${category.name}`);
             
-            if (mealsData.meals) {
-                for (const meal of mealsData.meals) {
-                    // Get full meal details
-                    const detailsResponse = await fetch(`${MEALDB_API}/lookup.php?i=${meal.idMeal}`);
-                    const detailsData = await detailsResponse.json();
+            // First fetch by category
+            const categoryMealsResponse = await fetch(`${MEALDB_API}/filter.php?c=${category.name}`);
+            const categoryMealsData = await categoryMealsResponse.json();
+            
+            if (categoryMealsData.meals) {
+                await processMeals(categoryMealsData.meals, category, mealdbUser, existingTitles);
+            }
+
+            // Then fetch by each area for this category
+            for (const area of areas) {
+                const areaMealsResponse = await fetch(`${MEALDB_API}/filter.php?a=${area}`);
+                const areaMealsData = await areaMealsResponse.json();
+                
+                if (areaMealsData.meals) {
+                    await processMeals(areaMealsData.meals, category, mealdbUser, existingTitles);
+                }
+            }
+        }
+
+        console.log('Database seeding completed successfully!');
+        process.exit(0);
+    } catch (error) {
+        console.error('Error seeding database:', error);
+        process.exit(1);
+    }
+}
+
+async function processMeals(meals, category, mealdbUser, existingTitles) {
+    for (const meal of meals) {
+        if (!existingTitles.has(meal.strMeal.toLowerCase())) {
+            try {
+                // Get full meal details
+                const detailsResponse = await fetch(`${MEALDB_API}/lookup.php?i=${meal.idMeal}`);
+                const detailsData = await detailsResponse.json();
+                
+                if (detailsData.meals && detailsData.meals[0]) {
                     const mealDetails = detailsData.meals[0];
 
                     // Format ingredients and measurements
@@ -104,16 +156,14 @@ async function seedDatabase() {
                             categoryId: category.id
                         }
                     });
-                }
-            }
-            console.log(`Seeded recipes for category: ${category.name}`);
-        }
 
-        console.log('Database seeding completed successfully!');
-        process.exit(0);
-    } catch (error) {
-        console.error('Error seeding database:', error);
-        process.exit(1);
+                    existingTitles.add(mealDetails.strMeal.toLowerCase());
+                }
+            } catch (error) {
+                console.error(`Error processing meal ${meal.strMeal}:`, error);
+                continue;
+            }
+        }
     }
 }
 
