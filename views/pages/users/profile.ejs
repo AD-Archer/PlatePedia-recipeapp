@@ -31,6 +31,13 @@
                             <p class="card-text text-muted mb-3"><%= profileUser.bio %></p>
                         <% } %>
 
+                        <!-- Edit Profile Button (Only shows for profile owner) -->
+                        <% if (locals.user && locals.user.id === profileUser.id) { %>
+                            <button class="btn btn-outline-secondary mb-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                <i class="bi bi-pencil-square"></i> Edit Profile
+                            </button>
+                        <% } %>
+
                         <div class="d-flex justify-content-around mb-3">
                             <div class="text-center">
                                 <h5 class="mb-0"><%= stats.recipeCount %></h5>
@@ -91,6 +98,93 @@
 
     <%- include('../../partials/footer') %>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm" method="POST" action="/profile/update">
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="<%= profileUser.username %>" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="<%= profileUser.email %>" required>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3"><%= profileUser.bio || '' %></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm" method="POST" action="/profile/change-password">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Recovery Modal -->
+    <div class="modal fade" id="passwordRecoveryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordRecoveryForm" method="POST" action="/profile/reset-password">
+                        <div class="mb-3">
+                            <label for="recoveryEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="recoveryEmail" name="email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         async function toggleFollow(username, button) {
             const isFollowing = button.getAttribute('data-following') === 'true';
@@ -121,6 +215,97 @@
                 alert('Error updating follow status');
             }
         }
+
+        // Form submission handling
+        document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                const response = await fetch('/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        email: document.getElementById('email').value,
+                        bio: document.getElementById('bio').value
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Error updating profile');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating profile');
+            }
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/profile/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        currentPassword: document.getElementById('currentPassword').value,
+                        newPassword: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    alert('Password changed successfully');
+                    document.getElementById('changePasswordForm').reset();
+                    bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                } else {
+                    alert(data.error || 'Error changing password');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error changing password');
+            }
+        });
+
+        document.getElementById('passwordRecoveryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                const response = await fetch('/profile/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById('recoveryEmail').value
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    alert('Password reset instructions have been sent to your email');
+                    document.getElementById('passwordRecoveryForm').reset();
+                    bootstrap.Modal.getInstance(document.getElementById('passwordRecoveryModal')).hide();
+                } else {
+                    alert(data.error || 'Error requesting password reset');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error requesting password reset');
+            }
+        });
     </script>
 </body>
 </html> 

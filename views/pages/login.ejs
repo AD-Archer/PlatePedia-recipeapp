@@ -30,12 +30,13 @@
 
                         <form action="/login" method="POST">
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                                <label for="identifier" class="form-label">Email or Username</label>
                                 <input 
-                                    type="email" 
+                                    type="text" 
                                     class="form-control" 
-                                    id="email" 
-                                    name="email" 
+                                    id="identifier" 
+                                    name="identifier" 
+                                    placeholder="Enter your email or username"
                                     required
                                 >
                             </div>
@@ -59,6 +60,12 @@
                                     name="remember"
                                 >
                                 <label class="form-check-label" for="remember">Remember me</label>
+                            </div>
+
+                            <div class="mb-3 text-end">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#passwordRecoveryModal">
+                                    Forgot password?
+                                </a>
                             </div>
 
                             <div class="d-grid">

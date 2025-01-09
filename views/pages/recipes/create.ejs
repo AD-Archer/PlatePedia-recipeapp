@@ -10,153 +10,105 @@
     <%- include('../../partials/header') %>
     
     <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+        
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow-sm">
                     <div class="card-body p-4">
-                        <h1 class="text-center mb-4">Create New Recipe</h1>
+                        <h1 class="text-center mb-4">Create Recipe</h1>
                         
-                        <form action="/recipes/new" method="POST" id="recipeForm" class="needs-validation" enctype="application/x-www-form-urlencoded" novalidate>
-                            <% if (error) { %>
-                                <div class="alert alert-danger">
-                                    <%= error %>
-                                </div>
-                            <% } %>
-
+                        <form id="createRecipeForm" class="needs-validation" novalidate>
+                            <!-- Title -->
                             <div class="mb-3">
-                                <label for="title" class="form-label">Recipe Title <span class="text-danger">*</span></label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    id="title" 
-                                    name="title" 
-                                    value="<%= locals.formData ? formData.title : '' %>"
-                                    required
-                                >
-                                <div class="invalid-feedback">Please provide a title.</div>
+                                <label for="title" class="form-label">Recipe Title*</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
                             </div>
 
+                            <!-- Description -->
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea 
-                                    class="form-control" 
-                                    id="description" 
-                                    name="description" 
-                                    rows="3"
-                                ><%= locals.formData ? formData.description : '' %></textarea>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                             </div>
 
+                            <!-- Ingredients -->
                             <div class="mb-3">
-                                <label class="form-label">Ingredients <span class="text-danger">*</span></label>
+                                <label class="form-label">Ingredients*</label>
                                 <div id="ingredientsList">
-                                    <% if (locals.formData && formData.ingredients) { %>
-                                        <% formData.ingredients.forEach(ingredient => { %>
-                                            <div class="input-group mb-2">
-                                                <input type="text" class="form-control" name="ingredients[]" value="<%= ingredient %>" required>
-                                                <button type="button" class="btn btn-outline-danger remove-ingredient">Remove</button>
-                                            </div>
-                                        <% }) %>
-                                    <% } else { %>
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control" name="ingredients[]" required>
-                                            <button type="button" class="btn btn-outline-danger remove-ingredient">Remove</button>
-                                        </div>
-                                    <% } %>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="ingredients[]" required>
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeIngredient(this)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="button" class="btn btn-outline-secondary" id="addIngredient">
-                                    Add Ingredient
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addIngredient()">
+                                    <i class="bi bi-plus"></i> Add Ingredient
                                 </button>
-                                <div class="invalid-feedback">Please add at least one ingredient.</div>
                             </div>
 
+                            <!-- Instructions -->
                             <div class="mb-3">
-                                <label for="instructions" class="form-label">Instructions <span class="text-danger">*</span></label>
-                                <textarea 
-                                    class="form-control" 
-                                    id="instructions" 
-                                    name="instructions" 
-                                    rows="5"
-                                    required
-                                ><%= locals.formData ? formData.instructions : '' %></textarea>
-                                <div class="invalid-feedback">Please provide instructions.</div>
+                                <label for="instructions" class="form-label">Instructions*</label>
+                                <textarea class="form-control" id="instructions" name="instructions" rows="5" required></textarea>
                             </div>
 
+                            <!-- Categories -->
                             <div class="mb-3">
-                                <label for="calories" class="form-label">Calories <span class="text-danger">*</span></label>
-                                <input 
-                                    type="number" 
-                                    class="form-control" 
-                                    id="calories" 
-                                    name="calories" 
-                                    value="<%= locals.formData ? formData.calories : '' %>"
-                                    required
-                                    min="0"
-                                >
-                                <div class="invalid-feedback">Please provide a valid calorie count.</div>
+                                <label class="form-label">Categories*</label>
+                                <div class="row g-2">
+                                    <% categories.forEach(category => { %>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="categories[]" value="<%= category.id %>" 
+                                                       id="category<%= category.id %>">
+                                                <label class="form-check-label" for="category<%= category.id %>">
+                                                    <%= category.name %>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+
+                            <!-- Recipe Details -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cookingTime" class="form-label">Cooking Time (minutes)</label>
+                                    <input type="number" class="form-control" id="cookingTime" name="cookingTime">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="servings" class="form-label">Servings</label>
+                                    <input type="number" class="form-control" id="servings" name="servings">
+                                </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="cookingTime" class="form-label">Cooking Time (minutes)</label>
-                                        <input 
-                                            type="number" 
-                                            class="form-control" 
-                                            id="cookingTime" 
-                                            name="cookingTime"
-                                            value="<%= locals.formData ? formData.cookingTime : '' %>"
-                                            min="0"
-                                        >
-                                    </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="difficulty" class="form-label">Difficulty</label>
+                                    <select class="form-select" id="difficulty" name="difficulty">
+                                        <option value="">Select difficulty</option>
+                                        <option value="easy">Easy</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="servings" class="form-label">Servings</label>
-                                        <input 
-                                            type="number" 
-                                            class="form-control" 
-                                            id="servings" 
-                                            name="servings"
-                                            value="<%= locals.formData ? formData.servings : '' %>"
-                                            min="1"
-                                        >
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="difficulty" class="form-label">Difficulty</label>
-                                        <select class="form-select" id="difficulty" name="difficulty">
-                                            <option value="">Select difficulty</option>
-                                            <option value="easy" <%= locals.formData && formData.difficulty === 'easy' ? 'selected' : '' %>>Easy</option>
-                                            <option value="medium" <%= locals.formData && formData.difficulty === 'medium' ? 'selected' : '' %>>Medium</option>
-                                            <option value="hard" <%= locals.formData && formData.difficulty === 'hard' ? 'selected' : '' %>>Hard</option>
-                                        </select>
-                                    </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="calories" class="form-label">Calories*</label>
+                                    <input type="number" class="form-control" id="calories" name="calories" required>
                                 </div>
                             </div>
 
+                            <!-- Image Upload -->
                             <div class="mb-3">
-                                <label class="form-label">Categories</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <% categories.forEach(category => { %>
-                                        <div class="form-check">
-                                            <input 
-                                                class="form-check-input" 
-                                                type="checkbox" 
-                                                name="categories[]" 
-                                                value="<%= category.id %>" 
-                                                id="category<%= category.id %>"
-                                                <%= (formData && formData.categories && Array.isArray(formData.categories) && formData.categories.includes(category.id.toString())) ? 'checked' : '' %>
-                                            >
-                                            <label class="form-check-label" for="category<%= category.id %>">
-                                                <%= category.name %>
-                                            </label>
-                                        </div>
-                                    <% }) %>
-                                </div>
+                                <label for="imageUrl" class="form-label">Recipe Image URL</label>
+                                <input type="url" class="form-control" id="imageUrl" name="imageUrl">
                             </div>
 
-                            <div class="text-end">
+                            <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Create Recipe</button>
                             </div>
                         </form>
@@ -169,26 +121,45 @@
     <%- include('../../partials/footer') %>
 
     <script>
-        document.getElementById('recipeForm').addEventListener('submit', async function(e) {
+        function addIngredient() {
+            const ingredientsList = document.getElementById('ingredientsList');
+            const newIngredient = document.createElement('div');
+            newIngredient.className = 'input-group mb-2';
+            newIngredient.innerHTML = `
+                <input type="text" class="form-control" name="ingredients[]" required>
+                <button type="button" class="btn btn-outline-danger" onclick="removeIngredient(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+            ingredientsList.appendChild(newIngredient);
+        }
+
+        function removeIngredient(button) {
+            const ingredientsList = document.getElementById('ingredientsList');
+            if (ingredientsList.children.length > 1) {
+                button.parentElement.remove();
+            }
+        }
+
+        document.getElementById('createRecipeForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const data = {
                 title: formData.get('title'),
                 description: formData.get('description'),
-                ingredients: Array.from(formData.getAll('ingredients[]')).filter(i => i.trim()),
+                ingredients: [...formData.getAll('ingredients[]')].filter(i => i),
                 instructions: formData.get('instructions'),
-                cookingTime: formData.get('cookingTime'),
-                servings: formData.get('servings'),
-                difficulty: formData.get('difficulty'),
-                calories: formData.get('calories'),
-                categories: formData.getAll('categories')
+                categories: [...formData.getAll('categories[]')].map(Number),
+                cookingTime: formData.get('cookingTime') ? Number(formData.get('cookingTime')) : null,
+                servings: formData.get('servings') ? Number(formData.get('servings')) : null,
+                difficulty: formData.get('difficulty') || null,
+                calories: Number(formData.get('calories')),
+                imageUrl: formData.get('imageUrl') || null
             };
 
-            console.log('Submitting recipe:', data);
-
             try {
-                const response = await fetch('/recipes/new', {
+                const response = await fetch('/recipes/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -197,32 +168,15 @@
                 });
 
                 const result = await response.json();
-                console.log('Server response:', result);
-
-                if (response.ok) {
-                    window.location.href = '/recipes/my-recipes';
+                
+                if (result.success) {
+                    window.location.href = `/recipes/${result.recipeId}`;
                 } else {
-                    alert(result.error || 'Failed to create recipe');
+                    alert(result.error || 'Error creating recipe');
                 }
             } catch (error) {
-                console.error('Error creating recipe:', error);
-                alert('An error occurred while creating the recipe');
-            }
-        });
-
-        document.getElementById('addIngredient').addEventListener('click', function() {
-            const ingredientDiv = document.createElement('div');
-            ingredientDiv.className = 'input-group mb-2';
-            ingredientDiv.innerHTML = `
-                <input type="text" class="form-control" name="ingredients[]" required>
-                <button type="button" class="btn btn-outline-danger remove-ingredient">Remove</button>
-            `;
-            document.getElementById('ingredientsList').appendChild(ingredientDiv);
-        });
-
-        document.getElementById('ingredientsList').addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-ingredient')) {
-                e.target.closest('.input-group').remove();
+                console.error('Error:', error);
+                alert('Error creating recipe');
             }
         });
     </script>

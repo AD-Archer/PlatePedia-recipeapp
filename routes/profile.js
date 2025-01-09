@@ -1,37 +1,130 @@
 import express from 'express';
-import UserManager from '../models/User.js';
+import { body, validationResult } from 'express-validator';
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 const router = express.Router();
 
-// Middleware to check if user is logged in
+// Middleware to ensure user is authenticated
 const isAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        next();
-    } else {
-        req.session.error = 'Please log in to view profile';
-        res.redirect('/login');
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
     }
+    next();
 };
 
-// Profile route
-router.get('/', isAuthenticated, async (req, res) => {
+// Update profile
+router.post('/update', isAuthenticated, [
+    body('username').trim().isLength({ min: 3, max: 30 }),
+    body('email').isEmail().normalizeEmail(),
+    body('bio').trim().optional({ nullable: true, checkFalsy: true })
+], async (req, res) => {
     try {
-        // Get fresh user data with recipes and other relations
-        const userData = await UserManager.getUserWithDetails(req.session.user.id);
-        
-        res.render('pages/profile', {
-            user: userData,
-            error: req.session.error,
-            success: req.session.success
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: errors.array()[0].msg });
+        }
+
+        const { username, email, bio } = req.body;
+        const userId = req.session.user.id;
+
+        // Check if username or email is already taken
+        const existingUser = await User.findOne({
+            where: {
+                id: { [Op.ne]: userId },
+                [Op.or]: [{ username }, { email }]
+            }
         });
-        
-        // Clear flash messages
-        delete req.session.error;
-        delete req.session.success;
+
+        if (existingUser) {
+            return res.status(400).json({
+                error: 'Username or email already taken'
+            });
+        }
+
+        // Update user
+        await User.update(
+            { username, email, bio },
+            { where: { id: userId } }
+        );
+
+        // Update session
+        const updatedUser = await User.findByPk(userId);
+        req.session.user = updatedUser;
+
+        res.json({ success: true });
     } catch (error) {
-        console.error('Profile error:', error);
-        req.session.error = 'Error loading profile';
-        res.redirect('/dashboard');
+        console.error('Profile update error:', error);
+        res.status(500).json({ error: 'Error updating profile' });
+    }
+});
+
+// Change password
+router.post('/change-password', isAuthenticated, [
+    body('currentPassword').notEmpty(),
+    body('newPassword').isLength({ min: 6 })
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: errors.array()[0].msg });
+        }
+
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findByPk(req.session.user.id);
+
+        // Verify current password
+        const isValid = await user.validatePassword(currentPassword);
+        if (!isValid) {
+            return res.status(400).json({ error: 'Current password is incorrect' });
+        }
+
+        // Update password
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Password change error:', error);
+        res.status(500).json({ error: 'Error changing password' });
+    }
+});
+
+// Request password reset
+router.post('/reset-password', [
+    body('email').isEmail().normalizeEmail()
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: errors.array()[0].msg });
+        }
+
+        const { email } = req.body;
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            // Return success even if user not found (security)
+            return res.json({ success: true });
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+        // Save token to user
+        user.resetToken = resetToken;
+        user.resetTokenExpiry = resetTokenExpiry;
+        await user.save();
+
+        // TODO: Send reset email
+        console.log('Reset token:', resetToken);
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Password reset request error:', error);
+        res.status(500).json({ error: 'Error requesting password reset' });
     }
 });
 

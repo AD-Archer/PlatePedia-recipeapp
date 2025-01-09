@@ -1,34 +1,52 @@
+import { sql } from '@vercel/postgres';
 import { Sequelize } from 'sequelize';
 import 'dotenv/config';
 
-const databaseUrl = process.env.DATABASE_URL;
+let sequelize;
 
-if (!databaseUrl) {
-    console.error('DATABASE_URL is not defined in environment variables');
-    process.exit(1);
-}
-
-const sequelize = new Sequelize(databaseUrl, {
-    dialect: 'postgres',
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
+const initializeDb = async () => {
+    if (!sequelize) {
+        const databaseUrl = process.env.DATABASE_URL;
+        
+        if (!databaseUrl) {
+            console.error('No database URL found in environment variables');
+            throw new Error('Database configuration is missing');
         }
-    },
-    logging: false
-});
 
-// Test the connection
-const testConnection = async () => {
+        // Dynamically import pg
+        const pg = await import('pg');
+
+        sequelize = new Sequelize(databaseUrl, {
+            dialect: 'postgres',
+            dialectModule: pg.default,
+            dialectOptions: {
+                ssl: {
+                    require: true,
+                    rejectUnauthorized: false
+                }
+            },
+            logging: console.log // Temporarily enable logging for debugging
+        });
+    }
+    return sequelize;
+};
+
+export const getDb = async () => {
+    return await initializeDb();
+};
+
+// Simple connection test
+export const testConnection = async () => {
     try {
-        await sequelize.authenticate();
-        console.log('Database connection established.');
+        const db = await getDb();
+        await db.authenticate();
+        console.log('Database connection successful');
         return true;
     } catch (error) {
-        console.error('Unable to connect to database:', error);
+        console.error('Database connection error:', error);
         return false;
     }
 };
 
-export { sequelize as default, testConnection };
+const db = await initializeDb();
+export default db;

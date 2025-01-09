@@ -3,8 +3,11 @@ import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { Op } from 'sequelize';
+import { getDb } from '../config/db.js';
 
 const router = express.Router();
+const sequelize = await getDb();
 
 // Show signup form
 router.get('/', (req, res) => {
@@ -26,9 +29,22 @@ router.post('/', [
         .isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters')
         .matches(/^[A-Za-z0-9_-]+$/).withMessage('Username can only contain letters, numbers, underscores, and hyphens')
         .custom(async (value) => {
-            const existingUser = await User.findOne({ where: { username: value } });
+            const existingUser = await User.findOne({
+                where: {
+                    [Op.or]: [
+                        sequelize.where(
+                            sequelize.fn('LOWER', sequelize.col('username')),
+                            value.toLowerCase()
+                        ),
+                        sequelize.where(
+                            sequelize.fn('LOWER', sequelize.col('email')),
+                            value.toLowerCase()
+                        )
+                    ]
+                }
+            });
             if (existingUser) {
-                throw new Error('Username is already taken');
+                throw new Error('Username or email is already taken');
             }
             return true;
         }),
@@ -39,9 +55,22 @@ router.post('/', [
         .isEmail().withMessage('Please enter a valid email')
         .normalizeEmail()
         .custom(async (value) => {
-            const existingUser = await User.findOne({ where: { email: value } });
+            const existingUser = await User.findOne({
+                where: {
+                    [Op.or]: [
+                        sequelize.where(
+                            sequelize.fn('LOWER', sequelize.col('username')),
+                            value.toLowerCase()
+                        ),
+                        sequelize.where(
+                            sequelize.fn('LOWER', sequelize.col('email')),
+                            value.toLowerCase()
+                        )
+                    ]
+                }
+            });
             if (existingUser) {
-                throw new Error('Email is already registered');
+                throw new Error('Username or email is already taken');
             }
             return true;
         }),
@@ -79,17 +108,13 @@ router.post('/', [
     try {
         const { username, email, password } = req.body;
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
         console.log('Creating user with:', { username, email });
 
         // Create user
         const user = await User.create({
             username,
             email,
-            password: hashedPassword
+            password: password // User model will hash this automatically
         });
 
         console.log('User created successfully:', user.id);

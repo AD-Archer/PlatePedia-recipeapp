@@ -2,10 +2,12 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { User } from '../models/TableCreation.js';
-import { asyncHandler } from '../middleware/errorHandler.js';
+import User from '../models/User.js';
+import { Op } from 'sequelize';
+import { getDb } from '../config/db.js';
 
 const router = express.Router();
+const sequelize = await getDb();
 
 // Show login form
 router.get('/', (req, res) => {
@@ -19,31 +21,52 @@ router.get('/', (req, res) => {
 
 // Handle login
 router.post('/', [
-    body('email').isEmail().withMessage('Please enter a valid email'),
+    body('identifier').trim().notEmpty().withMessage('Email or username is required'),
     body('password').notEmpty().withMessage('Password is required')
-], asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        req.session.error = errors.array()[0].msg;
-        return res.redirect('/login');
-    }
-
-    const { email, password } = req.body;
-
+], async (req, res) => {
     try {
-        // Find user by email
-        const user = await User.findOne({ where: { email } });
-
-        if (!user) {
-            req.session.error = 'Invalid email or password';
+        console.log('Login attempt:', { identifier: req.body.identifier });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            req.session.error = errors.array()[0].msg;
             return res.redirect('/login');
         }
 
-        // Check password
-        const validPassword = await bcrypt.compare(password, user.password);
+        const { identifier, password, remember } = req.body;
 
-        if (!validPassword) {
-            req.session.error = 'Invalid email or password';
+        // Find user by email or username
+        const user = await User.findOne({
+            where: {
+                [Op.or]: [
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('email')),
+                        identifier.toLowerCase()
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('username')),
+                        identifier.toLowerCase()
+                    )
+                ]
+            }
+        });
+
+        console.log('User found:', user ? 'yes' : 'no');
+
+        if (!user) {
+            req.session.error = 'Invalid credentials';
+            return res.redirect('/login');
+        }
+
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        console.log('Password check:', {
+            provided: password ? 'yes' : 'no',
+            stored: user.password ? 'yes' : 'no',
+            valid: isValidPassword ? 'yes' : 'no'
+        });
+        
+        if (!isValidPassword) {
+            req.session.error = 'Invalid credentials';
             return res.redirect('/login');
         }
 
@@ -51,61 +74,50 @@ router.post('/', [
         req.session.user = {
             id: user.id,
             username: user.username,
-            email: user.email,
-            profileImage: user.profileImage
+            email: user.email
         };
 
-        // Save session and handle remember me token
+        // Wait for session to be saved
         await new Promise((resolve, reject) => {
-            req.session.save(async (err) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                
-                console.log('Session saved successfully:', req.sessionID);
-
-                try {
-                    // Handle "remember me"
-                    if (req.body.remember) {
-                        const token = crypto.randomBytes(32).toString('hex');
-                        const expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-                        await user.update({
-                            rememberToken: token,
-                            tokenExpires: expiry
-                        });
-
-                        res.cookie('remember_token', token, {
-                            expires: expiry,
-                            httpOnly: true,
-                            secure: process.env.NODE_ENV === 'production'
-                        });
-                    }
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
+            req.session.save((err) => {
+                if (err) reject(err);
+                else resolve();
             });
         });
 
-        // After successful login
-        const returnTo = req.session.returnTo || '/dashboard';
-        delete req.session.returnTo;
+        console.log('Session saved:', req.session.user);
 
-        // Ensure redirect happens after session is saved
-        req.session.save((err) => {
-            if (err) {
-                console.error('Error saving session before redirect:', err);
-            }
-            res.redirect(returnTo);
-        });
+        // Handle remember me
+        if (remember) {
+            // Generate remember token
+            const token = crypto.randomBytes(32).toString('hex');
+            const hashedToken = await bcrypt.hash(token, 10);
+            
+            // Save token to user
+            await user.update({
+                rememberToken: hashedToken,
+                tokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+            });
+
+            // Set remember me cookie
+            res.cookie('rememberToken', `${user.id}:${token}`, {
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production'
+            });
+        }
+
+        // Redirect to dashboard or previous page
+        const redirectTo = req.session.returnTo || '/dashboard';
+        delete req.session.returnTo;
+        console.log('Redirecting to:', redirectTo);
+        res.redirect(redirectTo);
 
     } catch (error) {
         console.error('Login error:', error);
         req.session.error = 'An error occurred during login';
         res.redirect('/login');
     }
-}));
+});
 
 export default router;

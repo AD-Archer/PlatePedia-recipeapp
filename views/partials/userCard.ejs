@@ -1,0 +1,36 @@
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body text-center">
+            <% if (user.profileImage) { %>
+                <img src="<%= user.profileImage %>" alt="<%= user.username %>'s profile" 
+                     class="rounded-circle mb-3" style="width: 64px; height: 64px; object-fit: cover;">
+            <% } else { %>
+                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                     style="width: 64px; height: 64px;">
+                    <i class="bi bi-person-circle fs-3"></i>
+                </div>
+            <% } %>
+            
+            <h5 class="card-title mb-1">
+                <a href="/users/<%= user.username %>" class="text-decoration-none text-dark">
+                    <%= user.username %>
+                </a>
+            </h5>
+            
+            <% if (user.bio) { %>
+                <p class="card-text small text-muted mb-3"><%= user.bio %></p>
+            <% } %>
+            
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <small class="text-muted"><%= user.recipeCount %> recipes</small>
+            </div>
+
+            <button 
+                onclick="toggleFollow('<%= user.username %>', this)"
+                data-following="<%= user.isFollowing %>"
+                class="btn btn-<%= user.isFollowing ? 'outline-' : '' %>primary btn-sm follow-btn">
+                <%= user.isFollowing ? 'Unfollow' : 'Follow' %>
+            </button>
+        </div>
+    </div>
+</div> 
