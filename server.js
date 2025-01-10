@@ -1,3 +1,5 @@
+//Entry point to our application. server.js
+
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
@@ -141,101 +143,7 @@ app.get('/api/healthcheck', async (req, res) => {
 });
 
 // Main routes
-app.get('/', async (req, res) => {
-    try {
-        // // Fetch recipes
-        // const popularRecipes = await Recipe.findAll({ // collect all of the recipes. 
-        //     include: [{
-        //         model: User,
-        //         as: 'author',
-        //         attributes: ['username', 'id']
-        //     }],
-        //     order: [['createdAt', 'DESC']],
-        //     limit: 6
-        // });
-
-        // const latestRecipes = popularRecipes
-        // const latestRecipes = await Recipe.findAll({
-        //     include: [{
-        //         model: User,
-        //         as: 'author',
-        //         attributes: ['username', 'id']
-        //     }],
-        //     order: [['createdAt', 'DESC']],
-        //     limit: 8
-        // });
-
-        // Fetch the latest 10 recipes once
-        const allRecipes = await Recipe.findAll({
-            include: [{
-                model: User,
-                as: 'author',
-                attributes: ['username', 'id']
-            }],
-            order: [['createdAt', 'DESC']],
-        });
-
-       // Shuffle the recipes array randomly 
-        const shuffledRecipes = allRecipes.sort(() => Math.random() - 0.5);
-
-        /* Select 6 random recipes for popularRecipes, hypothecially i could do this using the favorites value
-         to select the most popular but if we dont have many users then they will always see the same foods
-         and even i could add another random recipe to the site but that gets messy
-         */
-        const popularRecipes = shuffledRecipes.slice(0, 6);
-
-        // Use allRecipes directly for latest recipes
-        const latestRecipes = allRecipes.slice(0,8);
-        // the site literally loads twice as fast with this change
-
-        // Get categories with recipe count using sequelize instance
-        const sequelize = await getDb();
-        const categories = await Category.findAll({
-            attributes: {
-                include: [
-                    [
-                        sequelize.literal(
-                            '(SELECT COUNT(*) FROM recipe_categories WHERE recipe_categories."categoryId" = "Category".id)'
-                        ),
-                        'recipeCount'
-                    ]
-                ]
-            },
-            order: [['type', 'ASC'], ['name', 'ASC']]
-        });
-
-        // Group categories by type
-        const groupedCategories = categories.reduce((acc, category) => {
-            const type = category.type || 'Other';
-            if (!acc[type]) acc[type] = [];
-            acc[type].push(category);
-            return acc;
-        }, {});
-
-        // Add saved status only if user is logged in
-        const processedPopularRecipes = req.user ? 
-            await addSavedStatus(popularRecipes, req.user) : 
-            popularRecipes;
-            
-        const processedLatestRecipes = req.user ? 
-            await addSavedStatus(latestRecipes, req.user) : 
-            latestRecipes;
-
-        res.render('pages/dashboard', {
-            user: req.user,
-            popularRecipes: processedPopularRecipes,
-            latestRecipes: processedLatestRecipes,
-            groupedCategories
-        });
-    } catch (error) {
-        console.error('Error loading dashboard:', error);
-        res.status(500).render('pages/error', { 
-            message: 'Error loading dashboard', 
-            error 
-        });
-    }
-});
-
+app.get('/', dashboard)
 // declaring routing from /routes
 app.use('/signup', signup); 
 app.use('/login', login); 

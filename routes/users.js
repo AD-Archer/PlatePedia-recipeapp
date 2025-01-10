@@ -1,5 +1,5 @@
 import express from 'express';
-import { User, Recipe, UserFollows } from '../models/TableCreation.js';
+import { User, Recipe, UserFollows, Category } from '../models/TableCreation.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op, Sequelize } from 'sequelize';
@@ -196,6 +196,18 @@ router.delete('/:username/follow', isAuthenticated, asyncHandler(async (req, res
         following: false,
         message: deleted ? 'Successfully unfollowed user' : 'Not following user'
     });
+}));
+
+router.get('/some-route', asyncHandler(async (req, res) => {
+    try {
+        const categories = await Category.findAll({
+            // Your query logic here
+        });
+        res.json(categories);
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ error: 'Failed to fetch categories' });
+    }
 }));
 
 export default router; 

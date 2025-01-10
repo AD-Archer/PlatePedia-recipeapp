@@ -27,9 +27,14 @@ const sequelize = new Sequelize(dbUrl, {
     }
 });
 
-export const getDb = async () => {
+
+export const getDb = () => {
     if (!sequelize) {
-        throw new Error('Sequelize instance not initialized');
+        sequelize = new Sequelize(process.env.DATABASE_URL, {
+            dialect: 'postgres',
+            protocol: 'postgres',
+            logging: false, // Disable logging; default: console.log
+        });
     }
     return sequelize;
 };
