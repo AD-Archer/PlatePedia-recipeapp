@@ -1,0 +1,44 @@
+  <!-- Recent Recipes Section -->
+  <section class="mb-5">
+    <h2 class="mb-4">Recent Recipes</h2>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <% if (latestRecipes && latestRecipes.length > 0) { %>
+            <% latestRecipes.forEach(recipe => { %>
+                <div class="col">
+                    <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.id %>')">
+                        <% if (recipe.imageUrl) { %>
+                            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= recipe.title %></h5>
+                            <p class="card-text"><%= recipe.description %></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">By 
+                                        <a href="/users/<%= recipe.author.username %>" onclick="event.stopPropagation()">
+                                            <%= recipe.author.username %>
+                                        </a>
+                                    </small>
+                                </div>
+                                <% if (user && user.id !== recipe.author.id) { %>
+                                    <button 
+                                        class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
+                                        onclick="toggleSave('<%= recipe.id %>', this, event)"
+                                        data-saved="<%= recipe.isSaved %>"
+                                    >
+                                        <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
+                                        <%= recipe.isSaved ? 'Saved' : 'Save' %>
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="col-12 text-center">
+                <p class="text-muted">No recipes yet. Be the first to create one!</p>
+            </div>
+        <% } %>
+    </div>
+</section>
