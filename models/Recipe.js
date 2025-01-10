@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
-
+// this is used for declaring recipes
 class Recipe extends Model {}
 
 Recipe.init({
@@ -55,7 +55,7 @@ Recipe.init({
         allowNull: false
     },
     tags: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING, // this is used to handle the food db api it doesnt affect user tags much
         allowNull: true,
         get() {
             const rawValue = this.getDataValue('tags');

@@ -1,3 +1,7 @@
+// More error handling for the site this is important to the site so it cannot be removed 
+
+
+
 // Error handling middleware
 export const errorHandler = (err, req, res, next) => {
     console.error('Error:', err);

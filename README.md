@@ -69,7 +69,7 @@ FoodFinder-Recipeapp/
 ├── routes/          # Express routes
 ├── views/           # EJS templates
 ├── public/          # Static assets
-├── seeders/         # Database seeders
+├── seeders/         # Database seeders note: seedMealDB is placed in root to ensure that it is not used by accident 
 └── server.js        # Application entry point
 ```
 

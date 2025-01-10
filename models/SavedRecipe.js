@@ -3,6 +3,8 @@ import sequelize from '../config/db.js';
 import User from './User.js';
 import Recipe from './Recipe.js';
 
+// this is used to save recipes to the users model
+
 class SavedRecipe extends Model {}
 
 SavedRecipe.init({

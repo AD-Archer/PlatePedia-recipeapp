@@ -1,3 +1,6 @@
+// This file is used to make sure that a can access certain features on certain pages on the site 
+
+
 // Middleware to check if user is logged in
 export const isAuthenticated = (req, res, next) => {
     if (req.session.user) {

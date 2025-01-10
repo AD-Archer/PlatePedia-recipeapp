@@ -1,3 +1,5 @@
+// This file is used to save recipes to the user's table 
+
 import { SavedRecipe } from '../models/TableCreation.js';
 
 export async function addSavedStatus(recipes, user) {

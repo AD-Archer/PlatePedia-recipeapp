@@ -5,6 +5,8 @@ import SavedRecipe from './SavedRecipe.js';
 import RecipeCategory from './RecipeCategory.js';
 import UserFollows from './UserFollows.js';
 
+//table creation
+
 // Define associations
 Recipe.belongsTo(User, {
     foreignKey: 'userId',

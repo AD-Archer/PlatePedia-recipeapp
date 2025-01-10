@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
+const url = "localhost" // this can be changed if you wish but for dev purposes localhost works fine
 // Initialize database and sync models
 async function initializeDatabase() {
     try {
@@ -127,24 +127,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use(storePreviousUrl);
 
-// Health check route
-app.get('/api/debug', (req, res) => {
-    res.json({
-        env: {
-            NODE_ENV: process.env.NODE_ENV,
-            DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',
-            SESSION_SECRET: process.env.SESSION_SECRET ? 'Set' : 'Not set'
-        },
-        session: {
-            exists: !!req.session,
-            id: req.sessionID,
-            cookie: req.session?.cookie
-        },
-        headers: req.headers,
-        user: req.session?.user || null
-    });
-});
 
+// used to make sure the connection to the server is healthy and working 
 app.get('/api/healthcheck', async (req, res) => {
     try {
         const sequelize = getDb();
@@ -159,26 +143,50 @@ app.get('/api/healthcheck', async (req, res) => {
 // Main routes
 app.get('/', async (req, res) => {
     try {
-        // Fetch recipes
-        const popularRecipes = await Recipe.findAll({
+        // // Fetch recipes
+        // const popularRecipes = await Recipe.findAll({ // collect all of the recipes. 
+        //     include: [{
+        //         model: User,
+        //         as: 'author',
+        //         attributes: ['username', 'id']
+        //     }],
+        //     order: [['createdAt', 'DESC']],
+        //     limit: 6
+        // });
+
+        // const latestRecipes = popularRecipes
+        // const latestRecipes = await Recipe.findAll({
+        //     include: [{
+        //         model: User,
+        //         as: 'author',
+        //         attributes: ['username', 'id']
+        //     }],
+        //     order: [['createdAt', 'DESC']],
+        //     limit: 8
+        // });
+
+        // Fetch the latest 10 recipes once
+        const allRecipes = await Recipe.findAll({
             include: [{
                 model: User,
                 as: 'author',
                 attributes: ['username', 'id']
             }],
             order: [['createdAt', 'DESC']],
-            limit: 6
         });
 
-        const latestRecipes = await Recipe.findAll({
-            include: [{
-                model: User,
-                as: 'author',
-                attributes: ['username', 'id']
-            }],
-            order: [['createdAt', 'DESC']],
-            limit: 8
-        });
+       // Shuffle the recipes array randomly 
+        const shuffledRecipes = allRecipes.sort(() => Math.random() - 0.5);
+
+        /* Select 6 random recipes for popularRecipes, hypothecially i could do this using the favorites value
+         to select the most popular but if we dont have many users then they will always see the same foods
+         and even i could add another random recipe to the site but that gets messy
+         */
+        const popularRecipes = shuffledRecipes.slice(0, 6);
+
+        // Use allRecipes directly for latest recipes
+        const latestRecipes = allRecipes.slice(0,8);
+        // the site literally loads twice as fast with this change
 
         // Get categories with recipe count using sequelize instance
         const sequelize = await getDb();
@@ -227,8 +235,10 @@ app.get('/', async (req, res) => {
         });
     }
 });
-app.use('/signup', signup);
-app.use('/login', login);
+
+// declaring routing from /routes
+app.use('/signup', signup); 
+app.use('/login', login); 
 app.use('/dashboard', dashboard);
 app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
@@ -247,7 +257,7 @@ if (!process.env.VERCEL) {
     try {
         await initializeDatabase();
         app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
+            console.log(`Server running on http://${url}:${PORT}`);
             console.log(`Environment: ${process.env.NODE_ENV}`);
         });
     } catch (error) {

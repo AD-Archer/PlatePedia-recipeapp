@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
+// this is used to connect the categories and the recipes tables 
 const RecipeCategory = sequelize.define('RecipeCategory', {
     recipeId: {
         type: DataTypes.INTEGER,

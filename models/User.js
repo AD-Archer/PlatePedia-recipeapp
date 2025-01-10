@@ -2,8 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
 import sequelize from '../config/db.js';
 import Recipe from './Recipe.js';
-import UserFollows from './UserFollows.js';
-
+// this declares the user 
 class User extends Model {}
 
 User.init({

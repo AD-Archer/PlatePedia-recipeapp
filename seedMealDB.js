@@ -1,3 +1,11 @@
+/**
+ * Warning do not run this script more than once
+ * I am unsure what will happen but i am sure that it will not be pretty
+ * if you wish to attempt to use an api to source food I would recommend using
+ * google gemini and proccessing its output or edamam
+ * 
+ * 
+ */
 import fetch from 'node-fetch';
 import { Recipe, User, Category, RecipeCategory } from './models/TableCreation.js';
 import sequelize from './config/db.js';

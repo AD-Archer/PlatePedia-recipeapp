@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
-
+// this is use to define categories on the site to be dispalyed on our dashboard
 const Category = sequelize.define('Category', {
     name: {
         type: DataTypes.STRING,
