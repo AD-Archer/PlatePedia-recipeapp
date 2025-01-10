@@ -8,296 +8,99 @@
 </head>
 <body>
     <%- include('../../partials/header') %>
-    
+
     <div class="container py-5">
-        <%- include('../../partials/alerts') %>
-
         <div class="row">
-            <!-- Profile Info -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <% if (profileUser.profileImage) { %>
-                            <img src="<%= profileUser.profileImage %>" alt="Profile" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                        <% } else { %>
-                            <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
-                                <i class="bi bi-person-circle fs-1"></i>
-                            </div>
-                        <% } %>
-                        
-                        <h3 class="card-title mb-3"><%= profileUser.username %></h3>
-                        
-                        <% if (profileUser.bio) { %>
-                            <p class="card-text text-muted mb-3"><%= profileUser.bio %></p>
-                        <% } %>
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <% if (profileUser.profileImage) { %>
+                                <img src="<%= profileUser.profileImage %>" class="rounded-circle mb-3" width="150" height="150">
+                            <% } else { %>
+                                <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                                    <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                                </div>
+                            <% } %>
+                            <h3 class="mb-0"><%= profileUser.username %></h3>
+                            <% if (profileUser.bio) { %>
+                                <p class="text-muted mt-2"><%= profileUser.bio %></p>
+                            <% } %>
 
-                        <div class="d-flex justify-content-around mb-3">
+                            <% if (user && user.id !== profileUser.id) { %>
+                                <button 
+                                    class="btn <%= isFollowing ? 'btn-secondary' : 'btn-primary' %>"
+                                    onclick="toggleFollow('<%= profileUser.id %>', this)"
+                                    data-following="<%= isFollowing %>">
+                                    <i class="bi bi-person<%= isFollowing ? '-check' : '-plus' %>"></i>
+                                    <%= isFollowing ? 'Following' : 'Follow' %>
+                                </button>
+                            <% } %>
+                        </div>
+
+                        <div class="d-flex justify-content-around mb-4">
                             <div class="text-center">
-                                <h5 class="mb-0"><%= stats.recipeCount %></h5>
+                                <h5 class="mb-0"><%= profileUser.recipes?.length || 0 %></h5>
                                 <small class="text-muted">Recipes</small>
                             </div>
                             <div class="text-center">
-                                <h5 class="mb-0"><%= stats.followerCount %></h5>
+                                <h5 class="mb-0"><%= profileUser.followers?.length || 0 %></h5>
                                 <small class="text-muted">Followers</small>
                             </div>
                             <div class="text-center">
-                                <h5 class="mb-0"><%= stats.followingCount %></h5>
+                                <h5 class="mb-0"><%= profileUser.following?.length || 0 %></h5>
                                 <small class="text-muted">Following</small>
                             </div>
                         </div>
 
-                        <% if (locals.user && locals.user.id !== profileUser.id) { %>
-                            <button 
-                                class="btn btn-<%= isFollowing ? 'outline-' : '' %>primary w-100" 
-                                onclick="toggleFollow('<%= profileUser.username %>', this)"
-                                data-following="<%= isFollowing %>">
-                                <%= isFollowing ? 'Unfollow' : 'Follow' %>
-                            </button>
+                        <!-- Settings Section (Only visible to profile owner) -->
+                        <% if (isOwnProfile) { %>
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Account Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <a href="/settings/profile" class="btn btn-outline-primary">
+                                            <i class="bi bi-gear"></i> Edit Profile
+                                        </a>
+                                    </div>
+                                    <div class="mb-3">
+                                        <a href="/settings/security" class="btn btn-outline-secondary">
+                                            <i class="bi bi-shield-lock"></i> Security Settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <h4 class="mb-3">Recipes</h4>
+                        <% if (recipes && recipes.length > 0) { %>
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <% recipes.forEach(recipe => { %>
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <% if (recipe.imageUrl) { %>
+                                                <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                                            <% } %>
+                                            <div class="card-body">
+                                                <h5 class="card-title"><%= recipe.title %></h5>
+                                                <p class="card-text"><%= recipe.description %></p>
+                                                <a href="/recipes/<%= recipe.id %>" class="btn btn-primary">View Recipe</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <p class="text-muted">No recipes yet.</p>
                         <% } %>
                     </div>
                 </div>
             </div>
-
-            <!-- User's Recipes -->
-            <div class="col-md-8">
-                <h4 class="mb-4">Recipes by <%= profileUser.username %></h4>
-                
-                <!-- Settings Section (Only visible to profile owner) -->
-                <% if (isOwnProfile) { %>
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Account Settings</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-grid gap-3">
-                                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                    <i class="bi bi-pencil-square"></i> Edit Profile
-                                </button>
-                                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                                    <i class="bi bi-key"></i> Change Password
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
-
-                <div class="row row-cols-1 row-cols-md-2 g-4">
-                    <% if (profileUser.recipes && profileUser.recipes.length > 0) { %>
-                        <% profileUser.recipes.forEach(recipe => { %>
-                            <div class="col">
-                                <div class="card h-100">
-                                    <% if (recipe.imageUrl) { %>
-                                        <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
-                                    <% } %>
-                                    <div class="card-body">
-                                        <h5 class="card-title"><%= recipe.title %></h5>
-                                        <% if (recipe.description) { %>
-                                            <p class="card-text"><%= recipe.description %></p>
-                                        <% } %>
-                                        <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }) %>
-                    <% } else { %>
-                        <div class="col-12">
-                            <p class="text-muted">No recipes yet</p>
-                        </div>
-                    <% } %>
-                </div>
-            </div>
         </div>
     </div>
 
-    <%- include('../../partials/footer') %>
-
-    <!-- Edit Profile Modal -->
-    <% if (isOwnProfile) { %>
-        
-        
-        <!-- Edit Profile Modal -->
-        <div class="modal fade" id="editProfileModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Profile</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form id="editProfileForm" onsubmit="handleEditProfile(event)">
-                        <div class="modal-body">
-                            <!-- Username -->
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" 
-                                       name="username" value="<%= profileUser.username %>" required>
-                            </div>
-                            
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" 
-                                       name="email" value="<%= profileUser.email %>" required>
-                            </div>
-                            
-                            <!-- Bio -->
-                            <div class="mb-3">
-                                <label for="bio" class="form-label">Bio</label>
-                                <textarea class="form-control" id="bio" name="bio" 
-                                          rows="3"><%= profileUser.bio || '' %></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    <% } %>
-
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Change Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="changePasswordForm" onsubmit="handlePasswordChange(event)">
-                        <div class="alert alert-info">
-                            <small>
-                                <i class="bi bi-info-circle"></i>
-                                Password must be at least 6 characters long
-                            </small>
-                        </div>
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> Change Password
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function toggleFollow(username, button) {
-            const isFollowing = button.getAttribute('data-following') === 'true';
-            try {
-                const response = await fetch(`/users/${username}/follow`, {
-                    method: isFollowing ? 'DELETE' : 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    button.setAttribute('data-following', !isFollowing);
-                    button.textContent = isFollowing ? 'Follow' : 'Unfollow';
-                    button.className = `btn btn-${isFollowing ? '' : 'outline-'}primary w-100`;
-                    
-                    // Update followers count without refreshing
-                    const followersCount = document.querySelector('.text-center:nth-child(2) h5');
-                    const currentCount = parseInt(followersCount.textContent);
-                    followersCount.textContent = isFollowing ? currentCount - 1 : currentCount + 1;
-                } else {
-                    alert(data.error || 'Error updating follow status');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error updating follow status');
-            }
-        }
-
-        async function handleEditProfile(event) {
-            event.preventDefault();
-            
-            const form = event.target;
-            const formData = new FormData(form);
-            
-            try {
-                const response = await fetch(`/users/<%= profileUser.username %>/edit`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        username: formData.get('username'),
-                        email: formData.get('email'),
-                        bio: formData.get('bio'),
-                        profileImage: formData.get('profileImage')
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Hide modal
-                    bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
-                    
-                    // Refresh the page to show updated info
-                    window.location.href = `/users/${data.user.username}`;
-                } else {
-                    alert(data.error || 'Error updating profile');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error updating profile');
-            }
-        }
-
-        async function handlePasswordChange(event) {
-            event.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (newPassword !== confirmPassword) {
-                alert('New passwords do not match');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/users/<%= profileUser.username %>/change-password`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ currentPassword, newPassword })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('Password changed successfully');
-                    event.target.reset();
-                    bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
-                } else {
-                    alert(data.error || 'Error changing password');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error changing password');
-            }
-        }
-    </script>
+    <script src="/js/followToggle.js"></script>
 </body>
 </html> 

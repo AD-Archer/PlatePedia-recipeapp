@@ -218,13 +218,17 @@ const viewRecipe = asyncHandler(async (req, res) => {
     // Check if the logged-in user is following the recipe author
     let isFollowing = false;
     if (req.session.user && recipe.author.id !== req.session.user.id) {
-        const followRelation = await UserFollows.findOne({
-            where: {
-                followerId: req.session.user.id,
-                followingId: recipe.author.id
-            }
+        const userFollows = await User.findOne({
+            where: { 
+                id: req.session.user.id,
+                '$following.id$': recipe.author.id 
+            },
+            include: [{
+                model: User,
+                as: 'following'
+            }]
         });
-        isFollowing = !!followRelation;
+        isFollowing = !!userFollows;
     }
 
     let isSaved = false;
@@ -309,6 +313,10 @@ router.post('/:id/save', isAuthenticated, asyncHandler(async (req, res) => {
     try {
         const [savedRecipe, created] = await SavedRecipe.findOrCreate({
             where: {
+                user_id: req.session.user.id,
+                recipe_id: recipeId
+            },
+            defaults: {
                 user_id: req.session.user.id,
                 recipe_id: recipeId
             }
@@ -662,18 +670,15 @@ router.get('/:id', asyncHandler(async (req, res) => {
     }
 
     const recipe = await Recipe.findByPk(recipeId, {
-        include: [
-            {
-                model: User,
-                as: 'author',
-                attributes: ['id', 'username', 'profileImage']
-            },
-            {
-                model: Category,
-                as: 'categories',
-                through: { attributes: [] }
-            }
-        ]
+        include: [{
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'profileImage']
+        }, {
+            model: Category,
+            as: 'categories',
+            through: { attributes: [] }
+        }]
     });
 
     if (!recipe) {
@@ -684,13 +689,17 @@ router.get('/:id', asyncHandler(async (req, res) => {
     // Check if the logged-in user is following the recipe author
     let isFollowing = false;
     if (req.session.user && recipe.author.id !== req.session.user.id) {
-        const followRelation = await UserFollows.findOne({
-            where: {
-                followerId: req.session.user.id,
-                followingId: recipe.author.id
-            }
+        const userFollows = await User.findOne({
+            where: { 
+                id: req.session.user.id,
+                '$following.id$': recipe.author.id 
+            },
+            include: [{
+                model: User,
+                as: 'following'
+            }]
         });
-        isFollowing = !!followRelation;
+        isFollowing = !!userFollows;
     }
 
     res.render('pages/recipes/view', {
@@ -840,6 +849,10 @@ router.post('/:id/save', asyncHandler(async (req, res) => {
     try {
         const [savedRecipe, created] = await SavedRecipe.findOrCreate({
             where: {
+                user_id: req.session.user.id,
+                recipe_id: recipeId
+            },
+            defaults: {
                 user_id: req.session.user.id,
                 recipe_id: recipeId
             }

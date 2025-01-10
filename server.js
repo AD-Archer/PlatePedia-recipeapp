@@ -17,8 +17,8 @@ import signup from './routes/signup.js';
 import login from './routes/login.js';
 import dashboard from './routes/dashboard.js';
 import logout from './routes/logout.js';
-import recipes from './routes/recipes.js';
-import users from './routes/users.js';
+import recipesRouter from './routes/recipes.js';
+import usersRouter from './routes/users.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -150,8 +150,8 @@ app.use('/signup', signup);
 app.use('/login', login);
 app.use('/dashboard', dashboard);
 app.use('/logout', logout);
-app.use('/recipes', recipes);
-app.use('/users', users);
+app.use('/recipes', recipesRouter);
+app.use('/users', usersRouter);
 
 // Catch-all route
 app.get('*', (req, res) => res.redirect('/'));

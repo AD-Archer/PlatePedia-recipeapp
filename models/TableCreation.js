@@ -6,7 +6,19 @@ import SavedRecipe from './SavedRecipe.js';
 import UserFollows from './UserFollows.js';
 
 // Define associations
-Recipe.belongsTo(User, { foreignKey: 'userId', as: 'author' });
+Recipe.belongsTo(User, {
+    foreignKey: {
+        name: 'userId',
+        allowNull: false
+    },
+    as: 'author',
+    onDelete: 'CASCADE'
+});
+
+User.hasMany(Recipe, {
+    foreignKey: 'userId',
+    as: 'recipes'
+});
 
 // Recipe-Category many-to-many relationship
 Recipe.belongsToMany(Category, {
@@ -28,20 +40,14 @@ User.belongsToMany(Recipe, {
     through: SavedRecipe,
     foreignKey: 'user_id',
     otherKey: 'recipe_id',
-    as: 'savedRecipes',
-    constraints: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    as: 'savedRecipes'
 });
 
 Recipe.belongsToMany(User, {
     through: SavedRecipe,
     foreignKey: 'recipe_id',
     otherKey: 'user_id',
-    as: 'savedBy',
-    constraints: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    as: 'savedBy'
 });
 
 // Add direct associations for SavedRecipe

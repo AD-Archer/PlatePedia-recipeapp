@@ -9,6 +9,64 @@ import crypto from 'crypto';
 
 const router = express.Router();
 
+// Get user by username
+router.get('/:username', asyncHandler(async (req, res) => {
+    const user = await User.findOne({
+        where: { username: req.params.username },
+        include: [{
+            model: Recipe,
+            as: 'recipes',
+            include: [{
+                model: Category,
+                as: 'categories',
+                through: { attributes: [] }
+            }]
+        }, {
+            model: User,
+            as: 'followers',
+            attributes: ['id']
+        }, {
+            model: User,
+            as: 'following',
+            attributes: ['id']
+        }]
+    });
+
+    if (!user) {
+        req.session.error = 'User not found';
+        return res.redirect('/');
+    }
+
+    // Check if this is the profile owner
+    const isOwnProfile = req.session.user && req.session.user.id === user.id;
+
+    // Calculate stats
+    const stats = {
+        recipeCount: user.recipes.length,
+        followerCount: user.followers.length,
+        followingCount: user.following.length
+    };
+
+    // Check if logged-in user is following this user
+    let isFollowing = false;
+    if (req.session.user && req.session.user.id !== user.id) {
+        isFollowing = user.followers.some(follower => follower.id === req.session.user.id);
+    }
+
+    res.render('pages/users/profile', {
+        profileUser: user,
+        recipes: user.recipes,
+        stats,
+        isFollowing,
+        isOwnProfile,
+        error: req.session.error,
+        success: req.session.success
+    });
+
+    delete req.session.error;
+    delete req.session.success;
+}));
+
 // Show all users/suggested users page - Public access
 router.get('/', asyncHandler(async (req, res) => {
     // First, get recipe counts for all users
@@ -370,6 +428,138 @@ router.post('/reset-password/reset', [
     });
 
     res.json({ success: true, message: 'Password reset successfully' });
+}));
+
+// Debug route - REMOVE IN PRODUCTION
+router.get('/debug/:id', asyncHandler(async (req, res) => {
+    const users = await User.findAll({
+        attributes: ['id', 'username']
+    });
+    const requestedUser = await User.findByPk(req.params.id);
+    res.json({
+        requestedUser,
+        allUsers: users
+    });
+}));
+
+// Follow a user
+router.post('/:id/follow', asyncHandler(async (req, res) => {
+    try {
+        // Check authentication manually first
+        if (!req.session.user) {
+            return res.status(401).json({
+                success: false,
+                error: 'Please log in to follow users'
+            });
+        }
+
+        console.log('Follow request received');
+        console.log('Current user:', req.session.user);
+        console.log('Target user param:', req.params.id);
+
+        let userToFollow;
+        const userId = parseInt(req.params.id);
+        
+        // Try to find by ID first, if not, try username
+        if (!isNaN(userId)) {
+            userToFollow = await User.findByPk(userId);
+        } else {
+            userToFollow = await User.findOne({
+                where: { username: req.params.id }
+            });
+        }
+        console.log('Found user:', userToFollow ? userToFollow.toJSON() : null);
+
+        if (!userToFollow) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'User not found' 
+            });
+        }
+
+        // Check if trying to follow self
+        if (userToFollow.id === req.session.user.id) {
+            return res.status(400).json({
+                success: false,
+                error: 'Cannot follow yourself'
+            });
+        }
+
+        // Check if already following
+        const currentUser = await User.findByPk(req.session.user.id, {
+            include: [{
+                model: User,
+                as: 'following',
+                where: { id: userToFollow.id },
+                required: false
+            }]
+        });
+
+        if (!currentUser.following.length) {
+            await currentUser.addFollowing(userToFollow);
+            res.json({ 
+                success: true, 
+                message: 'Successfully followed user' 
+            });
+        } else {
+            res.json({ 
+                success: true, 
+                message: 'Already following user' 
+            });
+        }
+    } catch (error) {
+        console.error('Error following user:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error following user' 
+        });
+    }
+}));
+
+// Unfollow a user
+router.delete('/:id/follow', asyncHandler(async (req, res) => {
+    try {
+        // Check authentication manually first
+        if (!req.session.user) {
+            return res.status(401).json({
+                success: false,
+                error: 'Please log in to unfollow users'
+            });
+        }
+
+        let userToUnfollow;
+        // Try to find by ID first
+        const userId = parseInt(req.params.id);
+        if (!isNaN(userId)) {
+            userToUnfollow = await User.findByPk(userId);
+        } else {
+            // If not a number, try to find by username
+            userToUnfollow = await User.findOne({
+                where: { username: req.params.id }
+            });
+        }
+
+        if (!userToUnfollow) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'User not found' 
+            });
+        }
+
+        const currentUser = await User.findByPk(req.session.user.id);
+        await currentUser.removeFollowing(userToUnfollow);
+        
+        res.json({ 
+            success: true, 
+            message: 'Successfully unfollowed user' 
+        });
+    } catch (error) {
+        console.error('Error unfollowing user:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error unfollowing user' 
+        });
+    }
 }));
 
 export default router; 

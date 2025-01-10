@@ -18,11 +18,12 @@ async function seedMealDB() {
     try {
         // Create a system user for MealDB recipes if it doesn't exist
         const [systemUser] = await User.findOrCreate({
-            where: { username: 'mealdb_system' },
+            where: { username: 'themealdb' },
             defaults: {
-                email: 'system@mealdb.com',
+                email: 'api@themealdb.com',
                 password: 'randompassword123',
-                bio: 'System account for MealDB imported recipes'
+                bio: 'Official TheMealDB recipes collection',
+                profileImage: 'https://www.themealdb.com/images/logo-small.png'
             }
         });
 

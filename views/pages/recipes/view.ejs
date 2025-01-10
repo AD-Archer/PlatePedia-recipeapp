@@ -28,10 +28,11 @@
                                 <small class="text-muted">Created on <%= new Date(recipe.createdAt).toLocaleDateString() %></small>
                                 <% if (user && user.id !== recipe.author.id) { %>
                                     <button 
-                                        class="btn btn-sm btn-<%= isFollowing ? 'outline-' : '' %>primary ms-2" 
+                                        class="btn <%= isFollowing ? 'btn-secondary' : 'btn-primary' %> btn-sm ms-2"
                                         onclick="toggleFollow('<%= recipe.author.username %>', this)"
                                         data-following="<%= isFollowing %>">
-                                        <%= isFollowing ? 'Unfollow' : 'Follow' %> Chef
+                                        <i class="bi bi-person<%= isFollowing ? '-check' : '-plus' %>"></i>
+                                        <%= isFollowing ? 'Following' : 'Follow' %>
                                     </button>
                                 <% } %>
                             </div>
@@ -152,5 +153,7 @@
             }
         }
     </script>
+
+    <script src="/js/followToggle.js"></script>
 </body>
 </html> 
