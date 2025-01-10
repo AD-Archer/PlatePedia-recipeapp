@@ -9,6 +9,7 @@ import { errorHandler, storePreviousUrl } from './middleware/errorHandler.js';
 import { getDb } from './config/db.js';
 import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
+import { Sequelize } from 'sequelize';
 
 
 // Import routes
@@ -186,7 +187,7 @@ app.get('/api/healthcheck', async (req, res) => {
 });
 
 // Main routes
-app.get('/', (req, res) => res.render('pages/landingpage'));
+app.get('/', dashboard);
 app.use('/signup', signup);
 app.use('/login', login);
 app.use('/dashboard', dashboard);
