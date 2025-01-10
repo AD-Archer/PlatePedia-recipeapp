@@ -145,7 +145,76 @@ app.get('/api/healthcheck', async (req, res) => {
 });
 
 // Main routes
-app.get('/', dashboard);
+app.get('/', async (req, res) => {
+    try {
+        // Fetch recipes
+        const popularRecipes = await Recipe.findAll({
+            include: [{
+                model: User,
+                as: 'author',
+                attributes: ['username', 'id']
+            }],
+            order: [['createdAt', 'DESC']],
+            limit: 6
+        });
+
+        const latestRecipes = await Recipe.findAll({
+            include: [{
+                model: User,
+                as: 'author',
+                attributes: ['username', 'id']
+            }],
+            order: [['createdAt', 'DESC']],
+            limit: 8
+        });
+
+        // Get categories with recipe count using sequelize instance
+        const sequelize = await getDb();
+        const categories = await Category.findAll({
+            attributes: {
+                include: [
+                    [
+                        sequelize.literal(
+                            '(SELECT COUNT(*) FROM recipe_categories WHERE recipe_categories."categoryId" = "Category".id)'
+                        ),
+                        'recipeCount'
+                    ]
+                ]
+            },
+            order: [['type', 'ASC'], ['name', 'ASC']]
+        });
+
+        // Group categories by type
+        const groupedCategories = categories.reduce((acc, category) => {
+            const type = category.type || 'Other';
+            if (!acc[type]) acc[type] = [];
+            acc[type].push(category);
+            return acc;
+        }, {});
+
+        // Add saved status only if user is logged in
+        const processedPopularRecipes = req.user ? 
+            await addSavedStatus(popularRecipes, req.user) : 
+            popularRecipes;
+            
+        const processedLatestRecipes = req.user ? 
+            await addSavedStatus(latestRecipes, req.user) : 
+            latestRecipes;
+
+        res.render('pages/dashboard', {
+            user: req.user,
+            popularRecipes: processedPopularRecipes,
+            latestRecipes: processedLatestRecipes,
+            groupedCategories
+        });
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+        res.status(500).render('pages/error', { 
+            message: 'Error loading dashboard', 
+            error 
+        });
+    }
+});
 app.use('/signup', signup);
 app.use('/login', login);
 app.use('/dashboard', dashboard);

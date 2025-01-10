@@ -22,7 +22,7 @@ const isRecipeCreator = async (req, res, next) => {
         const recipe = await Recipe.findByPk(recipeId, {
             include: [{
                 model: Category,
-                as: 'categories',
+                as: 'Categories',
                 through: { attributes: [] }
             }]
         });
@@ -57,6 +57,7 @@ const listRecipes = asyncHandler(async (req, res) => {
             },
             {
                 model: Category,
+                as: 'Categories',
                 through: { attributes: [] }
             }
         ],
@@ -198,14 +199,14 @@ const viewRecipe = asyncHandler(async (req, res) => {
     const recipe = await Recipe.findByPk(recipeId, {
         include: [
             {
+                model: Category,
+                as: 'Categories',
+                through: { attributes: [] }
+            },
+            {
                 model: User,
                 as: 'author',
                 attributes: ['id', 'username', 'profileImage']
-            },
-            {
-                model: Category,
-                as: 'categories',
-                through: { attributes: [] }
             }
         ]
     });
@@ -379,12 +380,12 @@ router.get('/saved', isAuthenticated, asyncHandler(async (req, res) => {
             },
             {
                 model: Category,
-                as: 'categories',
+                as: 'Categories',
                 through: { attributes: [] }
             },
             {
                 model: User,
-                as: 'savedBy',
+                as: 'savedByUsers',
                 where: { id: req.session.user.id },
                 attributes: [],
                 through: { attributes: [] }
@@ -428,7 +429,7 @@ router.get('/browse', asyncHandler(async (req, res) => {
             },
             {
                 model: Category,
-                as: 'categories',
+                as: 'Categories',
                 through: { attributes: [] }
             }
         ];
@@ -608,7 +609,7 @@ router.get('/my-recipes', asyncHandler(async (req, res) => {
         include: [
             {
                 model: Category,
-                as: 'categories',
+                as: 'Categories',
                 through: { attributes: [] }
             }
         ],
@@ -637,12 +638,12 @@ router.get('/saved', asyncHandler(async (req, res) => {
             },
             {
                 model: Category,
-                as: 'categories',
+                as: 'Categories',
                 through: { attributes: [] }
             },
             {
                 model: User,
-                as: 'savedBy',
+                as: 'savedByUsers',
                 where: { id: req.session.user.id },
                 attributes: [],
                 through: { attributes: [] }
@@ -676,7 +677,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
             attributes: ['id', 'username', 'profileImage']
         }, {
             model: Category,
-            as: 'categories',
+            as: 'Categories',
             through: { attributes: [] }
         }]
     });

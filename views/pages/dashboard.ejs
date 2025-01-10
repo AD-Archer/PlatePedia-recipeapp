@@ -45,7 +45,7 @@
                     <% if (popularRecipes && popularRecipes.length > 0) { %>
                         <% popularRecipes.forEach(recipe => { %>
                             <div class="col">
-                                <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe(<%= recipe.id %>, event)">
+                                <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.id %>')">
                                     <% if (recipe.imageUrl) { %>
                                         <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
                                     <% } %>
@@ -60,18 +60,16 @@
                                                     </a>
                                                 </small>
                                             </div>
-                                            <div class="btn-group">
-                                                <% if (user) { %>
-                                                    <button 
-                                                        class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
-                                                        onclick="toggleSave(<%= recipe.id %>, this, event)"
-                                                        data-saved="<%= recipe.isSaved %>"
-                                                    >
-                                                        <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
-                                                        <%= recipe.isSaved ? 'Saved' : 'Save' %>
-                                                    </button>
-                                                <% } %>
-                                            </div>
+                                            <% if (user && user.id !== recipe.author.id) { %>
+                                                <button 
+                                                    class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
+                                                    onclick="toggleSave('<%= recipe.id %>', this, event)"
+                                                    data-saved="<%= recipe.isSaved %>"
+                                                >
+                                                    <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
+                                                    <%= recipe.isSaved ? 'Saved' : 'Save' %>
+                                                </button>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -79,7 +77,7 @@
                         <% }); %>
                     <% } else { %>
                         <div class="col-12 text-center">
-                            <p class="text-muted">No recipes yet. Be the first to create one!</p>
+                            <p class="text-muted">No popular recipes yet.</p>
                         </div>
                     <% } %>
                 </div>
@@ -142,7 +140,7 @@
                     <% if (latestRecipes && latestRecipes.length > 0) { %>
                         <% latestRecipes.forEach(recipe => { %>
                             <div class="col">
-                                <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe(<%= recipe.id %>, event)">
+                                <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.id %>')">
                                     <% if (recipe.imageUrl) { %>
                                         <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
                                     <% } %>
@@ -157,18 +155,16 @@
                                                     </a>
                                                 </small>
                                             </div>
-                                            <div class="btn-group">
-                                                <% if (user) { %>
-                                                    <button 
-                                                        class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
-                                                        onclick="toggleSave(<%= recipe.id %>, this, event)"
-                                                        data-saved="<%= recipe.isSaved %>"
-                                                    >
-                                                        <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
-                                                        <%= recipe.isSaved ? 'Saved' : 'Save' %>
-                                                    </button>
-                                                <% } %>
-                                            </div>
+                                            <% if (user && user.id !== recipe.author.id) { %>
+                                                <button 
+                                                    class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
+                                                    onclick="toggleSave('<%= recipe.id %>', this, event)"
+                                                    data-saved="<%= recipe.isSaved %>"
+                                                >
+                                                    <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
+                                                    <%= recipe.isSaved ? 'Saved' : 'Save' %>
+                                                </button>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -214,11 +210,7 @@
         }
     }
 
-    function goToRecipe(recipeId, event) {
-        // Don't navigate if they clicked the save button or author link
-        if (event.target.closest('.btn-group') || event.target.closest('a')) {
-            return;
-        }
+    function goToRecipe(recipeId) {
         window.location.href = `/recipes/${recipeId}`;
     }
 

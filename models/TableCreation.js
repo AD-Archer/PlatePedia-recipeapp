@@ -1,18 +1,14 @@
 import User from './User.js';
 import Recipe from './Recipe.js';
 import Category from './Category.js';
-import RecipeCategory from './RecipeCategory.js';
 import SavedRecipe from './SavedRecipe.js';
+import RecipeCategory from './RecipeCategory.js';
 import UserFollows from './UserFollows.js';
 
 // Define associations
 Recipe.belongsTo(User, {
-    foreignKey: {
-        name: 'userId',
-        allowNull: false
-    },
-    as: 'author',
-    onDelete: 'CASCADE'
+    foreignKey: 'userId',
+    as: 'author'
 });
 
 User.hasMany(Recipe, {
@@ -20,22 +16,22 @@ User.hasMany(Recipe, {
     as: 'recipes'
 });
 
-// Recipe-Category many-to-many relationship
+// Recipe-Category associations
 Recipe.belongsToMany(Category, {
     through: RecipeCategory,
     foreignKey: 'recipeId',
     otherKey: 'categoryId',
-    as: 'categories'
+    as: 'Categories'
 });
 
 Category.belongsToMany(Recipe, {
     through: RecipeCategory,
     foreignKey: 'categoryId',
     otherKey: 'recipeId',
-    as: 'recipes'
+    as: 'Recipes'
 });
 
-// Saved Recipes relationship
+// User-Recipe (Saved) associations
 User.belongsToMany(Recipe, {
     through: SavedRecipe,
     foreignKey: 'user_id',
@@ -47,25 +43,40 @@ Recipe.belongsToMany(User, {
     through: SavedRecipe,
     foreignKey: 'recipe_id',
     otherKey: 'user_id',
-    as: 'savedBy'
+    as: 'savedByUsers'
+});
+
+// User-User (Follows) associations - Fixed aliases
+User.belongsToMany(User, {
+    through: UserFollows,
+    as: 'followedUsers',
+    foreignKey: 'follower_id',
+    otherKey: 'following_id'
+});
+
+User.belongsToMany(User, {
+    through: UserFollows,
+    as: 'followerUsers',
+    foreignKey: 'following_id',
+    otherKey: 'follower_id'
 });
 
 // Add direct associations for SavedRecipe
-User.hasMany(SavedRecipe, {
+SavedRecipe.belongsTo(User, {
     foreignKey: 'user_id',
-    as: 'saves'
+    as: 'user'
 });
 
-Recipe.hasMany(SavedRecipe, {
+SavedRecipe.belongsTo(Recipe, {
     foreignKey: 'recipe_id',
-    as: 'saves'
+    as: 'recipe'
 });
 
 export {
     User,
     Recipe,
     Category,
-    RecipeCategory,
     SavedRecipe,
+    RecipeCategory,
     UserFollows
 };
