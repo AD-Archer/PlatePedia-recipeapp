@@ -713,8 +713,12 @@ router.get('/:id/edit', isRecipeCreator, asyncHandler(async (req, res) => {
         const recipeCategories = await req.recipe.getCategories();
         const categoryIds = recipeCategories.map(cat => cat.id);
 
+        // Convert ingredients string to array
+        const recipe = req.recipe.toJSON();
+        recipe.ingredients = recipe.ingredients.split('\n').filter(i => i.trim());
+
         res.render('pages/recipes/edit', {
-            recipe: req.recipe,
+            recipe: recipe,
             categories,
             categoryIds,
             error: req.session.error,
@@ -739,6 +743,10 @@ router.post('/:id/edit', isRecipeCreator, [
     body('cookingTime').optional().isInt({ min: 0 }).withMessage('Cooking time must be a positive number'),
     body('servings').optional().isInt({ min: 1 }).withMessage('Servings must be at least 1'),
     body('difficulty').optional().isIn(['easy', 'medium', 'hard']).withMessage('Invalid difficulty level'),
+    body('imageUrl')
+        .optional({ checkFalsy: true })
+        .trim()
+        .customSanitizer(value => value || null)  // Convert empty strings to null
 ], asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -756,17 +764,15 @@ router.post('/:id/edit', isRecipeCreator, [
             servings,
             difficulty,
             calories,
-            categories
+            categories,
+            imageUrl
         } = req.body;
 
         // Ensure ingredients is always an array and clean it
         const ingredientsArray = Array.isArray(ingredients) ? ingredients : [ingredients];
-        const cleanedIngredients = ingredientsArray.filter(ingredient => ingredient.trim() !== '');
-
-        if (cleanedIngredients.length === 0) {
-            req.session.error = 'At least one ingredient is required';
-            return res.redirect(`/recipes/${req.params.id}/edit`);
-        }
+        const cleanedIngredients = ingredientsArray
+            .filter(ingredient => ingredient.trim() !== '')
+            .join('\n');  // Join ingredients with newlines for storage
 
         // Update recipe
         await req.recipe.update({
@@ -778,23 +784,23 @@ router.post('/:id/edit', isRecipeCreator, [
             servings: servings || null,
             difficulty: difficulty || null,
             calories: parseInt(calories),
-            imageUrl: req.body.imageUrl || req.recipe.imageUrl
+            imageUrl: imageUrl || null  // Allow removing the image
         });
+
+        // Log the update for debugging
+        console.log('Recipe updated with image URL:', imageUrl);
 
         // Update categories if provided
         if (categories) {
             const categoryIds = Array.isArray(categories) ? categories : [categories];
             await req.recipe.setCategories(categoryIds);
-        } else {
-            await req.recipe.setCategories([]);
         }
 
         req.session.success = 'Recipe updated successfully!';
         return res.redirect(`/recipes/${req.params.id}`);
-
     } catch (error) {
-        console.error('Error updating recipe:', error);
-        req.session.error = 'Error updating recipe';
+        console.error('Error details:', error);
+        req.session.error = error.message || 'Error updating recipe';
         return res.redirect(`/recipes/${req.params.id}/edit`);
     }
 }));

@@ -1,0 +1,25 @@
+<form action="/login" method="POST" class="needs-validation" novalidate>
+    <% if (error) { %>
+        <div class="alert alert-danger">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <div class="mb-3">
+        <label for="login" class="form-label">Email or Username</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="login" 
+            name="login" 
+            required 
+            placeholder="Enter your email or username"
+            value="<%= locals.formData ? formData.email : '' %>"
+        >
+        <div class="invalid-feedback">
+            Please enter your email or username
+        </div>
+    </div>
+
+    <!-- Rest of the form... -->
+</form> 

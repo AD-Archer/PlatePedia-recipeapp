@@ -24,7 +24,7 @@ router.get('/edit', asyncHandler(async (req, res) => {
 }));
 
 // Handle profile update
-router.post('/edit', [
+router.post('/edit', isAuthenticated, [
     body('username')
         .trim()
         .isLength({ min: 3, max: 30 })
@@ -60,8 +60,13 @@ router.post('/edit', [
         .withMessage('Bio must not exceed 500 characters'),
     body('profileImage')
         .optional({ checkFalsy: true })
-        .isURL()
-        .withMessage('Please enter a valid URL for profile image')
+        .trim()
+        .custom((value) => {
+            if (value && !value.match(/^https?:\/\/.+/i)) {
+                throw new Error('Profile image must be a valid URL starting with http:// or https://');
+            }
+            return true;
+        }),
 ], asyncHandler(async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -115,7 +120,7 @@ router.post('/edit', [
             email: req.body.email,
             password: req.body.password || user.password,
             bio: req.body.bio,
-            profileImage: req.body.profileImage
+            profileImage: req.body.profileImage || user.profileImage
         });
 
         // Update session data
@@ -130,7 +135,7 @@ router.post('/edit', [
         res.redirect('/profile');
     } catch (error) {
         console.error('Profile update error:', error);
-        req.session.error = 'Error updating profile';
+        req.session.error = error.message || 'Error updating profile';
         res.redirect('/profile/edit');
     }
 }));

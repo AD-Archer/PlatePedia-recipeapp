@@ -34,8 +34,22 @@ Recipe.init({
         allowNull: false
     },
     imageUrl: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: DataTypes.TEXT('long'),
+        allowNull: true,
+        validate: {
+            isValidUrl: function(value) {
+                if (!value) return; // Allow null/empty
+                try {
+                    new URL(value);
+                } catch (e) {
+                    throw new Error('Please enter a valid image URL');
+                }
+            },
+            len: {
+                args: [0, 2048],
+                msg: 'Recipe image URL must be less than 2048 characters'
+            }
+        }
     },
     difficulty: {
         type: DataTypes.STRING,

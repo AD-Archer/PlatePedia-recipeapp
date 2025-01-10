@@ -5,48 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Finder - Browse Recipes</title>
     <%- include('../../partials/bootstrap') %>
+    <style>
+        /* Fix container overflow */
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Search section styling */
+        .search-section {
+            background: var(--card-background);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Filter sidebar */
+        .filters-card {
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* Recipe grid */
+        .recipe-grid {
+            gap: 1.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .search-section {
+                padding: 1rem;
+            }
+
+            .search-form {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+
+            .search-form .form-control,
+            .search-form .form-select,
+            .search-form .btn {
+                width: 100%;
+                margin: 0 0 0.5rem 0;
+            }
+
+            .filters-card {
+                position: static;
+                margin-bottom: 1.5rem;
+            }
+
+            .recipe-grid {
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <%- include('../../partials/header') %>
     
-    <div class="container py-5">
+    <div class="container py-4">
         <h1 class="mb-4">Browse Recipes</h1>
 
         <!-- Search and Filter Section -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <form class="d-flex gap-2" id="searchForm">
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        placeholder="Search recipes..." 
-                        id="searchInput"
-                        name="search"
-                        value="<%= locals.searchQuery || '' %>"
-                    >
-                    <select class="form-select w-auto" name="category" id="categoryFilter">
-                        <option value="">All Categories</option>
-                        <% categories.forEach(category => { %>
-                            <option 
-                                value="<%= category.id %>" 
-                                <%= locals.selectedCategory == category.id ? 'selected' : '' %>
-                            >
-                                <%= category.name %>
-                            </option>
-                        <% }) %>
-                    </select>
-                    <select class="form-select w-auto" name="difficulty" id="difficultyFilter">
-                        <option value="">All Difficulties</option>
-                        <option value="easy" <%= locals.selectedDifficulty === 'easy' ? 'selected' : '' %>>Easy</option>
-                        <option value="medium" <%= locals.selectedDifficulty === 'medium' ? 'selected' : '' %>>Medium</option>
-                        <option value="hard" <%= locals.selectedDifficulty === 'hard' ? 'selected' : '' %>>Hard</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
-                </form>
+        <div class="row g-4">
+            <div class="col-lg-9 order-lg-2">
+                <!-- Search Form -->
+                <div class="search-section mb-4">
+                    <form class="search-form d-flex flex-wrap gap-2" id="searchForm">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            placeholder="Search recipes..." 
+                            id="searchInput"
+                            name="search"
+                            value="<%= locals.searchQuery || '' %>"
+                        >
+                        <select class="form-select" name="category" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <% categories.forEach(category => { %>
+                                <option 
+                                    value="<%= category.id %>" 
+                                    <%= locals.selectedCategory == category.id ? 'selected' : '' %>
+                                >
+                                    <%= category.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                        <select class="form-select" name="difficulty" id="difficultyFilter">
+                            <option value="">All Difficulties</option>
+                            <option value="easy" <%= locals.selectedDifficulty === 'easy' ? 'selected' : '' %>>Easy</option>
+                            <option value="medium" <%= locals.selectedDifficulty === 'medium' ? 'selected' : '' %>>Medium</option>
+                            <option value="hard" <%= locals.selectedDifficulty === 'hard' ? 'selected' : '' %>>Hard</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+                    </form>
+                </div>
+
+                <!-- Results Grid -->
+                <div class="recipe-grid row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                    <% recipes.forEach(recipe => { %>
+                        <%- include('../../partials/recipeCard', { recipe: recipe }) %>
+                    <% }) %>
+                </div>
+
+                <% if (recipes.length === 0) { %>
+                    <div class="text-center py-5">
+                        <h3>No recipes found</h3>
+                        <p class="text-muted">Try adjusting your search criteria</p>
+                    </div>
+                <% } %>
             </div>
-            <div class="col-md-3">
-                <div class="card mb-4">
+
+            <div class="col-lg-3 order-lg-1">
+                <div class="card filters-card">
                     <div class="card-body">
                         <h5 class="card-title">Filters</h5>
                         <form action="/recipes/browse" method="GET">
@@ -54,83 +128,42 @@
                                 <label class="form-label">Meal Types</label>
                                 <div class="d-flex flex-wrap gap-2">
                                     <% categories.filter(cat => cat.type === 'meal').forEach(category => { %>
-                                         <div class="form-check">
-                                             <input class="form-check-input" type="checkbox" 
-                                                    name="tags[]" value="<%= category.name %>" 
-                                                    id="tag<%= category.name %>"
-                                                    <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
-                                             <label class="form-check-label" for="tag<%= category.name %>">
-                                                 <%= category.name %>
-                                             </label>
-                                         </div>
-                                     <% }); %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>"
+                                                   <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Main Ingredients</label>
                                 <div class="d-flex flex-wrap gap-2">
                                     <% categories.filter(cat => cat.type === 'ingredient').forEach(category => { %>
-                                         <div class="form-check">
-                                             <input class="form-check-input" type="checkbox" 
-                                                    name="tags[]" value="<%= category.name %>" 
-                                                    id="tag<%= category.name %>"
-                                                    <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
-                                             <label class="form-check-label" for="tag<%= category.name %>">
-                                                 <%= category.name %>
-                                             </label>
-                                         </div>
-                                     <% }); %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="tags[]" value="<%= category.name %>" 
+                                                   id="tag<%= category.name %>"
+                                                   <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
+                                            <label class="form-check-label" for="tag<%= category.name %>">
+                                                <%= category.name %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
                                 </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Results Section -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="recipeGrid">
-            <% recipes.forEach(recipe => { %>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <% if (recipe.imageUrl) { %>
-                            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
-                        <% } %>
-                        <div class="card-body">
-                            <h5 class="card-title"><%= recipe.title %></h5>
-                            <p class="card-text text-muted">By <%= recipe.author.username %></p>
-                            
-                            <% if (recipe.categories && recipe.categories.length > 0) { %>
-                                <div class="mb-2">
-                                    <% recipe.categories.forEach(category => { %>
-                                        <span class="badge bg-secondary me-1"><%= category.name %></span>
-                                    <% }) %>
-                                </div>
-                            <% } %>
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="badge bg-info"><%= recipe.calories %> calories</span>
-                                    <% if (recipe.difficulty) { %>
-                                        <span class="badge bg-<%= recipe.difficulty === 'easy' ? 'success' : (recipe.difficulty === 'medium' ? 'warning' : 'danger') %>">
-                                            <%= recipe.difficulty %>
-                                        </span>
-                                    <% } %>
-                                </div>
-                                <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <% }) %>
-        </div>
-
-        <% if (recipes.length === 0) { %>
-            <div class="text-center py-5">
-                <h3>No recipes found</h3>
-                <p class="text-muted">Try adjusting your search criteria</p>
-            </div>
-        <% } %>
     </div>
 
     <%- include('../../partials/footer') %>

@@ -26,6 +26,9 @@ body {
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 .container {
@@ -67,14 +70,14 @@ body {
   border: none;
   border-radius: var(--border-radius);
   background: var(--card-background);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0,0,0,0.1);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
 .card:hover {
   transform: translateY(-6px) scale(1.01);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.15);
 }
 
 /* Category Cards */
@@ -128,6 +131,7 @@ body {
 .recipe-card {
   border-radius: var(--border-radius-sm);
   background: white;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
 .recipe-card .card-img-top {
@@ -395,4 +399,110 @@ body {
 .page-content {
   padding-top: 2rem;
   padding-bottom: 4rem;
+} 
+
+/* Dashboard Mobile Optimizations */
+@media (max-width: 768px) {
+  /* Welcome Section */
+  .welcome-section {
+    padding: 2rem 0;
+  }
+  
+  .welcome-section .display-4 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .welcome-section .lead {
+    font-size: 1rem;
+  }
+
+  /* Category Cards */
+  .category-card {
+    height: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .category-card .card-body {
+    padding: 0.75rem;
+  }
+
+  .category-card .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .category-card .recipe-count {
+    font-size: 0.8rem;
+  }
+
+  /* Section Spacing */
+  section {
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Grid Adjustments */
+  .row-cols-md-3 {
+    --bs-gutter-x: 0.75rem;
+  }
+
+  /* Recipe Cards */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  /* Button Groups */
+  .welcome-section .btn {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .welcome-section .ms-2 {
+    margin-left: 0 !important;
+  }
+} 
+
+/* Fix container padding on mobile */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+        max-width: 100%;
+    }
+
+    /* Fix welcome section margin */
+    .welcome-section {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    /* Ensure all rows don't overflow */
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+} 
+
+/* Search section styling */
+.search-section {
+    background: var(--card-background);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Filter sidebar */
+.filters-card {
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    border: 1px solid rgba(0,0,0,0.1);
 } 

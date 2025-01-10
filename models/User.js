@@ -63,8 +63,19 @@ User.init({
         allowNull: true
     },
     profileImage: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: DataTypes.TEXT('long'),
+        allowNull: true,
+        validate: {
+            isUrl: function(value) {
+                if (value && !value.match(/^https?:\/\/.+/i)) {
+                    throw new Error('Profile image must be a valid URL starting with http:// or https://');
+                }
+            },
+            len: {
+                args: [0, 2048],
+                msg: 'Profile image URL must be less than 2048 characters'
+            }
+        }
     },
     resetToken: {
         type: DataTypes.STRING,
