@@ -49,24 +49,19 @@
 
     <script>
         function goToProfile(username, event) {
-            // Don't navigate if they clicked the follow button
-            if (event.target.closest('button')) {
-                return;
-            }
+            if (event.target.closest('button')) return;
             window.location.href = `/users/${username}`;
         }
 
         async function toggleFollow(userId, button, event) {
-            event.stopPropagation(); // Prevent card click when following
+            event.stopPropagation();
             try {
                 const isFollowing = button.getAttribute('data-following') === 'true';
                 const method = isFollowing ? 'DELETE' : 'POST';
                 
                 const response = await fetch(`/users/${userId}/follow`, {
                     method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
                 if (response.ok) {

@@ -5,6 +5,56 @@ import { isAuthenticated } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+// Add the root users route to show all users
+router.get('/', asyncHandler(async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['id', 'username', 'profileImage'],
+            include: [{
+                model: Recipe,
+                attributes: [],
+                required: false
+            }]
+        });
+
+        const enhancedUsers = await Promise.all(users.map(async (user) => {
+            const recipeCount = await Recipe.count({
+                where: { userId: user.id }
+            });
+
+            let isFollowing = false;
+            if (req.session.user && req.session.user.id !== user.id) {
+                const userFollows = await User.findOne({
+                    where: { 
+                        id: req.session.user.id,
+                        '$followedUsers.id$': user.id 
+                    },
+                    include: [{
+                        model: User,
+                        as: 'followedUsers'
+                    }]
+                });
+                isFollowing = !!userFollows;
+            }
+
+            return {
+                ...user.toJSON(),
+                recipeCount,
+                isFollowing
+            };
+        }));
+
+        return res.render('pages/users/index', {
+            users: enhancedUsers,
+            user: req.session.user
+        });
+    } catch (error) {
+        console.error('Error loading users:', error);
+        req.flash('error', 'Error loading users');
+        return res.redirect('/');
+    }
+}));
+
 // View user profile by username
 router.get('/:username', asyncHandler(async (req, res) => {
     const username = req.params.username;

@@ -16,12 +16,7 @@ router.get('/', asyncHandler(async (req, res) => {
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['id', 'username', 'profileImage']
-                },
-                {
-                    model: Category,
-                    as: 'categories',
-                    through: { attributes: [] }
+                    attributes: ['username', 'profileImage']
                 }
             ],
             order: [['createdAt', 'DESC']],
@@ -36,12 +31,7 @@ router.get('/', asyncHandler(async (req, res) => {
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['id', 'username', 'profileImage']
-                },
-                {
-                    model: Category,
-                    as: 'categories',
-                    through: { attributes: [] }
+                    attributes: ['username', 'profileImage']
                 }
             ],
             order: [['createdAt', 'DESC']],
@@ -103,29 +93,20 @@ router.get('/', asyncHandler(async (req, res) => {
             suggestedUsers = suggestedUsers.map(user => user.get({ plain: true }));
         }
 
-        try {
-            const latestRecipesWithStatus = await addSavedStatus(latestRecipes, req.session.user?.id);
-            const popularRecipesWithStatus = await addSavedStatus(popularRecipes, req.session.user?.id);
+        // Process data if user is logged in
+        const userId = req.session.user ? req.session.user.id : null;
+        const latestRecipesWithStatus = userId ? await addSavedStatus(latestRecipes, userId) : latestRecipes;
+        const popularRecipesWithStatus = userId ? await addSavedStatus(popularRecipes, userId) : popularRecipes;
 
-            res.render('pages/dashboard', {
-                latestRecipes: latestRecipesWithStatus,
-                popularRecipes: popularRecipesWithStatus,
-                groupedCategories,
-                suggestedUsers,
-                error: req.session.error,
-                success: req.session.success
-            });
-        } catch (error) {
-            console.error('Error processing recipes:', error);
-            res.render('pages/dashboard', {
-                latestRecipes: latestRecipes,
-                popularRecipes: popularRecipes,
-                groupedCategories,
-                suggestedUsers,
-                error: 'Error loading some content',
-                success: req.session.success
-            });
-        }
+        res.render('pages/dashboard', {
+            user: req.session.user,
+            latestRecipes: latestRecipesWithStatus,
+            popularRecipes: popularRecipesWithStatus,
+            groupedCategories,
+            suggestedUsers,
+            error: req.session.error,
+            success: req.session.success
+        });
 
         delete req.session.error;
         delete req.session.success;
