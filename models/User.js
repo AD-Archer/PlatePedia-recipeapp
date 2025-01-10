@@ -1,6 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
 import sequelize from '../config/db.js';
+import Recipe from './Recipe.js';
+import UserFollows from './UserFollows.js';
 
 class User extends Model {}
 
@@ -104,9 +106,7 @@ User.init({
 // Password hashing middleware
 User.beforeCreate(async (user) => {
     if (user.password) {
-        console.log('Hashing password for new user');
         user.password = await bcrypt.hash(user.password, 10);
-        console.log('Password hashed successfully');
     }
 });
 
@@ -114,6 +114,26 @@ User.beforeUpdate(async (user) => {
     if (user.changed('password')) {
         user.password = await bcrypt.hash(user.password, 10);
     }
+});
+
+// User associations
+User.hasMany(Recipe, {
+    foreignKey: 'userId',
+    as: 'userRecipes'
+});
+
+User.belongsToMany(User, {
+    through: UserFollows,
+    as: 'followers',
+    foreignKey: 'followingId',
+    otherKey: 'followerId'
+});
+
+User.belongsToMany(User, {
+    through: UserFollows,
+    as: 'following',
+    foreignKey: 'followerId',
+    otherKey: 'followingId'
 });
 
 export default User;

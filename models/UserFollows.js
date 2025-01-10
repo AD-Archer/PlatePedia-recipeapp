@@ -4,14 +4,10 @@ import sequelize from '../config/db.js';
 class UserFollows extends Model {}
 
 UserFollows.init({
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
     followerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'follower_id',
         references: {
             model: 'users',
             key: 'id'
@@ -20,6 +16,7 @@ UserFollows.init({
     followingId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'following_id',
         references: {
             model: 'users',
             key: 'id'
@@ -29,7 +26,14 @@ UserFollows.init({
     sequelize,
     modelName: 'UserFollows',
     tableName: 'user_follows',
-    timestamps: true
+    timestamps: true,
+    underscored: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['follower_id', 'following_id']
+        }
+    ]
 });
 
 export default UserFollows; 

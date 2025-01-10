@@ -1,5 +1,5 @@
 import express from 'express';
-import { Recipe, User, Category, UserFollows, SavedRecipe } from '../models/TableCreation.js';
+import { Recipe, User, Category, SavedRecipe } from '../models/TableCreation.js';
 import { body, validationResult } from 'express-validator';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
@@ -309,8 +309,8 @@ router.post('/:id/save', isAuthenticated, asyncHandler(async (req, res) => {
     try {
         const [savedRecipe, created] = await SavedRecipe.findOrCreate({
             where: {
-                userId: req.session.user.id,
-                recipeId: recipeId
+                user_id: req.session.user.id,
+                recipe_id: recipeId
             }
         });
 
@@ -335,8 +335,8 @@ router.delete('/:id/save', isAuthenticated, asyncHandler(async (req, res) => {
     try {
         const deleted = await SavedRecipe.destroy({
             where: {
-                userId: req.session.user.id,
-                recipeId: recipeId
+                user_id: req.session.user.id,
+                recipe_id: recipeId
             }
         });
 
@@ -746,15 +746,15 @@ router.post('/:id/edit', isRecipeCreator, [
     body('imageUrl')
         .optional({ checkFalsy: true })
         .trim()
-        .customSanitizer(value => value || null)  // Convert empty strings to null
 ], asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        req.session.error = errors.array()[0].msg;
-        return res.redirect(`/recipes/${req.params.id}/edit`);
-    }
-
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log('Validation errors:', errors.array());
+            req.session.error = errors.array()[0].msg;
+            return res.redirect(`/recipes/${req.params.id}/edit`);
+        }
+
         const {
             title,
             description,
@@ -768,38 +768,56 @@ router.post('/:id/edit', isRecipeCreator, [
             imageUrl
         } = req.body;
 
+        console.log('Form data received:', req.body);
+
         // Ensure ingredients is always an array and clean it
         const ingredientsArray = Array.isArray(ingredients) ? ingredients : [ingredients];
         const cleanedIngredients = ingredientsArray
             .filter(ingredient => ingredient.trim() !== '')
-            .join('\n');  // Join ingredients with newlines for storage
+            .join('\n');
 
-        // Update recipe
-        await req.recipe.update({
+        // Clean the image URL
+        let cleanedImageUrl = imageUrl ? imageUrl.trim() : null;
+        if (cleanedImageUrl === '') {
+            cleanedImageUrl = null;
+        }
+
+        // Prepare update data
+        const updateData = {
             title: title.trim(),
-            description: description ? description.trim() : null,
+            description: description ? description.trim() : '',
             ingredients: cleanedIngredients,
             instructions: instructions.trim(),
-            cookingTime: cookingTime || null,
-            servings: servings || null,
-            difficulty: difficulty || null,
+            cookingTime: cookingTime || 0,
+            servings: servings || 1,
+            difficulty: difficulty || 'easy',
             calories: parseInt(calories),
-            imageUrl: imageUrl || null  // Allow removing the image
-        });
+            imageUrl: cleanedImageUrl
+        };
 
-        // Log the update for debugging
-        console.log('Recipe updated with image URL:', imageUrl);
+        console.log('Attempting to update recipe with:', updateData);
+
+        // Update recipe using findByPk and update
+        const recipe = await Recipe.findByPk(req.recipe.id);
+        if (!recipe) {
+            throw new Error('Recipe not found');
+        }
+        
+        await recipe.update(updateData);
 
         // Update categories if provided
         if (categories) {
             const categoryIds = Array.isArray(categories) ? categories : [categories];
-            await req.recipe.setCategories(categoryIds);
+            await recipe.setCategories(categoryIds);
         }
 
+        console.log('Recipe updated successfully');
         req.session.success = 'Recipe updated successfully!';
         return res.redirect(`/recipes/${req.params.id}`);
     } catch (error) {
-        console.error('Error details:', error);
+        console.error('Error updating recipe:', error);
+        console.error('Error details:', error.message);
+        console.error('Error stack:', error.stack);
         req.session.error = error.message || 'Error updating recipe';
         return res.redirect(`/recipes/${req.params.id}/edit`);
     }
@@ -822,8 +840,8 @@ router.post('/:id/save', asyncHandler(async (req, res) => {
     try {
         const [savedRecipe, created] = await SavedRecipe.findOrCreate({
             where: {
-                userId: req.session.user.id,
-                recipeId: recipeId
+                user_id: req.session.user.id,
+                recipe_id: recipeId
             }
         });
 
@@ -847,8 +865,8 @@ router.delete('/:id/save', asyncHandler(async (req, res) => {
     try {
         const deleted = await SavedRecipe.destroy({
             where: {
-                userId: req.session.user.id,
-                recipeId: recipeId
+                user_id: req.session.user.id,
+                recipe_id: recipeId
             }
         });
 

@@ -1,72 +1,103 @@
-import express from 'express';
+import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
-import { User } from '../models/TableCreation.js';
-import { asyncHandler } from '../middleware/errorHandler.js';
-import { isAuthenticated } from '../middleware/authMiddleware.js';
 import bcrypt from 'bcrypt';
-import { Recipe } from '../models/TableCreation.js';
+import User from '../models/User.js';
+import Recipe from '../models/Recipe.js';
+import { isAuthenticated } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 
-const router = express.Router();
+const router = Router();
 
-// Middleware to ensure user is authenticated
-router.use(isAuthenticated);
+// View profile
+router.get('/', isAuthenticated, asyncHandler(async (req, res) => {
+    try {
+        const user = await User.findByPk(req.session.user.id, {
+            include: [
+                {
+                    model: Recipe,
+                    as: 'userRecipes',
+                    limit: 6,
+                    order: [['createdAt', 'DESC']],
+                },
+                {
+                    model: User,
+                    as: 'followers'
+                },
+                {
+                    model: User,
+                    as: 'following'
+                }
+            ]
+        });
 
-// Show edit profile form
-router.get('/edit', asyncHandler(async (req, res) => {
-    const user = await User.findByPk(req.session.user.id);
-    res.render('pages/profile/edit', {
-        user,
-        error: req.session.error,
-        success: req.session.success
-    });
-    delete req.session.error;
-    delete req.session.success;
+        if (!user) {
+            req.session.error = 'User not found';
+            return res.redirect('/login');
+        }
+
+        res.render('pages/profile/profile', {
+            user,
+            currentUser: req.session.user,
+            error: req.session.error,
+            success: req.session.success
+        });
+
+        delete req.session.error;
+        delete req.session.success;
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        req.session.error = 'Error loading profile';
+        res.redirect('/dashboard');
+    }
 }));
 
-// Handle profile update
+// Show edit profile form
+router.get('/edit', isAuthenticated, asyncHandler(async (req, res) => {
+    try {
+        const user = await User.findByPk(req.session.user.id);
+        if (!user) {
+            req.session.error = 'User not found';
+            return res.redirect('/login');
+        }
+
+        res.render('pages/profile/edit', {
+            user,
+            currentUser: req.session.user,
+            error: req.session.error,
+            success: req.session.success
+        });
+
+        delete req.session.error;
+        delete req.session.success;
+    } catch (error) {
+        console.error('Error loading edit profile:', error);
+        req.session.error = 'Error loading edit profile page';
+        res.redirect('/profile');
+    }
+}));
+
+// Update profile
 router.post('/edit', isAuthenticated, [
     body('username')
         .trim()
+        .notEmpty()
+        .withMessage('Username is required')
         .isLength({ min: 3, max: 30 })
-        .withMessage('Username must be between 3 and 30 characters')
-        .matches(/^[a-zA-Z0-9_]+$/)
-        .withMessage('Username can only contain letters, numbers, and underscores')
-        .toLowerCase(),
+        .withMessage('Username must be between 3 and 30 characters'),
     body('email')
         .trim()
+        .notEmpty()
+        .withMessage('Email is required')
         .isEmail()
-        .withMessage('Please enter a valid email address')
-        .normalizeEmail(),
-    body('currentPassword')
-        .optional({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('Current password must be at least 6 characters'),
-    body('newPassword')
-        .optional({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('New password must be at least 6 characters'),
-    body('confirmPassword')
-        .optional({ checkFalsy: true })
-        .custom((value, { req }) => {
-            if (value !== req.body.newPassword) {
-                throw new Error('Password confirmation does not match new password');
-            }
-            return true;
-        }),
+        .withMessage('Invalid email address'),
     body('bio')
         .optional({ checkFalsy: true })
         .trim()
         .isLength({ max: 500 })
-        .withMessage('Bio must not exceed 500 characters'),
+        .withMessage('Bio must be less than 500 characters'),
     body('profileImage')
         .optional({ checkFalsy: true })
         .trim()
-        .custom((value) => {
-            if (value && !value.match(/^https?:\/\/.+/i)) {
-                throw new Error('Profile image must be a valid URL starting with http:// or https://');
-            }
-            return true;
-        }),
 ], asyncHandler(async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -81,46 +112,14 @@ router.post('/edit', isAuthenticated, [
             return res.redirect('/login');
         }
 
-        // Check if username or email is already taken
-        if (req.body.username !== user.username) {
-            const existingUsername = await User.findOne({
-                where: { username: req.body.username }
-            });
-            if (existingUsername) {
-                req.session.error = 'Username is already taken';
-                return res.redirect('/profile/edit');
-            }
-        }
-
-        if (req.body.email !== user.email) {
-            const existingEmail = await User.findOne({
-                where: { email: req.body.email }
-            });
-            if (existingEmail) {
-                req.session.error = 'Email is already registered';
-                return res.redirect('/profile/edit');
-            }
-        }
-
-        // Handle password change if requested
-        if (req.body.currentPassword && req.body.newPassword) {
-            const isValidPassword = await bcrypt.compare(req.body.currentPassword, user.password);
-            if (!isValidPassword) {
-                req.session.error = 'Current password is incorrect';
-                return res.redirect('/profile/edit');
-            }
-            // Hash the new password
-            const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
-            req.body.password = hashedPassword;
-        }
+        const { username, email, bio, profileImage } = req.body;
 
         // Update user data
         await user.update({
-            username: req.body.username,
-            email: req.body.email,
-            password: req.body.password || user.password,
-            bio: req.body.bio,
-            profileImage: req.body.profileImage || user.profileImage
+            username,
+            email,
+            bio: bio || null,
+            profileImage: profileImage || null
         });
 
         // Update session data
@@ -134,62 +133,10 @@ router.post('/edit', isAuthenticated, [
         req.session.success = 'Profile updated successfully';
         res.redirect('/profile');
     } catch (error) {
-        console.error('Profile update error:', error);
+        console.error('Error updating profile:', error);
         req.session.error = error.message || 'Error updating profile';
         res.redirect('/profile/edit');
     }
-}));
-
-// View profile
-router.get('/', asyncHandler(async (req, res) => {
-    const user = await User.findByPk(req.session.user.id, {
-        include: [
-            {
-                model: Recipe,
-                as: 'recipes',
-                limit: 5,
-                order: [['createdAt', 'DESC']],
-                include: [
-                    {
-                        model: User,
-                        as: 'author',
-                        attributes: ['username']
-                    }
-                ]
-            },
-            {
-                model: Recipe,
-                as: 'savedRecipes',
-                limit: 5,
-                order: [['createdAt', 'DESC']],
-                include: [
-                    {
-                        model: User,
-                        as: 'author',
-                        attributes: ['username']
-                    }
-                ]
-            },
-            {
-                model: User,
-                as: 'followers'
-            }
-        ]
-    });
-
-    if (!user) {
-        req.session.error = 'User not found';
-        return res.redirect('/login');
-    }
-
-    res.render('pages/profile', {
-        user,
-        error: req.session.error,
-        success: req.session.success
-    });
-
-    delete req.session.error;
-    delete req.session.success;
 }));
 
 export default router; 

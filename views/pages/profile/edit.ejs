@@ -18,7 +18,7 @@
                     <div class="card-body p-4">
                         <h1 class="text-center mb-4">Edit Profile</h1>
                         
-                        <form action="/profile/edit" method="POST" class="needs-validation" novalidate>
+                        <form action="/profile/edit" method="POST" class="needs-validation" id="profileForm" novalidate>
                             <!-- Profile Image -->
                             <div class="mb-4 text-center">
                                 <% if (user.profileImage) { %>
@@ -36,8 +36,39 @@
                                 
                                 <div class="mb-3">
                                     <label for="profileImage" class="form-label">Profile Image URL</label>
-                                    <input type="url" class="form-control" id="profileImage" 
-                                           name="profileImage" value="<%= user.profileImage || '' %>">
+                                    <div class="input-group">
+                                        <input 
+                                            type="url" 
+                                            class="form-control" 
+                                            id="profileImage" 
+                                            name="profileImage" 
+                                            value="<%= user.profileImage ? user.profileImage : '' %>"
+                                            placeholder="https://example.com/your-image.jpg"
+                                        >
+                                        <% if (user.profileImage) { %>
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-outline-danger" 
+                                                onclick="clearProfileImage()"
+                                                title="Remove image"
+                                            >
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                    <div class="form-text">Enter a valid image URL starting with http:// or https://</div>
+                                    <div id="profileImageFeedback" class="invalid-feedback"></div>
+                                    <% if (user.profileImage) { %>
+                                        <div class="mt-2">
+                                            <img 
+                                                src="<%= user.profileImage %>" 
+                                                alt="Current profile image" 
+                                                class="img-thumbnail" 
+                                                style="max-height: 100px;"
+                                                onerror="handleImageError(this)"
+                                            >
+                                        </div>
+                                    <% } %>
                                 </div>
                             </div>
 
@@ -122,6 +153,51 @@
                 }, false)
             })
         })()
+
+        function clearProfileImage() {
+            const input = document.getElementById('profileImage');
+            input.value = '';
+            document.getElementById('profileForm').submit();
+        }
+
+        function validateProfileImage(input) {
+            const url = input.value.trim();
+            const feedback = document.getElementById('profileImageFeedback');
+            
+            if (url && !url.match(/^https?:\/\/.+/i)) {
+                input.classList.add('is-invalid');
+                feedback.textContent = 'Please enter a valid URL starting with http:// or https://';
+                return false;
+            }
+            
+            input.classList.remove('is-invalid');
+            feedback.textContent = '';
+            return true;
+        }
+
+        function handleImageError(img) {
+            img.style.display = 'none';
+            const feedback = document.getElementById('profileImageFeedback');
+            feedback.textContent = 'Unable to load image. Please check the URL.';
+            document.getElementById('profileImage').classList.add('is-invalid');
+        }
+
+        // Update form submission handler
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            const profileImage = document.getElementById('profileImage');
+            
+            // Validate image URL if present
+            if (profileImage.value.trim() && !validateProfileImage(profileImage)) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Log form data
+            const formData = new FormData(this);
+            console.log('Form data being sent:', {
+                profileImage: formData.get('profileImage')
+            });
+        });
     </script>
 </body>
 </html> 

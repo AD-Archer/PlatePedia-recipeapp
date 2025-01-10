@@ -90,15 +90,39 @@
                             <!-- Image URL field -->
                             <div class="mb-3">
                                 <label for="imageUrl" class="form-label">Image URL</label>
-                                <input 
-                                    type="url" 
-                                    class="form-control" 
-                                    id="imageUrl" 
-                                    name="imageUrl" 
-                                    value="<%= recipe.imageUrl || '' %>"
-                                    placeholder="https://example.com/image.jpg"
-                                >
+                                <div class="input-group">
+                                    <input 
+                                        type="url" 
+                                        class="form-control" 
+                                        id="imageUrl" 
+                                        name="imageUrl" 
+                                        value="<%= recipe.imageUrl ? recipe.imageUrl : '' %>"
+                                        placeholder="https://example.com/image.jpg"
+                                    >
+                                    <% if (recipe.imageUrl) { %>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-outline-danger" 
+                                            onclick="clearImageUrl()"
+                                            title="Remove image"
+                                        >
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    <% } %>
+                                </div>
                                 <div class="form-text">Enter a valid image URL starting with http:// or https://</div>
+                                <div id="imageUrlFeedback" class="invalid-feedback"></div>
+                                <% if (recipe.imageUrl) { %>
+                                    <div class="mt-2">
+                                        <img 
+                                            src="<%= recipe.imageUrl %>" 
+                                            alt="Current recipe image" 
+                                            class="img-thumbnail" 
+                                            style="max-height: 100px;"
+                                            onerror="handleImageError(this)"
+                                        >
+                                    </div>
+                                <% } %>
                             </div>
 
                             <!-- Categories -->
@@ -136,7 +160,7 @@
     <%- include('../../partials/footer') %>
 
     <script>
-        // Same JavaScript as in create.ejs for handling ingredients
+        // Form submission handler
         document.getElementById('recipeForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -154,19 +178,20 @@
                 return;
             }
 
+            // Validate image URL if present
+            const imageUrl = document.getElementById('imageUrl');
+            if (imageUrl.value.trim() && !validateImageUrl(imageUrl)) {
+                return;
+            }
+
+            // Log form data
+            const formData = new FormData(this);
+            console.log('Form data being sent:', {
+                imageUrl: formData.get('imageUrl')
+            });
+
             // If validation passes, submit the form
             this.submit();
-        });
-
-        // Add ingredient functionality
-        document.getElementById('addIngredient').addEventListener('click', function() {
-            const ingredientDiv = document.createElement('div');
-            ingredientDiv.className = 'input-group mb-2';
-            ingredientDiv.innerHTML = `
-                <input type="text" class="form-control" name="ingredients[]" required>
-                <button type="button" class="btn btn-outline-danger remove-ingredient">Remove</button>
-            `;
-            document.getElementById('ingredientsList').appendChild(ingredientDiv);
         });
 
         // Remove ingredient functionality
@@ -180,6 +205,44 @@
                 }
             }
         });
+
+        function clearImageUrl() {
+            const input = document.getElementById('imageUrl');
+            input.value = '';
+            document.getElementById('recipeForm').submit();
+        }
+
+        function validateImageUrl(input) {
+            const url = input.value.trim();
+            const feedback = document.getElementById('imageUrlFeedback');
+            
+            if (url && !url.match(/^https?:\/\/.+/i)) {
+                input.classList.add('is-invalid');
+                feedback.textContent = 'Please enter a valid URL starting with http:// or https://';
+                return false;
+            }
+            
+            input.classList.remove('is-invalid');
+            feedback.textContent = '';
+            return true;
+        }
+
+        function handleImageError(img) {
+            img.style.display = 'none';
+            const feedback = document.getElementById('imageUrlFeedback');
+            feedback.textContent = 'Unable to load image. Please check the URL.';
+            document.getElementById('imageUrl').classList.add('is-invalid');
+        }
+
+        function addIngredient() {
+            const ingredientDiv = document.createElement('div');
+            ingredientDiv.className = 'input-group mb-2';
+            ingredientDiv.innerHTML = `
+                <input type="text" class="form-control" name="ingredients[]" required>
+                <button type="button" class="btn btn-outline-danger remove-ingredient">Remove</button>
+            `;
+            document.getElementById('ingredientsList').appendChild(ingredientDiv);
+        }
     </script>
 </body>
 </html> 

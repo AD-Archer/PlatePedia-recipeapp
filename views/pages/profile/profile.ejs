@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Profile</title>
+    <%- include('../../partials/bootstrap') %>
+    <style>
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .profile-placeholder {
+            width: 150px;
+            height: 150px;
+            background-color: #6c757d;
+        }
+        .recipe-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/header') %>
+    
+    <div class="container py-5">
+        <%- include('../../partials/alerts') %>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <!-- Profile header with edit button -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h1 class="mb-0">Profile</h1>
+                            <% if (currentUser && currentUser.id === user.id) { %>
+                                <a href="/profile/edit" class="btn btn-primary">
+                                    <i class="bi bi-pencil"></i> Edit Profile
+                                </a>
+                            <% } %>
+                        </div>
+
+                        <!-- Profile content -->
+                        <div class="text-center mb-4">
+                            <% if (user.profileImage) { %>
+                                <img src="<%= user.profileImage %>" 
+                                     alt="Profile" 
+                                     class="rounded-circle mb-3 profile-image"
+                                     onerror="this.onerror=null; this.src='/images/default-profile.png';">
+                            <% } else { %>
+                                <div class="profile-placeholder rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center">
+                                    <span class="text-white display-4">
+                                        <%= user.username.charAt(0).toUpperCase() %>
+                                    </span>
+                                </div>
+                            <% } %>
+                            
+                            <h2 class="mb-2"><%= user.username %></h2>
+                            <% if (user.bio) { %>
+                                <p class="text-muted mb-3"><%= user.bio %></p>
+                            <% } %>
+                            
+                            <div class="d-flex justify-content-center gap-3 mb-4">
+                                <div class="text-center">
+                                    <h5 class="mb-0"><%= user.userRecipes ? user.userRecipes.length : 0 %></h5>
+                                    <small class="text-muted">Recipes</small>
+                                </div>
+                                <div class="text-center">
+                                    <h5 class="mb-0"><%= user.followers ? user.followers.length : 0 %></h5>
+                                    <small class="text-muted">Followers</small>
+                                </div>
+                                <div class="text-center">
+                                    <h5 class="mb-0"><%= user.following ? user.following.length : 0 %></h5>
+                                    <small class="text-muted">Following</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recipes Section -->
+                        <div class="mt-4">
+                            <h3 class="mb-3">Recent Recipes</h3>
+                            <% if (user.userRecipes && user.userRecipes.length > 0) { %>
+                                <div class="row row-cols-1 row-cols-md-2 g-4">
+                                    <% user.userRecipes.forEach(recipe => { %>
+                                        <div class="col">
+                                            <div class="card h-100">
+                                                <% if (recipe.imageUrl) { %>
+                                                    <img src="<%= recipe.imageUrl %>" 
+                                                         class="card-img-top recipe-thumbnail" 
+                                                         alt="<%= recipe.title %>">
+                                                <% } %>
+                                                <div class="card-body">
+                                                    <h5 class="card-title"><%= recipe.title %></h5>
+                                                    <p class="card-text text-muted">
+                                                        <%= recipe.description ? recipe.description.substring(0, 100) + '...' : '' %>
+                                                    </p>
+                                                    <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <p class="text-muted">No recipes yet.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../partials/footer') %>
+</body>
+</html> 
