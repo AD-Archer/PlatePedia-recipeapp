@@ -7,10 +7,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                    <a class="nav-link" href="/users">Popular Chefs</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/recipes/browse">Browse Recipes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Dashboard</a>
                 </li>
                 <% if (locals.user) { %>
                     <li class="nav-item">
@@ -29,6 +32,7 @@
                             Welcome, <%= user.username %>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/users">Chefs</a></li>
                             <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
                             <li><a class="dropdown-item" href="/users/<%= user.username %>">Profile</a></li>
                             <li><a class="dropdown-item" href="/recipes/my-recipes">My Recipes</a></li>
@@ -44,6 +48,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/signup">Sign Up</a>
                     </li>
+                    
                 <% } %>
             </ul>
         </div>

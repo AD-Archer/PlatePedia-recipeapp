@@ -16,7 +16,12 @@ router.get('/', asyncHandler(async (req, res) => {
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['username', 'profileImage']
+                    attributes: ['id', 'username', 'profileImage']
+                },
+                {
+                    model: Category,
+                    as: 'categories',
+                    through: { attributes: [] }
                 }
             ],
             order: [['createdAt', 'DESC']],
@@ -31,7 +36,12 @@ router.get('/', asyncHandler(async (req, res) => {
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['username', 'profileImage']
+                    attributes: ['id', 'username', 'profileImage']
+                },
+                {
+                    model: Category,
+                    as: 'categories',
+                    through: { attributes: [] }
                 }
             ],
             order: [['createdAt', 'DESC']],

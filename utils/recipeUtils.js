@@ -1,31 +1,31 @@
 import { SavedRecipe } from '../models/TableCreation.js';
 
-export const addSavedStatus = async (recipes, userId) => {
-    if (!recipes || !userId) {
-        return recipes;
-    }
-
+export async function addSavedStatus(recipes, userId) {
     try {
-        // Convert recipes to plain objects if they're Sequelize instances
-        const plainRecipes = recipes.map(recipe => 
-            recipe.toJSON ? recipe.toJSON() : recipe
-        );
-
         // Get all saved recipe IDs for this user
         const savedRecipes = await SavedRecipe.findAll({
-            where: { userId },
-            attributes: ['recipeId']
+            where: { 
+                user_id: userId 
+            },
+            attributes: ['recipe_id']
         });
 
-        const savedRecipeIds = new Set(savedRecipes.map(sr => sr.recipeId));
+        const savedRecipeIds = savedRecipes.map(sr => sr.recipe_id);
 
         // Add isSaved property to each recipe
-        return plainRecipes.map(recipe => ({
-            ...recipe,
-            isSaved: savedRecipeIds.has(recipe.id)
-        }));
+        if (Array.isArray(recipes)) {
+            return recipes.map(recipe => ({
+                ...recipe,
+                isSaved: savedRecipeIds.includes(recipe.id)
+            }));
+        } else {
+            return {
+                ...recipes,
+                isSaved: savedRecipeIds.includes(recipes.id)
+            };
+        }
     } catch (error) {
         console.error('Error adding saved status:', error);
-        return recipes;
+        return recipes; // Return original recipes if there's an error
     }
-}; 
+} 
