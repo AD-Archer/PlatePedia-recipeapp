@@ -40,6 +40,12 @@
                             </div>
                         </div>
 
+                        <!-- Share Button -->
+                        <div class="mb-4">
+                            <h5>Share this Recipe</h5>
+                            <button class="btn btn-outline-primary" onclick="sharePageOrCopyLink('<%= recipe.url %>')">Share Page Link</button>
+                        </div>
+
                         <% if (recipe.description) { %>
                             <p class="card-text mb-4"><%= recipe.description %></p>
                         <% } %>
@@ -105,6 +111,31 @@
                 </div>
             </div>
         </div>
+        
+        <% if (recipe.image || recipe.youtubeLink) { %>
+            <% if (recipe.youtubeLink) { %>
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto text-center">
+                        <h5>Watch the Video</h5>
+                        <iframe width="560" height="315" src="<%= recipe.youtubeLink.replace('watch?v=', 'embed/') %>" frameborder="0" allowfullscreen style="margin: auto;"></iframe>
+                    </div>
+                </div>
+            <% } else if (recipe.image) { %>
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <h5>Recipe Image</h5>
+                        <img src="<%= recipe.image %>" class="img-fluid" alt="Recipe Image">
+                    </div>
+                </div>
+            <% } %>
+        <% } else { %>
+            <div class="row mb-4">
+                <div class="col-md-8 mx-auto">
+                    <h5>No Video or Image Available</h5>
+                    <img src="https://as2.ftcdn.net/v2/jpg/02/51/95/53/1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg" class="img-fluid" alt="Default Image">
+                </div>
+            </div>
+        <% } %>
     </div>
 
     <%- include('../../partials/footer') %>
@@ -154,8 +185,28 @@
                 alert('Error updating save status');
             }
         }
+
+        function sharePageOrCopyLink(url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: 'Check out this page!',
+                    url: url
+                }).then(() => {
+                    console.log('Page link shared successfully!');
+                }).catch(err => {
+                    console.error('Error sharing the link: ', err);
+                });
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Page link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            }
+        }
     </script>
 
     <script src="/js/followToggle.js"></script>
 </body>
-</html> 
+</html>

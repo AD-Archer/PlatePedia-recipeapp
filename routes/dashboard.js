@@ -2,7 +2,7 @@ import express from 'express';
 import { Recipe, User, Category } from '../models/TableCreation.js';
 import { Op } from 'sequelize';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { getDb } from '../config/db.js';
+import sequelize from '../config/db.js';
 import { addSavedStatus } from '../utils/recipeUtils.js';
 
 const router = express.Router();
@@ -98,7 +98,6 @@ router.get('/', async (req, res) => {
         const latestRecipes = allRecipes.slice(0, 8);
 
         // Fetch categories with recipe counts
-        const sequelize = await getDb();
         const categories = await Category.findAll({
             attributes: {
                 include: [

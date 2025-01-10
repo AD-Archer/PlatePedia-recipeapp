@@ -7,7 +7,7 @@ import path from 'path';
 import 'dotenv/config';
 import session from 'express-session';
 import { errorHandler, storePreviousUrl } from './middleware/errorHandler.js';
-import { getDb } from './config/db.js';
+import sequelize from './config/db.js';
 import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
 import flash from 'connect-flash';

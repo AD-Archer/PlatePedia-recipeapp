@@ -79,6 +79,17 @@ Recipe.init({
             model: 'users',
             key: 'id'
         }
+    },
+    youtubeLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            isUrl: true, // Ensure the value is a valid URL
+            len: {
+                args: [0, 2048],
+                msg: 'YouTube link must be less than 2048 characters'
+            }
+        }
     }
 }, {
     sequelize,

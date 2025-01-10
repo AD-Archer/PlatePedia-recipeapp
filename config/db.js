@@ -6,38 +6,19 @@ import the packages
 
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import pg from 'pg';
 
 dotenv.config();
 
-const dbUrl = process.env.DATABASE_URL;
-if (!dbUrl) {
-    throw new Error('DATABASE_URL environment variable is not set');
-}
-
-const sequelize = new Sequelize(dbUrl, {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    dialectModule: pg,
-    ssl: true,
+    protocol: 'postgres',
+    logging: false, // Disable logging; default: console.log
     dialectOptions: {
         ssl: {
             require: true,
-            rejectUnauthorized: false
+            rejectUnauthorized: false // This is necessary for some cloud providers
         }
     }
 });
 
-
-export const getDb = () => {
-    if (!sequelize) {
-        sequelize = new Sequelize(process.env.DATABASE_URL, {
-            dialect: 'postgres',
-            protocol: 'postgres',
-            logging: false, // Disable logging; default: console.log
-        });
-    }
-    return sequelize;
-};
-
-export { sequelize };
 export default sequelize;

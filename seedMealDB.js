@@ -11,13 +11,13 @@ import { Recipe, User, Category, RecipeCategory } from './models/TableCreation.j
 import sequelize from './config/db.js';
 import { fileURLToPath } from 'url';
 
-async function fetchRecipesByLetter(letter) {
+async function fetchAllMeals() {
     try {
-        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
+        const response = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=');
         const data = await response.json();
         return data.meals || [];
     } catch (error) {
-        console.error(`Error fetching recipes for letter ${letter}:`, error);
+        console.error('Error fetching all meals:', error);
         return [];
     }
 }
@@ -35,88 +35,84 @@ async function seedMealDB() {
             }
         });
 
-        // Fetch recipes for each letter of the alphabet
-        const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        console.log('Fetching all meals...');
+        const meals = await fetchAllMeals();
         let totalRecipes = 0;
 
-        for (const letter of alphabet) {
-            console.log(`Fetching recipes starting with '${letter}'...`);
-            const meals = await fetchRecipesByLetter(letter);
-            
-            for (const meal of meals) {
-                // Format ingredients and measurements into a list
-                const ingredients = [];
-                for (let i = 1; i <= 20; i++) {
-                    const ingredient = meal[`strIngredient${i}`];
-                    const measure = meal[`strMeasure${i}`];
-                    if (ingredient && ingredient.trim()) {
-                        ingredients.push(`${measure ? measure.trim() + ' ' : ''}${ingredient.trim()}`);
-                    }
+        for (const meal of meals) {
+            // Format ingredients and measurements into a list
+            const ingredients = [];
+            for (let i = 1; i <= 20; i++) {
+                const ingredient = meal[`strIngredient${i}`];
+                const measure = meal[`strMeasure${i}`];
+                if (ingredient && ingredient.trim()) {
+                    ingredients.push(`${measure ? measure.trim() + ' ' : ''}${ingredient.trim()}`);
                 }
+            }
 
-                // Estimate cooking time from instructions length
-                const instructionsLength = meal.strInstructions?.length || 0;
-                const estimatedTime = Math.max(30, Math.min(180, Math.floor(instructionsLength / 50)));
+            // Estimate cooking time from instructions length
+            const instructionsLength = meal.strInstructions?.length || 0;
+            const estimatedTime = Math.max(30, Math.min(180, Math.floor(instructionsLength / 50)));
 
-                // Estimate calories (random between 200-800 for demo)
-                const estimatedCalories = Math.floor(Math.random() * (800 - 200) + 200);
+            // Estimate calories (random between 200-800 for demo)
+            const estimatedCalories = Math.floor(Math.random() * (800 - 200) + 200);
 
-                // Create or update recipe
-                const [recipe, created] = await Recipe.findOrCreate({
-                    where: { title: meal.strMeal },
+            // Create or update recipe
+            const [recipe, created] = await Recipe.findOrCreate({
+                where: { title: meal.strMeal },
+                defaults: {
+                    userId: systemUser.id,
+                    description: `${meal.strMeal} - A delicious ${meal.strCategory} recipe from ${meal.strArea} cuisine.`,
+                    ingredients: ingredients.join('\n'),
+                    instructions: meal.strInstructions,
+                    imageUrl: meal.strMealThumb,
+                    cookingTime: estimatedTime,
+                    servings: 4,
+                    difficulty: instructionsLength > 1000 ? 'hard' : instructionsLength > 500 ? 'medium' : 'easy',
+                    calories: estimatedCalories,
+                    youtubeLink: meal.strYoutube // Add YouTube link
+                }
+            });
+
+            // Handle categories
+            if (meal.strCategory) {
+                const [category] = await Category.findOrCreate({
+                    where: { name: meal.strCategory },
                     defaults: {
-                        userId: systemUser.id,
-                        description: `${meal.strMeal} - A delicious ${meal.strCategory} recipe from ${meal.strArea} cuisine.`,
-                        ingredients: ingredients.join('\n'),
-                        instructions: meal.strInstructions,
-                        imageUrl: meal.strMealThumb,
-                        cookingTime: estimatedTime,
-                        servings: 4,
-                        difficulty: instructionsLength > 1000 ? 'hard' : instructionsLength > 500 ? 'medium' : 'easy',
-                        calories: estimatedCalories
+                        type: 'meal',
+                        imageUrl: `https://www.themealdb.com/images/category/${meal.strCategory.toLowerCase()}.png`
                     }
                 });
 
-                // Handle categories
-                if (meal.strCategory) {
-                    const [category] = await Category.findOrCreate({
-                        where: { name: meal.strCategory },
-                        defaults: {
-                            type: 'meal',
-                            imageUrl: `https://www.themealdb.com/images/category/${meal.strCategory.toLowerCase()}.png`
-                        }
-                    });
-
-                    // Link recipe to category
-                    await RecipeCategory.findOrCreate({
-                        where: {
-                            recipeId: recipe.id,
-                            categoryId: category.id
-                        }
-                    });
-                }
-
-                // Add area as a category if it exists
-                if (meal.strArea) {
-                    const [areaCategory] = await Category.findOrCreate({
-                        where: { name: meal.strArea },
-                        defaults: {
-                            type: 'cuisine',
-                            imageUrl: `https://www.themealdb.com/images/category/miscellaneous.png`
-                        }
-                    });
-
-                    await RecipeCategory.findOrCreate({
-                        where: {
-                            recipeId: recipe.id,
-                            categoryId: areaCategory.id
-                        }
-                    });
-                }
-
-                totalRecipes++;
-                console.log(`${created ? 'Created' : 'Updated'} recipe: ${recipe.title}`);
+                // Link recipe to category
+                await RecipeCategory.findOrCreate({
+                    where: {
+                        recipeId: recipe.id,
+                        categoryId: category.id
+                    }
+                });
             }
+
+            // Add area as a category if it exists
+            if (meal.strArea) {
+                const [areaCategory] = await Category.findOrCreate({
+                    where: { name: meal.strArea },
+                    defaults: {
+                        type: 'cuisine',
+                        imageUrl: `https://www.themealdb.com/images/category/miscellaneous.png`
+                    }
+                });
+
+                await RecipeCategory.findOrCreate({
+                    where: {
+                        recipeId: recipe.id,
+                        categoryId: areaCategory.id
+                    }
+                });
+            }
+
+            totalRecipes++;
+            console.log(`${created ? 'Created' : 'Updated'} recipe: ${recipe.title}`);
         }
 
         console.log(`MealDB seed completed successfully. Total recipes: ${totalRecipes}`);
