@@ -79,14 +79,23 @@
                             <div class="row row-cols-1 row-cols-md-2 g-4">
                                 <% recipes.forEach(recipe => { %>
                                     <div class="col">
-                                        <div class="card h-100">
+                                        <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe(<%= recipe.id %>, event)">
                                             <% if (recipe.imageUrl) { %>
                                                 <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
                                             <% } %>
                                             <div class="card-body">
                                                 <h5 class="card-title"><%= recipe.title %></h5>
                                                 <p class="card-text"><%= recipe.description %></p>
-                                                <a href="/recipes/<%= recipe.id %>" class="btn btn-primary">View Recipe</a>
+                                                <% if (user && user.id !== recipe.userId) { %>
+                                                    <button 
+                                                        class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
+                                                        onclick="toggleSave(<%= recipe.id %>, this, event)"
+                                                        data-saved="<%= recipe.isSaved %>"
+                                                    >
+                                                        <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
+                                                        <%= recipe.isSaved ? 'Saved' : 'Save' %>
+                                                    </button>
+                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
@@ -102,5 +111,43 @@
     </div>
 
     <script src="/js/followToggle.js"></script>
+    <script>
+        function goToRecipe(recipeId, event) {
+            // Don't navigate if they clicked the save button
+            if (event.target.closest('button')) {
+                return;
+            }
+            window.location.href = `/recipes/${recipeId}`;
+        }
+
+        async function toggleSave(recipeId, button, event) {
+            event.stopPropagation(); // Prevent card click when saving
+            try {
+                const isSaved = button.getAttribute('data-saved') === 'true';
+                const response = await fetch(`/recipes/${recipeId}/save`, {
+                    method: isSaved ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    button.setAttribute('data-saved', !isSaved);
+                    button.innerHTML = isSaved ? 
+                        '<i class="bi bi-bookmark"></i> Save' : 
+                        '<i class="bi bi-bookmark-fill"></i> Saved';
+                    button.classList.toggle('btn-outline-primary');
+                    button.classList.toggle('btn-primary');
+                } else {
+                    alert(data.error || 'Error updating save status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating save status');
+            }
+        }
+    </script>
 </body>
 </html> 

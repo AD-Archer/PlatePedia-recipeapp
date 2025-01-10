@@ -14,67 +14,75 @@
 
         <h1 class="mb-4">Popular Chefs</h1>
         
-        <div class="row g-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
             <% users.forEach(user => { %>
-                <div class="col-md-3">
-                    <div class="card h-100">
+                <div class="col">
+                    <div class="card h-100" style="cursor: pointer;" onclick="goToProfile('<%= user.username %>', event)">
                         <div class="card-body text-center">
                             <% if (user.profileImage) { %>
-                                <img src="<%= user.profileImage %>" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                <img src="<%= user.profileImage %>" class="rounded-circle mb-3" width="100" height="100">
                             <% } else { %>
-                                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                                    <i class="bi bi-person-circle fs-1"></i>
+                                <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                                    <i class="bi bi-person-fill text-white" style="font-size: 3rem;"></i>
                                 </div>
                             <% } %>
-                            
-                            <h5 class="card-title">
-                                <a href="/users/<%= user.username %>" class="text-decoration-none">
-                                    <%= user.username %>
-                                </a>
-                            </h5>
-                            
-                            <p class="text-muted mb-3"><%= user.recipeCount || 0 %> recipes</p>
+                            <h5 class="card-title mb-3"><%= user.username %></h5>
+                            <p class="text-muted mb-3"><%= user.recipeCount %> recipes</p>
                             
                             <% if (locals.user && locals.user.id !== user.id) { %>
                                 <button 
-                                    class="btn btn-<%= user.isFollowing ? 'outline-' : '' %>primary btn-sm follow-btn" 
-                                    onclick="toggleFollow('<%= user.username %>', this)"
+                                    class="btn <%= user.isFollowing ? 'btn-secondary' : 'btn-primary' %>"
+                                    onclick="toggleFollow('<%= user.id %>', this, event)"
                                     data-following="<%= user.isFollowing %>">
-                                    <%= user.isFollowing ? 'Unfollow' : 'Follow' %>
+                                    <i class="bi bi-person<%= user.isFollowing ? '-check' : '-plus' %>"></i>
+                                    <%= user.isFollowing ? 'Following' : 'Follow' %>
                                 </button>
                             <% } %>
                         </div>
                     </div>
                 </div>
-            <% }) %>
+            <% }); %>
         </div>
     </div>
 
     <%- include('../../partials/footer') %>
 
     <script>
-        async function toggleFollow(username, button) {
-            const isFollowing = button.getAttribute('data-following') === 'true';
+        function goToProfile(username, event) {
+            // Don't navigate if they clicked the follow button
+            if (event.target.closest('button')) {
+                return;
+            }
+            window.location.href = `/users/${username}`;
+        }
+
+        async function toggleFollow(userId, button, event) {
+            event.stopPropagation(); // Prevent card click when following
             try {
-                const response = await fetch(`/users/${username}/follow`, {
-                    method: isFollowing ? 'DELETE' : 'POST',
+                const isFollowing = button.getAttribute('data-following') === 'true';
+                const method = isFollowing ? 'DELETE' : 'POST';
+                
+                const response = await fetch(`/users/${userId}/follow`, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
+
+                if (response.ok) {
                     button.setAttribute('data-following', !isFollowing);
-                    button.textContent = isFollowing ? 'Follow' : 'Unfollow';
-                    button.className = `btn btn-${isFollowing ? '' : 'outline-'}primary btn-sm follow-btn`;
+                    button.innerHTML = isFollowing ? 
+                        '<i class="bi bi-person-plus"></i> Follow' : 
+                        '<i class="bi bi-person-check"></i> Following';
+                    button.classList.toggle('btn-primary');
+                    button.classList.toggle('btn-secondary');
                 } else {
-                    alert(data.error || 'Error updating follow status');
+                    const data = await response.json();
+                    alert(data.error || 'Error toggling follow status');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error updating follow status');
+                alert('Error toggling follow status');
             }
         }
     </script>
