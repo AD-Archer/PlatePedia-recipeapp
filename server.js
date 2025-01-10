@@ -10,6 +10,7 @@ import { getDb } from './config/db.js';
 import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
 import { Sequelize } from 'sequelize';
+import flash from 'connect-flash';
 
 
 // Import routes
@@ -98,6 +99,17 @@ app.use(session({
     },
     store: new session.MemoryStore()
 }));
+
+// Flash messages middleware
+app.use(flash());
+
+// Middleware to set flash messages in response locals
+app.use((req, res, next) => {
+    res.locals.error = req.flash('error');
+    res.locals.success = req.flash('success');
+    res.locals.user = req.session.user; // Ensure user is available in all views
+    next();
+});
 
 // User and flash message middleware
 app.use((req, res, next) => {

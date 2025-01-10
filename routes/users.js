@@ -1,58 +1,69 @@
 import express from 'express';
-import { User, Recipe, Category } from '../models/TableCreation.js';
+import { User, Recipe, UserFollows } from '../models/TableCreation.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
+import { Op, Sequelize } from 'sequelize';
 
 const router = express.Router();
 
-// Add the root users route to show all users
+// Show all users/suggested users page - Public access
 router.get('/', asyncHandler(async (req, res) => {
-    try {
-        const users = await User.findAll({
-            attributes: ['id', 'username', 'profileImage'],
-            include: [{
-                model: Recipe,
-                attributes: [],
-                required: false
-            }]
-        });
+    // First, get recipe counts for all users
+    const userRecipeCounts = await User.findAll({
+        attributes: [
+            'id',
+            'username',
+            'profileImage',
+            [Sequelize.fn('COUNT', Sequelize.col('recipes.id')), 'recipe_count']
+        ],
+        include: [{
+            model: Recipe,
+            as: 'recipes',
+            attributes: [],
+            required: false
+        }],
+        group: ['User.id'],
+        order: [[Sequelize.literal('recipe_count'), 'DESC']],
+        raw: true
+    });
 
-        const enhancedUsers = await Promise.all(users.map(async (user) => {
-            const recipeCount = await Recipe.count({
-                where: { userId: user.id }
-            });
-
-            let isFollowing = false;
-            if (req.session.user && req.session.user.id !== user.id) {
-                const userFollows = await User.findOne({
-                    where: { 
-                        id: req.session.user.id,
-                        '$followedUsers.id$': user.id 
-                    },
-                    include: [{
-                        model: User,
-                        as: 'followedUsers'
-                    }]
-                });
-                isFollowing = !!userFollows;
+    // Then, get follow status for logged-in user
+    const users = await User.findAll({
+        where: {
+            id: {
+                [Op.in]: userRecipeCounts.map(u => u.id)
             }
+        },
+        include: [{
+            model: User,
+            as: 'followers',
+            where: req.session.user ? { id: req.session.user.id } : {},
+            required: false
+        }],
+        limit: 20
+    });
 
-            return {
-                ...user.toJSON(),
-                recipeCount,
-                isFollowing
-            };
-        }));
+    // Combine the data
+    const usersWithFollowStatus = users.map(user => {
+        const recipeCount = userRecipeCounts.find(u => u.id === user.id)?.recipe_count || 0;
+        return {
+            ...user.toJSON(),
+            isFollowing: req.session.user ? 
+                user.followers.some(follower => follower.id === req.session.user.id) : 
+                false,
+            recipeCount: parseInt(recipeCount)
+        };
+    });
 
-        return res.render('pages/users/index', {
-            users: enhancedUsers,
-            user: req.session.user
-        });
-    } catch (error) {
-        console.error('Error loading users:', error);
-        req.flash('error', 'Error loading users');
-        return res.redirect('/');
-    }
+    res.render('pages/users/index', {
+        users: usersWithFollowStatus,
+        user: req.session.user,
+        error: req.session.error,
+        success: req.session.success
+    });
+
+    delete req.session.error;
+    delete req.session.success;
 }));
 
 // View user profile by username
@@ -91,17 +102,13 @@ router.get('/:username', asyncHandler(async (req, res) => {
     // Check if logged-in user is following this user
     let isFollowing = false;
     if (req.session.user && req.session.user.id !== profileUser.id) {
-        const userFollows = await User.findOne({
-            where: { 
-                id: req.session.user.id,
-                '$followedUsers.id$': profileUser.id 
-            },
-            include: [{
-                model: User,
-                as: 'followedUsers'
-            }]
+        const followRelation = await UserFollows.findOne({
+            where: {
+                followerId: req.session.user.id,
+                followingId: profileUser.id
+            }
         });
-        isFollowing = !!userFollows;
+        isFollowing = !!followRelation;
     }
 
     // Get follower and following counts
@@ -150,18 +157,22 @@ router.post('/:username/follow', isAuthenticated, asyncHandler(async (req, res) 
         return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    const [userFollow] = await User.findOrCreate({
+    if (userToFollow.id === req.session.user.id) {
+        return res.status(400).json({ success: false, error: 'You cannot follow yourself' });
+    }
+
+    const [relation, created] = await UserFollows.findOrCreate({
         where: {
-            id: req.session.user.id,
-            '$followedUsers.id$': userToFollow.id
-        },
-        include: [{
-            model: User,
-            as: 'followedUsers'
-        }]
+            followerId: req.session.user.id,
+            followingId: userToFollow.id
+        }
     });
 
-    res.json({ success: true });
+    res.json({ 
+        success: true, 
+        following: true,
+        message: created ? 'Successfully followed user' : 'Already following user'
+    });
 }));
 
 router.delete('/:username/follow', isAuthenticated, asyncHandler(async (req, res) => {
@@ -173,18 +184,18 @@ router.delete('/:username/follow', isAuthenticated, asyncHandler(async (req, res
         return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    await User.destroy({
+    const deleted = await UserFollows.destroy({
         where: {
-            id: req.session.user.id,
-            '$followedUsers.id$': userToUnfollow.id
-        },
-        include: [{
-            model: User,
-            as: 'followedUsers'
-        }]
+            followerId: req.session.user.id,
+            followingId: userToUnfollow.id
+        }
     });
 
-    res.json({ success: true });
+    res.json({ 
+        success: true, 
+        following: false,
+        message: deleted ? 'Successfully unfollowed user' : 'Not following user'
+    });
 }));
 
 export default router; 

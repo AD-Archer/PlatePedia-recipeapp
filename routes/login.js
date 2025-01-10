@@ -28,6 +28,7 @@ router.post('/', asyncHandler(async (req, res) => {
         });
 
         if (!user) {
+            req.flash('error', 'Invalid username or password');
             return res.status(401).json({
                 success: false,
                 error: 'Invalid username or password'
@@ -37,6 +38,7 @@ router.post('/', asyncHandler(async (req, res) => {
         // Check password
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
+            req.flash('error', 'Invalid username or password');
             return res.status(401).json({
                 success: false,
                 error: 'Invalid username or password'
