@@ -5,9 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Finder - Dashboard</title>
     <meta name="google-adsense-account" content="ca-pub-9831610369524751">
+    <meta name="google-site-verification" content="A9Gw-kE0rnXWjdybzQ_A20xfoJXMJsib2d1uRZIiFL0" />
     <%- include('../partials/meta') %>
     <%- include('../partials/bootstrap') %>
 </head>
+<style>/* Welcome Section Styles */
+    .welcome-section {
+        background: linear-gradient(90deg, rgba(79, 172, 254, 0.8), rgba(0, 242, 254, 0.8)), 
+                    url('path/to/your/banner-image.jpg') no-repeat center center/cover; /* Adding a background image */
+        color: white; /* White text for contrast */
+        padding: 60px 20px; /* Increased padding for more space */
+        border-radius: 10px; /* Slightly rounded corners */
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow for depth */
+        text-align: center; /* Center alignment for the text */
+    }
+    
+    .welcome-section h1 {
+        font-size: 2.8rem; /* Larger font size for the title */
+        margin-bottom: 20px; /* Space below title */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Shadow effect for better visibility */
+    }
+    
+    .welcome-section p {
+        font-size: 1.2rem; /* Slightly larger font for the paragraph */
+        margin-bottom: 30px; /* Space below paragraph */
+    }
+    
+    .welcome-section .btn {
+        padding: 12px 25px; /* Increased padding for buttons */
+        font-size: 1rem; /* Font size for buttons */
+        border-radius: 25px; /* Fully rounded buttons */
+        transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for buttons */
+    }
+    
+    .welcome-section .btn-light:hover {
+        background-color: rgba(255, 255, 255, 0.8); /* A softer hover effect */
+        transform: scale(1.05); /* Slightly enlarge on hover */
+    }
+    
+    .welcome-section .btn-outline-light {
+        border: 2px solid rgba(255, 255, 255, 0.8); /* More visible outline for buttons */
+    }
+    
+    .welcome-section .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.2); /* Change background on hover */
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .welcome-section {
+            padding: 40px 10px; /* Less padding on smaller screens */
+        }
+    
+        .welcome-section h1 {
+            font-size: 2rem; /* Smaller title on mobile */
+        }
+    
+        .welcome-section p {
+            font-size: 1rem; /* Smaller paragraph font */
+        }
+    
+        .welcome-section .btn {
+            width: 100%; /* Full width buttons on mobile */
+            margin-top: 10px; /* Space between buttons */
+        }
+    }
+    </style>
 <body>
     <%- include('../partials/header') %>
 

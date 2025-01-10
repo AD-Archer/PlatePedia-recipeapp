@@ -6,12 +6,10 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import 'dotenv/config';
 import session from 'express-session';
-import UserManager from './models/User.js';
 import { errorHandler, storePreviousUrl } from './middleware/errorHandler.js';
 import { getDb } from './config/db.js';
 import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
-import { Sequelize } from 'sequelize';
 import flash from 'connect-flash';
 
 
@@ -30,37 +28,7 @@ const app = express();
 const url = "localhost" // this can be changed if you wish but for dev purposes localhost works fine
 // Initialize database and sync models
 async function initializeDatabase() {
-    try {
-        const sequelize = await getDb();
-        await sequelize.authenticate();
-        console.log('Database connection successful');
-
-        // Sync models with alter option to preserve data
-        await User.sync({ alter: true });
-        await Category.sync({ alter: true });
-        await Recipe.sync({ alter: true });
-        await RecipeCategory.sync({ alter: true });
-        await UserFollows.sync({ alter: true });
-        await SavedRecipe.sync({ alter: true });
-
-        // Keep your initial data creation logic
-        const categoryCount = await Category.count();
-        if (categoryCount === 0) {
-            // Your existing category creation code...
-            const categories = await Category.bulkCreate([
-                // Meal Types
-                { name: 'Breakfast', type: 'meal', imageUrl: 'https://www.themealdb.com/images/category/breakfast.png' },
-                { name: 'Lunch', type: 'meal', imageUrl: 'https://www.themealdb.com/images/category/miscellaneous.png' },
-                // ... rest of your categories
-            ]);
-        }
-
-        console.log('Database synchronized successfully');
-    } catch (error) {
-        console.error('Database initialization error:', error);
-        throw error;
-    }
-}
+ 
 
 // Initialize database connection for each request
 app.use(async (req, res, next) => {
@@ -69,6 +37,13 @@ app.use(async (req, res, next) => {
         const sequelize = await getDb();
         await sequelize.authenticate();
         console.log('Database connection successful');
+        // Sync models with alter option to preserve data
+        await User.sync({ alter: true });
+        await Category.sync({ alter: true });
+        await Recipe.sync({ alter: true });
+        await RecipeCategory.sync({ alter: true });
+        await UserFollows.sync({ alter: true });
+        await SavedRecipe.sync({ alter: true });
         next();
     } catch (error) {
         console.error('Database connection error:', error);
@@ -81,6 +56,7 @@ app.use(async (req, res, next) => {
         });
     }
 });
+}
 
 app.enable('trust proxy');
 
@@ -147,7 +123,6 @@ app.get('/', dashboard)
 // declaring routing from /routes
 app.use('/signup', signup); 
 app.use('/login', login); 
-app.use('/dashboard', dashboard);
 app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);

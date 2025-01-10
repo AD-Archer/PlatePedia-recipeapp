@@ -1,26 +1,29 @@
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2c3e50;">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="/">Food Finder</a>
+        <a class="navbar-brand" href="/">
+            <img src="/images/burger.png" alt="Food Finder" class="logo"> 
+            Food Finder
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/users">Popular Chefs</a>
+                    <a class="nav-link" href="/users"><i class="bi bi-person-fill"></i> Popular Chefs</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/recipes/browse">Browse Recipes</a>
+                    <a class="nav-link" href="/recipes/browse"><i class="bi bi-book"></i> Browse Recipes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Dashboard</a>
+                    <a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Dashboard</a>
                 </li>
                 <% if (locals.user) { %>
                     <li class="nav-item">
-                        <a class="nav-link" href="/recipes/my-recipes">My Recipes</a>
+                        <a class="nav-link" href="/recipes/my-recipes"><i class="bi bi-file-earmark-text"></i> My Recipes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/recipes/saved">Saved Recipes</a>
+                        <a class="nav-link" href="/recipes/saved"><i class="bi bi-bookmark-fill"></i> Saved Recipes</a>
                     </li>
                 <% } %>
             </ul>
@@ -29,56 +32,91 @@
                 <% if (user) { %>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Welcome, <%= user.username %>
+                            <i class="bi bi-person-circle"></i> Welcome, <%= user.username %>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="/users">Chefs</a></li>
-                            <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/users/<%= user.username %>">Profile</a></li>
-                            <li><a class="dropdown-item" href="/recipes/my-recipes">My Recipes</a></li>
-                            <li><a class="dropdown-item" href="/recipes/saved">Saved Recipes</a></li>
+                            <li><a class="dropdown-item" href="/users"><i class="bi bi-person"></i> Chefs</a></li>
+                            <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-grid"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/users/<%= user.username %>"><i class="bi bi-file-earmark-person"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="/recipes/my-recipes"><i class="bi bi-file-earmark-text"></i> My Recipes</a></li>
+                            <li><a class="dropdown-item" href="/recipes/saved"><i class="bi bi-bookmark-fill"></i> Saved Recipes</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-power"></i> Logout</a></li>
                         </ul>
                     </li>
                 <% } else { %>
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
+                        <a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right"></i> Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/signup">Sign Up</a>
+                        <a class="nav-link" href="/signup"><i class="bi bi-person-plus-fill"></i> Sign Up</a>
                     </li>
                 <% } %>
             </ul>
         </div>
     </div>
+    <style>/* Navbar Styles */
+        .navbar {
+            background-color: #2c3e50; /* Dark slate blue for the navbar */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+        }
+        
+        .logo {
+            width: 40px; /* Logo size */
+            margin-right: 10px; /* Space between logo and brand name */
+        }
+        
+        .navbar-brand {
+            font-weight: bold; /* Bold brand name */
+            color: #ecf0f1; /* Light gray for contrast */
+            font-size: 1.8rem; /* Larger font size for brand */
+            transition: color 0.3s; /* Smooth color transition */
+        }
+        
+        .navbar-brand:hover {
+            color: #ffeb3b; /* Change color on hover for emphasis */
+        }
+        
+        .navbar-nav .nav-link {
+            color: #bdc3c7; /* Silver color for links */
+            padding: 12px 15px; /* Padding for clickable area */
+            border-radius: 5px; /* Rounded corners for links */
+            transition: color 0.3s, background-color 0.3s; /* Smooth transitions */
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #ecf0f1; /* Light gray on hover */
+            background-color: rgba(255, 255, 255, 0.1); /* Light background on hover */
+        }
+        
+        .dropdown-menu {
+            background-color: #34495e; /* Darker slate blue for dropdown */
+            border: none; /* Remove border for a cleaner look */
+        }
+        
+        .dropdown-item {
+            color: #bdc3c7; /* Silver for dropdown items */
+            padding: 10px 15px; /* Padding for dropdown items */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+        }
+        
+        .dropdown-item:hover {
+            background-color: #2c3e50; /* Dark slate blue on hover */
+            color: #ecf0f1; /* Light gray on hover */
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.5rem; /* Smaller brand font size on mobile */
+            }
+        
+            .navbar-nav .nav-link {
+                padding: 10px; /* Reduced padding for links on mobile */
+            }
+        
+            .logo {
+                width: 30px; /* Smaller logo on mobile */
+            }
+        }</style>
 </nav>
-
-<style>
-    .navbar {
-        background-color: #2c3e50; /* Dark slate blue */
-    }
-    .navbar-brand {
-        font-weight: bold;
-        color: #ecf0f1; /* Light gray */
-    }
-    .navbar-nav .nav-link {
-        color: #bdc3c7; /* Silver */
-        transition: color 0.3s;
-    }
-    .navbar-nav .nav-link:hover {
-        color: #ecf0f1; /* Light gray */
-    }
-    .dropdown-menu {
-        background-color: #34495e; /* Darker slate blue */
-    }
-    .dropdown-item {
-        color: #bdc3c7; /* Silver */
-    }
-    .dropdown-item:hover {
-        background-color: #2c3e50; /* Dark slate blue */
-        color: #ecf0f1; /* Light gray */
-    }
-</style>
-
-  
