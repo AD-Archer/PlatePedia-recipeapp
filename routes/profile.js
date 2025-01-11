@@ -10,11 +10,6 @@ const router = express.Router();
 // View profile
 router.get('/', isAuthenticated, asyncHandler(async (req, res) => {
     try {
-        console.log('Profile route accessed:', {
-            sessionUser: req.session.user,
-            url: req.url
-        });
-
         const user = await User.findByPk(req.session.user.id, {
             include: [
                 {
@@ -22,29 +17,17 @@ router.get('/', isAuthenticated, asyncHandler(async (req, res) => {
                     as: 'userRecipes',
                     limit: 6,
                     order: [['createdAt', 'DESC']]
-                },
-                {
-                    model: User,
-                    as: 'followers'
-                },
-                {
-                    model: User,
-                    as: 'following'
                 }
             ]
         });
 
         if (!user) {
-            console.log('User not found in database');
             req.flash('error', 'User not found');
             return res.redirect('/login');
         }
 
-        const userData = user.toJSON();
-        console.log('User data:', userData);
-
         res.render('pages/profile/profile', {
-            user: userData,
+            user: user.toJSON(),
             path: '/profile'
         });
     } catch (error) {
@@ -78,28 +61,45 @@ router.get('/edit', isAuthenticated, asyncHandler(async (req, res) => {
 router.post('/edit', isAuthenticated, [
     body('username')
         .trim()
-        .notEmpty()
-        .withMessage('Username is required')
-        .isLength({ min: 3, max: 30 })
-        .withMessage('Username must be between 3 and 30 characters')
-        .matches(/^[a-zA-Z0-9_]+$/)
-        .withMessage('Username can only contain letters, numbers, and underscores'),
+        .notEmpty().withMessage('Username is required')
+        .isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters')
+        .matches(/^[a-zA-Z0-9_-]+$/).withMessage('Username can only contain letters, numbers, underscores, and hyphens')
+        .custom(async (value, { req }) => {
+            const existingUser = await User.findOne({
+                where: {
+                    username: value.toLowerCase(),
+                    id: { [Op.ne]: req.session.user.id } // Exclude current user
+                }
+            });
+            if (existingUser) {
+                throw new Error('Username is already taken');
+            }
+            return true;
+        }),
     body('email')
         .trim()
-        .notEmpty()
-        .withMessage('Email is required')
-        .isEmail()
-        .withMessage('Invalid email address'),
+        .notEmpty().withMessage('Email is required')
+        .isEmail().withMessage('Invalid email address')
+        .custom(async (value, { req }) => {
+            const existingUser = await User.findOne({
+                where: {
+                    email: value.toLowerCase(),
+                    id: { [Op.ne]: req.session.user.id } // Exclude current user
+                }
+            });
+            if (existingUser) {
+                throw new Error('Email is already registered');
+            }
+            return true;
+        }),
     body('bio')
         .optional({ checkFalsy: true })
         .trim()
-        .isLength({ max: 500 })
-        .withMessage('Bio must be less than 500 characters'),
+        .isLength({ max: 500 }).withMessage('Bio must be less than 500 characters'),
     body('profileImage')
         .optional({ checkFalsy: true })
         .trim()
-        .isURL()
-        .withMessage('Profile image must be a valid URL')
+        .isURL().withMessage('Profile image must be a valid URL')
 ], asyncHandler(async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -116,44 +116,42 @@ router.post('/edit', isAuthenticated, [
 
         const { username, email, bio, profileImage } = req.body;
 
-        // Check if username or email is already taken
-        const existingUser = await User.findOne({
-            where: {
-                id: { [Op.ne]: user.id },
-                [Op.or]: [
-                    { username: username.toLowerCase() },
-                    { email: email.toLowerCase() }
-                ]
+        try {
+            // Update user data
+            await user.update({
+                username: username.toLowerCase(),
+                email: email.toLowerCase(),
+                bio: bio || null,
+                profileImage: profileImage || null
+            });
+
+            // Update session data
+            req.session.user = {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                profileImage: user.profileImage
+            };
+
+            req.flash('success', 'Profile updated successfully');
+            res.redirect('/profile');
+        } catch (error) {
+            // Handle Sequelize unique constraint errors
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                const field = error.errors[0].path;
+                const message = field === 'username' ? 
+                    'Username is already taken' : 
+                    'Email is already registered';
+                req.flash('error', message);
+            } else {
+                req.flash('error', 'Error updating profile');
+                console.error('Profile update error:', error);
             }
-        });
-
-        if (existingUser) {
-            req.flash('error', existingUser.username === username.toLowerCase() ? 
-                'Username already taken' : 'Email already registered');
-            return res.redirect('/profile/edit');
+            res.redirect('/profile/edit');
         }
-
-        // Update user data
-        await user.update({
-            username: username.toLowerCase(),
-            email: email.toLowerCase(),
-            bio: bio || null,
-            profileImage: profileImage || null
-        });
-
-        // Update session data
-        req.session.user = {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            profileImage: user.profileImage
-        };
-
-        req.flash('success', 'Profile updated successfully');
-        res.redirect('/profile');
     } catch (error) {
-        console.error('Error updating profile:', error);
-        req.flash('error', error.message || 'Error updating profile');
+        console.error('Error in profile update route:', error);
+        req.flash('error', 'An unexpected error occurred');
         res.redirect('/profile/edit');
     }
 }));

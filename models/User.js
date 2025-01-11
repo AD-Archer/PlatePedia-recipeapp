@@ -135,4 +135,19 @@ User.belongsToMany(User, {
     otherKey: 'following_id'
 });
 
+User.findByLogin = async function(login) {
+    return await User.findOne({
+        where: sequelize.or(
+            sequelize.where(
+                sequelize.fn('LOWER', sequelize.col('username')),
+                sequelize.fn('LOWER', login)
+            ),
+            sequelize.where(
+                sequelize.fn('LOWER', sequelize.col('email')),
+                sequelize.fn('LOWER', login)
+            )
+        )
+    });
+};
+
 export default User;

@@ -111,8 +111,6 @@ app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);
 app.use('/profile', profileRouter);
-
-// Dashboard should be last before error handlers
 app.use('/', dashboard);
 
 // Debug middleware

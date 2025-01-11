@@ -36,9 +36,13 @@
                                     required
                                     minlength="3"
                                     maxlength="30"
+                                    pattern="[a-zA-Z0-9_-]+"
                                 >
                                 <div class="form-text">
                                     Username must be 3-30 characters and can only contain letters, numbers, underscores, and hyphens.
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please choose a valid username.
                                 </div>
                             </div>
 
@@ -52,6 +56,9 @@
                                     value="<%= locals.formData ? formData.email : '' %>"
                                     required
                                 >
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -109,8 +116,14 @@
             
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
-            console.log('Submitting form data:', data);
-            
+
+            // Additional validation for username format
+            const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+            if (!usernameRegex.test(data.username)) {
+                alert('Username can only contain letters, numbers, underscores, and hyphens');
+                return;
+            }
+
             try {
                 const response = await fetch('/signup', {
                     method: 'POST',
@@ -121,7 +134,6 @@
                 });
                 
                 const result = await response.json();
-                console.log('Server response:', result);
                 
                 if (response.ok) {
                     window.location.href = '/login';

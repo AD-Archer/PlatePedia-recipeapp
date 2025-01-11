@@ -2,6 +2,8 @@ import express from 'express';
 import { User } from '../models/TableCreation.js';
 import bcrypt from 'bcrypt';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { Op } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const router = express.Router();
 
@@ -17,38 +19,45 @@ router.get('/', (req, res) => {
 
 // Handle login
 router.post('/', asyncHandler(async (req, res) => {
-    const { username, password } = req.body;
+    const { login, password } = req.body;
 
     try {
-        // Find user
+        // Find user by username or email
         const user = await User.findOne({
-            where: {
-                username: username.toLowerCase()
-            }
+            where: sequelize.or(
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('username')),
+                    sequelize.fn('LOWER', login.trim())
+                ),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('email')),
+                    sequelize.fn('LOWER', login.trim())
+                )
+            )
         });
 
         if (!user) {
-            req.flash('error', 'Invalid username or password');
             return res.status(401).json({
                 success: false,
-                error: 'Invalid username or password'
+                error: 'Invalid username/email or password'
             });
         }
 
         // Check password
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            req.flash('error', 'Invalid username or password');
             return res.status(401).json({
                 success: false,
-                error: 'Invalid username or password'
+                error: 'Invalid username/email or password'
             });
         }
 
         // Set user session
         req.session.user = {
             id: user.id,
-            username: user.username
+            username: user.username,
+            email: user.email,
+            profileImage: user.profileImage
         };
 
         // Wait for session to be saved
@@ -62,8 +71,6 @@ router.post('/', asyncHandler(async (req, res) => {
                 }
             });
         });
-
-        console.log('Session saved:', req.session.user);
 
         // Send success response
         res.json({

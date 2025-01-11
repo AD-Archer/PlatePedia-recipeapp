@@ -38,13 +38,13 @@
 
                         <form id="loginForm" class="needs-validation" novalidate>
                             <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
+                                <label for="login" class="form-label">Username or Email</label>
                                 <input 
                                     type="text" 
                                     class="form-control" 
-                                    id="username" 
-                                    name="username" 
-                                    placeholder="Enter your username"
+                                    id="login" 
+                                    name="login" 
+                                    placeholder="Enter your username or email"
                                     required
                                 >
                             </div>
@@ -136,7 +136,7 @@
             e.preventDefault();
             
             const formData = {
-                username: document.getElementById('username').value,
+                login: document.getElementById('login').value,
                 password: document.getElementById('password').value
             };
 
@@ -158,6 +158,12 @@
                     const alertDiv = document.createElement('div');
                     alertDiv.className = 'alert alert-danger';
                     alertDiv.textContent = data.error || 'Login failed';
+                    
+                    // Remove any existing alerts
+                    const existingAlert = document.querySelector('.alert');
+                    if (existingAlert) {
+                        existingAlert.remove();
+                    }
                     
                     // Insert at the top of the form
                     const form = document.getElementById('loginForm');

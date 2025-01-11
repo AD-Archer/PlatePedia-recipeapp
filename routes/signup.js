@@ -26,21 +26,19 @@ router.post('/', [
     body('username')
         .trim()
         .isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters')
-        .matches(/^[A-Za-z0-9_-]+$/).withMessage('Username can only contain letters, numbers, underscores, and hyphens')
+        .matches(/^[a-zA-Z0-9_-]+$/).withMessage('Username can only contain letters, numbers, underscores, and hyphens')
         .custom(async (value) => {
             const existingUser = await User.findOne({
-                where: {
-                    [Op.or]: [
-                        sequelize.where(
-                            sequelize.fn('LOWER', sequelize.col('username')),
-                            value.toLowerCase()
-                        ),
-                        sequelize.where(
-                            sequelize.fn('LOWER', sequelize.col('email')),
-                            value.toLowerCase()
-                        )
-                    ]
-                }
+                where: sequelize.or(
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('username')),
+                        value.toLowerCase()
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('email')),
+                        value.toLowerCase()
+                    )
+                )
             });
             if (existingUser) {
                 throw new Error('Username or email is already taken');
@@ -55,18 +53,16 @@ router.post('/', [
         .normalizeEmail()
         .custom(async (value) => {
             const existingUser = await User.findOne({
-                where: {
-                    [Op.or]: [
-                        sequelize.where(
-                            sequelize.fn('LOWER', sequelize.col('username')),
-                            value.toLowerCase()
-                        ),
-                        sequelize.where(
-                            sequelize.fn('LOWER', sequelize.col('email')),
-                            value.toLowerCase()
-                        )
-                    ]
-                }
+                where: sequelize.or(
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('username')),
+                        value.toLowerCase()
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('email')),
+                        value.toLowerCase()
+                    )
+                )
             });
             if (existingUser) {
                 throw new Error('Username or email is already taken');
