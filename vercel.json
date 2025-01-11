@@ -33,6 +33,14 @@
       }
     },
     {
+      "src": "/sitemap.xml",
+      "dest": "server.js",
+      "headers": {
+        "Content-Type": "application/xml",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
       "src": "/manifest.json",
       "dest": "server.js",
       "headers": {
@@ -49,6 +57,14 @@
     {
       "src": "/favicon.ico",
       "dest": "/public/images/burger.png"
+    },
+    {
+      "src": "/ads.txt",
+      "dest": "server.js",
+      "headers": {
+        "Content-Type": "text/plain",
+        "Cache-Control": "public, max-age=3600"
+      }
     },
     {
       "src": "/((?!.*\\.).*)",

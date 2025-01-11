@@ -59,7 +59,9 @@ app.use(cookieParser());
 app.use((req, res, next) => {
     if (req.path === '/manifest.json' || 
         req.path.startsWith('/images/') || 
-        req.path === '/robots.txt') {
+        req.path === '/robots.txt' ||
+        req.path === '/sitemap.xml' ||
+        req.path === '/ads.txt') {
         return next();
     }
     next();
@@ -195,12 +197,18 @@ function escapeXML(str) {
 
 app.get('/sitemap.xml', async (req, res) => {
     try {
+        // Set headers
+        res.set({
+            'Content-Type': 'application/xml',
+            'Cache-Control': 'public, max-age=3600'
+        });
+
         // Fetch recipes with specific attributes
         const recipes = await Recipe.findAll({
             attributes: ['id', 'title', 'updatedAt'],
             where: {
                 title: {
-                    [Op.ne]: null  // Only get recipes with titles
+                    [Op.ne]: null
                 }
             },
             raw: true
@@ -263,7 +271,7 @@ app.get('/sitemap.xml', async (req, res) => {
         sitemap += `</urlset>`;
 
         // Send sitemap as XML
-        res.header('Content-Type', 'application/xml').send(sitemap);
+        res.send(sitemap);
     } catch (error) {
         console.error('Error generating sitemap:', error);
         res.status(500).send('Error generating sitemap');
@@ -275,7 +283,11 @@ app.get('/robots.txt', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
 });
 app.get('/ads.txt', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'ads.txt'));
+    res.set({
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'public, max-age=3600'
+    });
+    res.send('google.com, pub-9831610369524751, DIRECT, f08c47fec0942fa0');
 });
 
 
