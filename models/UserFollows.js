@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
-// this declares the user follows table
+
 class UserFollows extends Model {}
 
 UserFollows.init({
@@ -21,6 +21,16 @@ UserFollows.init({
             model: 'users',
             key: 'id'
         }
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: 'created_at'
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        field: 'updated_at'
     }
 }, {
     sequelize,

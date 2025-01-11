@@ -150,6 +150,39 @@
                 alert('Error updating save status');
             }
         }
+
+        async function toggleFollow(userId, button) {
+            try {
+                const isFollowing = button.getAttribute('data-following') === 'true';
+                const response = await fetch(`/users/${userId}/follow`, {
+                    method: isFollowing ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    button.setAttribute('data-following', !isFollowing);
+                    button.innerHTML = `<i class="bi bi-person${isFollowing ? '-plus' : '-check'}"></i> ${isFollowing ? 'Follow' : 'Following'}`;
+                    button.classList.toggle('btn-secondary');
+                    button.classList.toggle('btn-primary');
+
+                    // Update follower count if it exists
+                    const followerCount = document.querySelector('.follower-count');
+                    if (followerCount) {
+                        let count = parseInt(followerCount.textContent);
+                        followerCount.textContent = isFollowing ? count - 1 : count + 1;
+                    }
+                } else {
+                    alert(data.error || 'Error updating follow status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating follow status');
+            }
+        }
     </script>
 </body>
 </html> 

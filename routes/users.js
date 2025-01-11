@@ -3,7 +3,6 @@ import { User, Recipe, UserFollows, Category } from '../models/TableCreation.js'
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op, Sequelize } from 'sequelize';
-
 const router = express.Router();
 
 // Show all users/suggested users page - Public access
@@ -148,54 +147,126 @@ router.get('/:username', asyncHandler(async (req, res) => {
 }));
 
 // Follow/unfollow routes
-router.post('/:username/follow', isAuthenticated, asyncHandler(async (req, res) => {
-    const userToFollow = await User.findOne({
-        where: { username: req.params.username }
-    });
+router.post('/:id/follow', isAuthenticated, asyncHandler(async (req, res) => {
+    try {
+        const followerId = parseInt(req.session.user.id);
+        const followingId = parseInt(req.params.id);
 
-    if (!userToFollow) {
-        return res.status(404).json({ success: false, error: 'User not found' });
-    }
+        console.log('Attempting to follow:', { followerId, followingId }); // Debug log
 
-    if (userToFollow.id === req.session.user.id) {
-        return res.status(400).json({ success: false, error: 'You cannot follow yourself' });
-    }
-
-    const [relation, created] = await UserFollows.findOrCreate({
-        where: {
-            followerId: req.session.user.id,
-            followingId: userToFollow.id
+        // Validate IDs
+        if (!followerId || !followingId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid user IDs' 
+            });
         }
-    });
 
-    res.json({ 
-        success: true, 
-        following: true,
-        message: created ? 'Successfully followed user' : 'Already following user'
-    });
+        // Don't allow following yourself
+        if (followerId === followingId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'You cannot follow yourself' 
+            });
+        }
+
+        // Check if user exists
+        const userToFollow = await User.findByPk(followingId);
+        if (!userToFollow) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'User not found' 
+            });
+        }
+
+        // Check if already following
+        const existingFollow = await UserFollows.findOne({
+            where: {
+                followerId,
+                followingId
+            }
+        });
+
+        if (existingFollow) {
+            return res.json({ 
+                success: true, 
+                following: true,
+                message: 'Already following user'
+            });
+        }
+
+        // Create new follow relationship with explicit values
+        const newFollow = await UserFollows.create({
+            followerId: followerId,
+            followingId: followingId,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        }, {
+            fields: ['followerId', 'followingId', 'createdAt', 'updatedAt']
+        });
+
+        console.log('Created follow relationship:', newFollow); // Debug log
+
+        res.json({ 
+            success: true, 
+            following: true,
+            message: 'Successfully followed user'
+        });
+    } catch (error) {
+        console.error('Error following user:', error);
+        console.error('Error details:', {
+            followerId: req.session.user?.id,
+            followingId: req.params.id,
+            error: error.message
+        });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error following user' 
+        });
+    }
 }));
 
-router.delete('/:username/follow', isAuthenticated, asyncHandler(async (req, res) => {
-    const userToUnfollow = await User.findOne({
-        where: { username: req.params.username }
-    });
+router.delete('/:id/follow', isAuthenticated, asyncHandler(async (req, res) => {
+    try {
+        const followerId = parseInt(req.session.user.id);
+        const followingId = parseInt(req.params.id);
 
-    if (!userToUnfollow) {
-        return res.status(404).json({ success: false, error: 'User not found' });
-    }
-
-    const deleted = await UserFollows.destroy({
-        where: {
-            followerId: req.session.user.id,
-            followingId: userToUnfollow.id
+        // Validate IDs
+        if (!followerId || !followingId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid user IDs' 
+            });
         }
-    });
 
-    res.json({ 
-        success: true, 
-        following: false,
-        message: deleted ? 'Successfully unfollowed user' : 'Not following user'
-    });
+        // Check if user exists
+        const userToUnfollow = await User.findByPk(followingId);
+        if (!userToUnfollow) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'User not found' 
+            });
+        }
+
+        const deleted = await UserFollows.destroy({
+            where: {
+                followerId: followerId,
+                followingId: followingId
+            }
+        });
+
+        res.json({ 
+            success: true, 
+            following: false,
+            message: deleted ? 'Successfully unfollowed user' : 'Not following user'
+        });
+    } catch (error) {
+        console.error('Error unfollowing user:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error unfollowing user' 
+        });
+    }
 }));
 
 router.get('/some-route', asyncHandler(async (req, res) => {

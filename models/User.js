@@ -122,17 +122,17 @@ User.hasMany(Recipe, {
 });
 
 User.belongsToMany(User, {
+    as: 'following',
     through: 'user_follows',
-    as: 'followers',
-    foreignKey: 'following_id',
-    otherKey: 'follower_id'
+    foreignKey: 'follower_id',
+    otherKey: 'following_id'
 });
 
 User.belongsToMany(User, {
+    as: 'followers',
     through: 'user_follows',
-    as: 'following',
-    foreignKey: 'follower_id',
-    otherKey: 'following_id'
+    foreignKey: 'following_id',
+    otherKey: 'follower_id'
 });
 
 export default User;

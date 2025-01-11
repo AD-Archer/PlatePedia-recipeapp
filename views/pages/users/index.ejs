@@ -59,14 +59,16 @@
             event.stopPropagation();
             try {
                 const isFollowing = button.getAttribute('data-following') === 'true';
-                const method = isFollowing ? 'DELETE' : 'POST';
-                
                 const response = await fetch(`/users/${userId}/follow`, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' }
+                    method: isFollowing ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                if (response.ok) {
+                const data = await response.json();
+
+                if (data.success) {
                     button.setAttribute('data-following', !isFollowing);
                     button.innerHTML = isFollowing ? 
                         '<i class="bi bi-person-plus"></i> Follow' : 
@@ -74,12 +76,11 @@
                     button.classList.toggle('btn-primary');
                     button.classList.toggle('btn-secondary');
                 } else {
-                    const data = await response.json();
-                    alert(data.error || 'Error toggling follow status');
+                    alert(data.error || 'Error updating follow status');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error toggling follow status');
+                alert('Error updating follow status');
             }
         }
     </script>
