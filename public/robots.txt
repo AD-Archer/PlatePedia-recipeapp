@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /private/
+
+Sitemap: https://food-finder-sepia.vercel.app/sitemap.xml

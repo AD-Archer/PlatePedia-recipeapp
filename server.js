@@ -7,11 +7,10 @@ import path from 'path';
 import 'dotenv/config';
 import session from 'express-session';
 import { errorHandler, storePreviousUrl } from './middleware/errorHandler.js';
-import sequelize from './config/db.js';
+import sequelize from './config/db.js'; // Updated to import sequelize from db.js
 import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
 import flash from 'connect-flash';
-
 
 // Import routes
 import signup from './routes/signup.js';
@@ -26,15 +25,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const url = "localhost" // this can be changed if you wish but for dev purposes localhost works fine
+
 // Initialize database and sync models
 async function initializeDatabase() {
- 
-
-// Initialize database connection for each request
-app.use(async (req, res, next) => {
     try {
         console.log('Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
-        const sequelize = await getDb();
+        // Use the sequelize instance to authenticate
         await sequelize.authenticate();
         console.log('Database connection successful');
         // Sync models with alter option to preserve data
@@ -44,18 +40,10 @@ app.use(async (req, res, next) => {
         await RecipeCategory.sync({ alter: true });
         await UserFollows.sync({ alter: true });
         await SavedRecipe.sync({ alter: true });
-        next();
     } catch (error) {
         console.error('Database connection error:', error);
-        const message = process.env.NODE_ENV === 'production' 
-            ? 'Internal server error' 
-            : error.message;
-        return res.status(500).json({ 
-            error: 'Database connection failed',
-            message
-        });
+        throw new Error('Database connection failed');
     }
-});
 }
 
 app.enable('trust proxy');
@@ -105,11 +93,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use(storePreviousUrl);
 
-
 // used to make sure the connection to the server is healthy and working 
 app.get('/api/healthcheck', async (req, res) => {
     try {
-        const sequelize = getDb();
         await sequelize.authenticate();
         res.status(200).json({ status: 'healthy' });
     } catch (error) {
@@ -126,6 +112,79 @@ app.use('/login', login);
 app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);
+
+
+/**
+ * These are for SEO
+ */
+// Manifest.json
+app.get('/manifest.json', (req, res) => {
+    res.type('application/json');
+    res.sendFile(path.join(__dirname, '/public/manifest.json'));
+});
+
+// Serve the sitemap.xml file dynamically
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        // Fetch all recipes from the database
+        const recipes = await Recipe.findAll();
+        // Fetch all categories from the database
+        const categories = await Category.findAll();
+
+        // Start building the sitemap XML
+        let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+
+        // Add the homepage
+        sitemap += `
+    <url>
+        <loc>https://food-finder-sepia.vercel.app/</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <priority>1.00</priority>
+    </url>`;
+
+        // Loop through each recipe and add it to the sitemap
+        recipes.forEach(recipe => {
+            sitemap += `
+    <url>
+        <loc>https://food-finder-sepia.vercel.app/recipes/${recipe.id}</loc>
+        <lastmod>${new Date(recipe.updatedAt).toISOString()}</lastmod>
+        <priority>0.80</priority>
+    </url>`;
+        });
+
+        // Loop through each category and add it to the sitemap
+        categories.forEach(category => {
+            sitemap += `
+    <url>
+        <loc>https://food-finder-sepia.vercel.app/recipes/browse?category=${category.id}</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <priority>0.70</priority>
+    </url>`;
+        });
+
+        // Close the urlset tag properly
+        sitemap += `
+</urlset>`;
+
+        // Log the generated sitemap for debugging
+        console.log(sitemap);
+
+        // Set the content type and send the sitemap
+        res.header('Content-Type', 'application/xml');
+        res.send(sitemap);
+    } catch (error) {
+        console.error('Error generating sitemap:', error);
+        res.status(500).send('Error generating sitemap');
+    }
+});
+
+
+// Serve the robots.txt file
+app.get('/robots.txt', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
+});
+
 
 // Catch-all route
 app.get('*', (req, res) => res.redirect('/'));

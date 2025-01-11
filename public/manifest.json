@@ -1,0 +1,36 @@
+{
+    "name": "Food Finder",
+    "short_name": "FoodFinder",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "description": "Food Finder is your go-to platform for discovering delicious recipes and connecting with fellow food enthusiasts.",
+    "icons": [
+        {
+            "src": "/images/burger.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "/images/burger.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/burger.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/burger.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/burger.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        }
+    ]
+}
