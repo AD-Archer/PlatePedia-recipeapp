@@ -81,7 +81,6 @@ app.use((req, res, next) => {
 // User and flash message middleware
 app.use((req, res, next) => {
     res.locals.user = req.session.user;
-    console.log('Session user:', req.session.user);
     next();
 });
 app.use(flashMiddleware);
@@ -124,6 +123,16 @@ app.get('/manifest.json', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/manifest.json'));
 });
 
+// Function to escape special characters in XML this is used for our sitemap
+function escapeXML(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+}
+
 // Serve the sitemap.xml file dynamically
 app.get('/sitemap.xml', async (req, res) => {
     try {
@@ -142,12 +151,13 @@ app.get('/sitemap.xml', async (req, res) => {
             cache.put('categories', categories, 1000 * 60 * 5); // Cache for 5 minutes
         }
 
+        // Log the fetched recipes to check their structure
+        console.log('Fetched Recipes:', recipes);
+
         // Start building the sitemap XML
         let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.w3.org/2001/XMLSchema-instance">
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0">
 `;
 
         // Add the homepage URL
@@ -156,15 +166,22 @@ app.get('/sitemap.xml', async (req, res) => {
         <loc>https://food-finder-sepia.vercel.app/</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>1.00</priority>
+        <mobile:mobile>yes</mobile:mobile>
     </url>`;
 
         // Loop through each recipe and add it to the sitemap
         recipes.forEach(recipe => {
+            // Escape recipe title to prevent XML errors
+            const title = escapeXML(recipe.title);
+            const description = `Discover the recipe for ${title} on Food Finder.`;
+
             sitemap += `
     <url>
         <loc>https://food-finder-sepia.vercel.app/recipes/${recipe.id}</loc>
         <lastmod>${new Date(recipe.updatedAt).toISOString()}</lastmod>
         <priority>0.80</priority>
+        <meta name="description" content="${description}"></meta>
+        <mobile:mobile>yes</mobile:mobile>
     </url>`;
         });
 
@@ -175,6 +192,7 @@ app.get('/sitemap.xml', async (req, res) => {
         <loc>https://food-finder-sepia.vercel.app/recipes/browse?category=${category.id}</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>0.70</priority>
+        <mobile:mobile>yes</mobile:mobile>
     </url>`;
         });
 
@@ -193,15 +211,13 @@ app.get('/sitemap.xml', async (req, res) => {
         <loc>https://food-finder-sepia.vercel.app${page.loc}</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>${page.priority}</priority>
+        <mobile:mobile>yes</mobile:mobile>
     </url>`;
         });
 
         // Close the urlset tag properly
         sitemap += `
 </urlset>`;
-
-        // Log the generated sitemap for debugging
-        console.log(sitemap);
 
         // Set the content type and send the sitemap
         res.header('Content-Type', 'application/xml');
@@ -211,6 +227,7 @@ app.get('/sitemap.xml', async (req, res) => {
         res.status(500).send('Error generating sitemap');
     }
 });
+
 
 
 // Serve the robots.txt file
