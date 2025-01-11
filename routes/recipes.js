@@ -6,6 +6,7 @@ import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op } from 'sequelize';
 import sequelize from 'sequelize';
 import { addSavedStatus } from '../utils/recipeUtils.js';
+import { getCachedData, getUserSavedRecipes } from '../utils/dataSync.js';
 
 const router = express.Router();
 
@@ -631,28 +632,7 @@ router.get('/my-recipes', asyncHandler(async (req, res) => {
 }));
 
 router.get('/saved', asyncHandler(async (req, res) => {
-    const savedRecipes = await Recipe.findAll({
-        include: [
-            {
-                model: User,
-                as: 'author',
-                attributes: ['username']
-            },
-            {
-                model: Category,
-                as: 'Categories',
-                through: { attributes: [] }
-            },
-            {
-                model: User,
-                as: 'savedByUsers',
-                where: { id: req.session.user.id },
-                attributes: [],
-                through: { attributes: [] }
-            }
-        ],
-        order: [['createdAt', 'DESC']]
-    });
+    const savedRecipes = await getUserSavedRecipes(req.session.user.id);
 
     res.render('pages/recipes/saved', {
         recipes: savedRecipes,

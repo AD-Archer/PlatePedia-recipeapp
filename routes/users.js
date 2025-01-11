@@ -3,10 +3,12 @@ import { User, Recipe, UserFollows, Category } from '../models/TableCreation.js'
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op, Sequelize } from 'sequelize';
+import { getCachedData, getUserData } from '../utils/dataSync.js';
 const router = express.Router();
 
 // Show all users/suggested users page - Public access
 router.get('/', asyncHandler(async (req, res) => {
+    const { popularUsers } = getCachedData('users');
     // First, get recipe counts for all users
     const userRecipeCounts = await User.findAll({
         attributes: [

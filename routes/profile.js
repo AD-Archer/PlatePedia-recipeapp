@@ -4,30 +4,21 @@ import { User, Recipe } from '../models/TableCreation.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { Op } from 'sequelize';
+import { getUserData } from '../utils/dataSync.js';
 
 const router = express.Router();
 
 // View profile
 router.get('/', isAuthenticated, asyncHandler(async (req, res) => {
+    const userData = await getUserData(req.session.user.id);
     try {
-        const user = await User.findByPk(req.session.user.id, {
-            include: [
-                {
-                    model: Recipe,
-                    as: 'userRecipes',
-                    limit: 6,
-                    order: [['createdAt', 'DESC']]
-                }
-            ]
-        });
-
-        if (!user) {
+        if (!userData) {
             req.flash('error', 'User not found');
             return res.redirect('/login');
         }
 
         res.render('pages/profile/profile', {
-            user: user.toJSON(),
+            user: userData.toJSON(),
             path: '/profile'
         });
     } catch (error) {

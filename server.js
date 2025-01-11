@@ -12,6 +12,7 @@ import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
 import flash from 'connect-flash';
 import cache from 'memory-cache'; // Import memory-cache
+import './utils/dataSync.js';  // Initialize data sync
 
 // Import routes
 import signup from './routes/signup.js';
@@ -120,18 +121,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// 404 handler
-app.use((req, res) => {
-    console.log('404 - Not Found:', req.url);
-    res.status(404).render('pages/error', {
-        error: 'Page not found',
-        path: req.url,
-        user: req.session.user
-    });
+app.get('/dashboard', (req, res) => { // i make the mistake of redirecting to the dashboard route, which doesnt exist anymore so i need this
+    res.redirect('/');
 });
-
-// Error handler must be last
-app.use(errorHandler);
 
 // SEO routes
 app.get('/manifest.json', (req, res) => {
@@ -236,6 +228,19 @@ app.get('/sitemap.xml', async (req, res) => {
 app.get('/robots.txt', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
 });
+
+// 404 handler
+app.use((req, res) => {
+    console.log('404 - Not Found:', req.url);
+    res.status(404).render('pages/error', {
+        error: 'Page not found',
+        path: req.url,
+        user: req.session.user
+    });
+});
+
+// Error handler must be last
+app.use(errorHandler);
 
 // Start server based on environment
 if (!process.env.VERCEL) {
