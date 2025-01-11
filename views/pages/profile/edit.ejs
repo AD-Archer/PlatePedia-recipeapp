@@ -26,7 +26,8 @@
                                 <% if (user.profileImage) { %>
                                     <img src="<%= user.profileImage %>" alt="Profile" 
                                          class="rounded-circle mb-3" 
-                                         style="width: 150px; height: 150px; object-fit: cover;">
+                                         style="width: 150px; height: 150px; object-fit: cover;"
+                                         onerror="this.onerror=null; this.src='/images/default-profile.png';">
                                 <% } else { %>
                                     <div class="bg-secondary rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
                                          style="width: 150px; height: 150px;">
@@ -60,26 +61,22 @@
                                     </div>
                                     <div class="form-text">Enter a valid image URL starting with http:// or https://</div>
                                     <div id="profileImageFeedback" class="invalid-feedback"></div>
-                                    <% if (user.profileImage) { %>
-                                        <div class="mt-2">
-                                            <img 
-                                                src="<%= user.profileImage %>" 
-                                                alt="Current profile image" 
-                                                class="img-thumbnail" 
-                                                style="max-height: 100px;"
-                                                onerror="handleImageError(this)"
-                                            >
-                                        </div>
-                                    <% } %>
                                 </div>
                             </div>
 
                             <!-- Username -->
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username*</label>
-                                <input type="text" class="form-control" id="username" 
-                                       name="username" value="<%= user.username %>" required>
-                                <div class="form-text">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="username" 
+                                       name="username" 
+                                       value="<%= user.username %>" 
+                                       required
+                                       pattern="[a-zA-Z0-9_]+"
+                                       minlength="3"
+                                       maxlength="30">
+                                <div class="invalid-feedback">
                                     Username must be between 3 and 30 characters and can only contain letters, numbers, and underscores.
                                 </div>
                             </div>
@@ -87,43 +84,27 @@
                             <!-- Email -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email*</label>
-                                <input type="email" class="form-control" id="email" 
-                                       name="email" value="<%= user.email %>" required>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       value="<%= user.email %>" 
+                                       required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
                             </div>
 
                             <!-- Bio -->
                             <div class="mb-3">
                                 <label for="bio" class="form-label">Bio</label>
-                                <textarea class="form-control" id="bio" name="bio" 
-                                          rows="3" maxlength="500"><%= user.bio || '' %></textarea>
+                                <textarea class="form-control" 
+                                          id="bio" 
+                                          name="bio" 
+                                          rows="3" 
+                                          maxlength="500"><%= user.bio || '' %></textarea>
                                 <div class="form-text">
                                     Maximum 500 characters
-                                </div>
-                            </div>
-
-                            <!-- Change Password Section -->
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                    Change Password (optional)
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="currentPassword" class="form-label">Current Password</label>
-                                        <input type="password" class="form-control" 
-                                               id="currentPassword" name="currentPassword">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="newPassword" class="form-label">New Password</label>
-                                        <input type="password" class="form-control" 
-                                               id="newPassword" name="newPassword">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                                        <input type="password" class="form-control" 
-                                               id="confirmPassword" name="confirmPassword">
-                                    </div>
                                 </div>
                             </div>
 
@@ -157,48 +138,27 @@
         })()
 
         function clearProfileImage() {
-            const input = document.getElementById('profileImage');
-            input.value = '';
-            document.getElementById('profileForm').submit();
+            document.getElementById('profileImage').value = '';
         }
 
         function validateProfileImage(input) {
             const url = input.value.trim();
-            const feedback = document.getElementById('profileImageFeedback');
-            
             if (url && !url.match(/^https?:\/\/.+/i)) {
-                input.classList.add('is-invalid');
-                feedback.textContent = 'Please enter a valid URL starting with http:// or https://';
                 return false;
             }
-            
-            input.classList.remove('is-invalid');
-            feedback.textContent = '';
             return true;
         }
 
-        function handleImageError(img) {
-            img.style.display = 'none';
-            const feedback = document.getElementById('profileImageFeedback');
-            feedback.textContent = 'Unable to load image. Please check the URL.';
-            document.getElementById('profileImage').classList.add('is-invalid');
-        }
-
-        // Update form submission handler
+        // Form submission handler
         document.getElementById('profileForm').addEventListener('submit', function(e) {
             const profileImage = document.getElementById('profileImage');
-            
-            // Validate image URL if present
             if (profileImage.value.trim() && !validateProfileImage(profileImage)) {
                 e.preventDefault();
+                profileImage.classList.add('is-invalid');
+                document.getElementById('profileImageFeedback').textContent = 
+                    'Please enter a valid URL starting with http:// or https://';
                 return false;
             }
-
-            // Log form data
-            const formData = new FormData(this);
-            console.log('Form data being sent:', {
-                profileImage: formData.get('profileImage')
-            });
         });
     </script>
 </body>

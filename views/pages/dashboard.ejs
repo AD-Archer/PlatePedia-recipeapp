@@ -7,180 +7,41 @@
     <%- include('../partials/meta') %>
     <%- include('../partials/bootstrap') %>
 </head>
-<style>/* Welcome Section Styles */
-    .welcome-section {
-        background: linear-gradient(90deg, rgba(79, 172, 254, 0.8), rgba(0, 242, 254, 0.8)), 
-                    url('path/to/your/banner-image.jpg') no-repeat center center/cover; /* Adding a background image */
-        color: white; /* White text for contrast */
-        padding: 60px 20px; /* Increased padding for more space */
-        border-radius: 10px; /* Slightly rounded corners */
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow for depth */
-        text-align: center; /* Center alignment for the text */
-    }
-    
-    .welcome-section h1 {
-        font-size: 2.8rem; /* Larger font size for the title */
-        margin-bottom: 20px; /* Space below title */
-        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Shadow effect for better visibility */
-    }
-    
-    .welcome-section p {
-        font-size: 1.2rem; /* Slightly larger font for the paragraph */
-        margin-bottom: 30px; /* Space below paragraph */
-    }
-    
-    .welcome-section .btn {
-        padding: 12px 25px; /* Increased padding for buttons */
-        font-size: 1rem; /* Font size for buttons */
-        border-radius: 25px; /* Fully rounded buttons */
-        transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for buttons */
-    }
-    
-    .welcome-section .btn-light:hover {
-        background-color: rgba(255, 255, 255, 0.8); /* A softer hover effect */
-        transform: scale(1.05); /* Slightly enlarge on hover */
-    }
-    
-    .welcome-section .btn-outline-light {
-        border: 2px solid rgba(255, 255, 255, 0.8); /* More visible outline for buttons */
-    }
-    
-    .welcome-section .btn-outline-light:hover {
-        background-color: rgba(255, 255, 255, 0.2); /* Change background on hover */
-    }
-    
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .welcome-section {
-            padding: 40px 10px; /* Less padding on smaller screens */
-        }
-    
-        .welcome-section h1 {
-            font-size: 2rem; /* Smaller title on mobile */
-        }
-    
-        .welcome-section p {
-            font-size: 1rem; /* Smaller paragraph font */
-        }
-    
-        .welcome-section .btn {
-            width: 100%; /* Full width buttons on mobile */
-            margin-top: 10px; /* Space between buttons */
-        }
-    }
-    </style>
 <body>
     <%- include('../partials/header') %>
 
-    <div class="page-content">
-        <div class="welcome-section">
-            <div class="container">
-                <div class="text-center">
-                    <% if (user) { %>
-                        <h1 class="display-4 mb-4">Welcome back, <%= user.username %>!</h1>
-                        <div class="mt-3">
-                            <a href="/recipes/create" class="btn btn-light">
-                                <i class="bi bi-plus-circle"></i> Create Recipe
-                            </a>
-                            <a href="/recipes/my-recipes" class="btn btn-outline-light ms-2">
-                                <i class="bi bi-collection"></i> My Recipes
-                            </a>
-                        </div>
-                    <% } else { %>
-                        <h1 class="display-4 mb-4">Welcome to Food Finder!</h1>
-                        <p class="lead">
-                            Discover amazing recipes and connect with food lovers.
-                            <a href="/signup" class="btn btn-light ms-2">Join Now</a>
-                        </p>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <%- include('../partials/alerts') %>
+    <div class="container py-5">
+        <%- include('../partials/alerts') %>
+        
+        <!-- Popular Recipes Section -->
+        <section class="mb-5">
             <%- include('../partials/dashboard/popularrecipes') %>
-            <%- include('../partials/dashboard/cuisine') %>  
-            <%- include('../partials/dashboard/suggestedusers') %>
+        </section>
+
+        <!-- Categories/Cuisine Section -->
+        <section class="mb-5">
+            <%- include('../partials/dashboard/cuisine') %>
+        </section>
+
+        <!-- Suggested Users Section (if logged in) -->
+        <% if (locals.user) { %>
+            <section class="mb-5">
+                <%- include('../partials/dashboard/suggestedusers') %>
+            </section>
+        <% } %>
+
+        <!-- Recent Recipes Section -->
+        <section class="mb-5">
             <%- include('../partials/dashboard/recent') %>
-        </div>
+        </section>
     </div>
 
     <%- include('../partials/footer') %>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9831610369524751"
-    crossorigin="anonymous"></script>
-    
+
     <script>
-    function goToUserProfile(username, event) {
-        // Don't navigate if they clicked the follow button
-        if (event.target.closest('button')) {
-            return;
+        function goToRecipe(id) {
+            window.location.href = `/recipes/${id}`;
         }
-        window.location.href = `/users/${username}`;
-    }
-
-    async function toggleFollow(userId, button, event) {
-        event.stopPropagation(); // Prevent card click when following
-        try {
-            const isFollowing = button.getAttribute('data-following') === 'true';
-            const response = await fetch(`/users/${userId}/follow`, {
-                method: isFollowing ? 'DELETE' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                button.setAttribute('data-following', !isFollowing);
-                button.innerHTML = isFollowing ? 
-                    '<i class="bi bi-person-plus"></i> Follow' : 
-                    '<i class="bi bi-person-check"></i> Following';
-                button.classList.toggle('btn-primary');
-                button.classList.toggle('btn-secondary');
-            } else {
-                alert(data.error || 'Error updating follow status');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error updating follow status');
-        }
-    }
-
-    function goToRecipe(recipeId) {
-        window.location.href = `/recipes/${recipeId}`;
-    }
-
-    async function toggleSave(recipeId, button, event) {
-        event.stopPropagation(); // Prevent card click when saving
-        try {
-            const isSaved = button.getAttribute('data-saved') === 'true';
-            const response = await fetch(`/recipes/${recipeId}/save`, {
-                method: isSaved ? 'DELETE' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                button.setAttribute('data-saved', !isSaved);
-                button.innerHTML = isSaved ? 
-                    '<i class="bi bi-bookmark"></i> Save' : 
-                    '<i class="bi bi-bookmark-fill"></i> Saved';
-                button.classList.toggle('btn-outline-primary');
-                button.classList.toggle('btn-primary');
-            } else {
-                alert(data.error || 'Error updating save status');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error updating save status');
-        }
-    }
     </script>
 </body>
 </html> 

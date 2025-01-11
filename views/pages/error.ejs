@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error - Food Finder</title>
+    <title>Food Finder - Error</title>
     <%- include('../partials/meta') %>
-
     <%- include('../partials/bootstrap') %>
-
 </head>
 <body>
-    <%- include('partials/header') %>
+    <%- include('../partials/header') %>
 
     <div class="container py-5">
         <div class="row">
             <div class="col-md-6 mx-auto text-center">
-                <h1 class="mb-4">Oops! Something went wrong</h1>
-                <p class="text-muted mb-4"><%= message %></p>
-                <% if (process.env.NODE_ENV !== 'production' && error) { %>
-                    <div class="alert alert-danger">
-                        <pre class="mb-0"><%= error.stack %></pre>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h1 class="display-4 mb-4">Oops!</h1>
+                        <p class="lead mb-4"><%= error %></p>
+                        <a href="/" class="btn btn-primary">Return Home</a>
                     </div>
-                <% } %>
-                <a href="/" class="btn btn-primary">Return to Home</a>
+                </div>
             </div>
         </div>
     </div>
 
-    <%- include('partials/footer') %>
+    <%- include('../partials/footer') %>
 </body>
 </html> 

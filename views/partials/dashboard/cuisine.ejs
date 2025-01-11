@@ -1,37 +1,43 @@
- <!-- Browse Categories Section -->
- <section class="mb-5">
-    <h2 class="section-title">Browse Categories</h2>
+<div class="section-content">
+    <h2 class="mb-4">Browse Categories</h2>
     <div class="row g-4">
-        <% Object.entries(groupedCategories).forEach(([type, categories]) => { %>
-            <% if (categories.length > 0) { %>
-                <div class="col-12 mb-5">
-                    <h3 class="h5 mb-3 text-muted text-capitalize fw-bold"><%= type %></h3>
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-                        <% categories.forEach(category => { %>
-                            <div class="col">
-                                <a href="/recipes/browse?category=<%= category.id %>" 
-                                   class="text-decoration-none">
-                                    <div class="card category-card">
-                                        <% if (category.imageUrl) { %>
-                                            <img src="<%= category.imageUrl %>" 
-                                                 class="card-img-top" 
-                                                 alt="<%= category.name %>">
-                                        <% } %>
-                                        <div class="card-body">
-                                            <h6 class="card-title text-center">
-                                                <%= category.name %>
-                                            </h6>
-                                            <p class="recipe-count text-center mb-0">
-                                                <%= category.dataValues.recipeCount || 0 %> recipes
-                                            </p>
+        <% if (locals.groupedCategories) { %>
+            <% Object.entries(groupedCategories).forEach(([type, categories]) => { %>
+                <% if (categories.length > 0) { %>
+                    <div class="col-12 mb-4">
+                        <h3 class="h5 mb-3 text-muted text-capitalize fw-bold"><%= type %></h3>
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+                            <% categories.forEach(category => { %>
+                                <div class="col">
+                                    <a href="/recipes/browse?category=<%= category.id %>" 
+                                       class="text-decoration-none">
+                                        <div class="card category-card h-100">
+                                            <% if (category.imageUrl) { %>
+                                                <img src="<%= category.imageUrl %>" 
+                                                     class="card-img-top" 
+                                                     alt="<%= category.name %>"
+                                                     style="height: 120px; object-fit: cover;">
+                                            <% } %>
+                                            <div class="card-body">
+                                                <h6 class="card-title text-center mb-1">
+                                                    <%= category.name %>
+                                                </h6>
+                                                <p class="text-muted text-center small mb-0">
+                                                    <%= category.dataValues.recipeCount || 0 %> recipes
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </div>
-                        <% }); %>
+                                    </a>
+                                </div>
+                            <% }); %>
+                        </div>
                     </div>
-                </div>
-            <% } %>
-        <% }); %>
+                <% } %>
+            <% }); %>
+        <% } else { %>
+            <div class="col-12">
+                <p class="text-muted">No categories found.</p>
+            </div>
+        <% } %>
     </div>
-</section>
+</div>

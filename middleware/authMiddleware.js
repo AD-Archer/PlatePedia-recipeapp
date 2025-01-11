@@ -3,13 +3,18 @@
 
 // Middleware to check if user is logged in
 export const isAuthenticated = (req, res, next) => {
-    if (req.session && req.session.user) {
-        req.user = req.session.user; // Set the user object
-        console.log('User authenticated:', req.user); // Log user info
+    console.log('Checking authentication:', {
+        session: req.session,
+        user: req.session.user,
+        url: req.url
+    });
+
+    if (req.session.user) {
         return next();
     }
-    console.log('User not authenticated'); // Log if user is not authenticated
-    res.status(401).json({ error: 'User not authenticated' });
+    console.log('User not authenticated, redirecting to login');
+    req.flash('error', 'Please log in to access this page');
+    res.redirect('/login');
 };
 
 // Middleware to check if user is NOT logged in (for login/signup pages)

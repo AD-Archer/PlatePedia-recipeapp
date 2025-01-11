@@ -1,44 +1,29 @@
-  <!-- Popular Recipes Section -->
-  <section class="mb-5">
+<div class="section-content">
     <h2 class="mb-4">Popular Recipes</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        <% if (popularRecipes && popularRecipes.length > 0) { %>
+        <% if (locals.popularRecipes && popularRecipes.length > 0) { %>
             <% popularRecipes.forEach(recipe => { %>
                 <div class="col">
                     <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.id %>')">
                         <% if (recipe.imageUrl) { %>
-                            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
+                            <img src="<%= recipe.imageUrl %>" 
+                                 class="card-img-top" 
+                                 alt="<%= recipe.title %>"
+                                 style="height: 200px; object-fit: cover;">
                         <% } %>
                         <div class="card-body">
                             <h5 class="card-title"><%= recipe.title %></h5>
-                            <p class="card-text"><%= recipe.description %></p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <small class="text-muted">By 
-                                        <a href="/users/<%= recipe.author.username %>" onclick="event.stopPropagation()">
-                                            <%= recipe.author.username %>
-                                        </a>
-                                    </small>
-                                </div>
-                                <% if (user && user.id !== recipe.author.id) { %>
-                                    <button 
-                                        class="btn btn-sm <%= recipe.isSaved ? 'btn-primary' : 'btn-outline-primary' %>"
-                                        onclick="toggleSave('<%= recipe.id %>', this, event)"
-                                        data-saved="<%= recipe.isSaved %>"
-                                    >
-                                        <i class="bi <%= recipe.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
-                                        <%= recipe.isSaved ? 'Saved' : 'Save' %>
-                                    </button>
-                                <% } %>
-                            </div>
+                            <p class="card-text text-muted">
+                                By <%= recipe.author ? recipe.author.username : 'Unknown' %>
+                            </p>
                         </div>
                     </div>
                 </div>
             <% }); %>
         <% } else { %>
-            <div class="col-12 text-center">
-                <p class="text-muted">No popular recipes yet.</p>
+            <div class="col-12">
+                <p class="text-muted">No recipes found.</p>
             </div>
         <% } %>
     </div>
-</section>
+</div>

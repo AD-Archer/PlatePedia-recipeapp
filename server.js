@@ -20,6 +20,7 @@ import dashboard from './routes/dashboard.js';
 import logout from './routes/logout.js';
 import recipesRouter from './routes/recipes.js';
 import usersRouter from './routes/users.js';
+import profileRouter from './routes/profile.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -93,47 +94,53 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use(storePreviousUrl);
 
-// used to make sure the connection to the server is healthy and working 
+// API routes first
 app.get('/api/healthcheck', async (req, res) => {
     try {
         await sequelize.authenticate();
         res.status(200).json({ status: 'healthy' });
     } catch (error) {
-        console.error('Health check failed:', error);
         res.status(500).json({ status: 'unhealthy', error: error.message });
     }
 });
 
 // Main routes
-app.get('/', dashboard)
-// declaring routing from /routes
-app.use('/signup', signup); 
-app.use('/login', login); 
+app.use('/signup', signup);
+app.use('/login', login);
 app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);
+app.use('/profile', profileRouter);
 
+// Dashboard should be last before error handlers
+app.use('/', dashboard);
 
-/**
- * These are for SEO
- */
-// Manifest.json
+// Debug middleware
+app.use((req, res, next) => {
+    console.log('Request URL:', req.url);
+    console.log('Session user:', req.session.user);
+    next();
+});
+
+// 404 handler
+app.use((req, res) => {
+    console.log('404 - Not Found:', req.url);
+    res.status(404).render('pages/error', {
+        error: 'Page not found',
+        path: req.url,
+        user: req.session.user
+    });
+});
+
+// Error handler must be last
+app.use(errorHandler);
+
+// SEO routes
 app.get('/manifest.json', (req, res) => {
     res.type('application/json');
     res.sendFile(path.join(__dirname, '/public/manifest.json'));
 });
 
-// Function to escape special characters in XML this is used for our sitemap
-function escapeXML(str) {
-    return str
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
-}
-
-// Serve the sitemap.xml file dynamically
 app.get('/sitemap.xml', async (req, res) => {
     try {
         // Check if recipes and categories are cached
@@ -228,19 +235,9 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 
-
-
-// Serve the robots.txt file
 app.get('/robots.txt', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
 });
-
-
-// Catch-all route
-app.get('*', (req, res) => res.redirect('/'));
-
-// Error handler must be last
-app.use(errorHandler);
 
 // Start server based on environment
 if (!process.env.VERCEL) {
