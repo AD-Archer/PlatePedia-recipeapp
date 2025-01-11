@@ -13,6 +13,7 @@ import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from
 import flash from 'connect-flash';
 import cache from 'memory-cache'; // Import memory-cache
 import './utils/dataSync.js';  // Initialize data sync
+import { Op } from 'sequelize';
 
 // Import routes
 import signup from './routes/signup.js';
@@ -143,13 +144,21 @@ function escapeXML(str) {
 
 app.get('/sitemap.xml', async (req, res) => {
     try {
-        // Fetch and cache data
-        const recipes = cache.get('recipes') || await Recipe.findAll();
-        const categories = cache.get('categories') || await Category.findAll();
+        // Fetch recipes with specific attributes
+        const recipes = await Recipe.findAll({
+            attributes: ['id', 'title', 'updatedAt'],
+            where: {
+                title: {
+                    [Op.ne]: null  // Only get recipes with titles
+                }
+            },
+            raw: true
+        });
 
-        // Cache results
-        cache.put('recipes', recipes, 1000 * 60 * 5); // Cache for 5 minutes
-        cache.put('categories', categories, 1000 * 60 * 5);
+        const categories = await Category.findAll({
+            attributes: ['id', 'name'],
+            raw: true
+        });
 
         // Start building the sitemap
         let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -165,23 +174,34 @@ app.get('/sitemap.xml', async (req, res) => {
         <mobile:mobile>yes</mobile:mobile>
     </url>`;
 
-        // Add recipes
+        // Add recipes with SEO-friendly URLs
         recipes.forEach(recipe => {
-            const title = escapeXML(recipe.title || 'Recipe');
+            // Create URL-safe title
+            const safeTitle = recipe.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric chars with hyphens
+                .replace(/^-+|-+$/g, '')      // Remove leading/trailing hyphens
+                .substring(0, 50);            // Limit length
+
             sitemap += `
     <url>
-        <loc>https://food-finder-sepia.vercel.app/recipes/${recipe.id}</loc>
+        <loc>https://food-finder-sepia.vercel.app/recipes/${safeTitle}</loc>
         <lastmod>${new Date(recipe.updatedAt || new Date()).toISOString()}</lastmod>
         <priority>0.80</priority>
         <mobile:mobile>yes</mobile:mobile>
     </url>`;
         });
 
-        // Add categories
+        // Add categories with SEO-friendly URLs
         categories.forEach(category => {
+            const safeName = category.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
             sitemap += `
     <url>
-        <loc>https://food-finder-sepia.vercel.app/recipes/browse?category=${category.id}</loc>
+        <loc>https://food-finder-sepia.vercel.app/recipes/browse?category=${safeName}</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>0.70</priority>
         <mobile:mobile>yes</mobile:mobile>
