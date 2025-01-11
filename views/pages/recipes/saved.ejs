@@ -74,43 +74,18 @@
             <% if (recipes && recipes.length > 0) { %>
                 <% recipes.forEach(recipe => { %>
                     <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 shadow-sm">
-                            <% if (recipe.imageUrl) { %>
-                                <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
-                            <% } %>
-                            <div class="card-body">
-                                <h5 class="card-title"><%= recipe.title %></h5>
-                                <p class="card-text text-muted">By <%= recipe.author.username %></p>
-                                
-                                <% if (recipe.categories && recipe.categories.length > 0) { %>
-                                    <div class="mb-2">
-                                        <% recipe.categories.forEach(category => { %>
-                                            <span class="badge bg-secondary me-1 mb-1"><%= category.name %></span>
-                                        <% }) %>
-                                    </div>
+                        <a href="/recipes/<%= recipe.id %>" class="text-decoration-none text-dark">
+                            <div class="card h-100 shadow-sm">
+                                <% if (recipe.imageUrl) { %>
+                                    <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>">
                                 <% } %>
-
-                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mt-3 gap-2 recipe-actions">
-                                    <div class="recipe-info">
-                                        <span class="badge bg-info"><%= recipe.calories %> calories</span>
-                                        <% if (recipe.difficulty) { %>
-                                            <span class="badge bg-<%= recipe.difficulty === 'easy' ? 'success' : (recipe.difficulty === 'medium' ? 'warning' : 'danger') %>">
-                                                <%= recipe.difficulty %>
-                                            </span>
-                                        <% } %>
-                                    </div>
-                                    <div class="btn-group w-100 w-md-auto">
-                                        <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View Recipe</a>
-                                        <button 
-                                            class="btn btn-primary btn-sm save-recipe" 
-                                            onclick="toggleSave('<%= recipe.id %>', this)"
-                                            data-saved="true">
-                                            Unsave
-                                        </button>
-                                    </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= recipe.title %></h5>
+                                    <p class="card-text"><%= recipe.description %></p>
+                                    <p class="text-muted"><%= recipe.calories %> calories</p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 <% }) %>
             <% } else { %>

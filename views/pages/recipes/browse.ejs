@@ -107,17 +107,29 @@
 
                 <!-- Results Grid -->
                 <div class="recipe-grid row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-                    <% recipes.forEach(recipe => { %>
-                        <%- include('../../partials/recipeCard', { recipe: recipe }) %>
-                    <% }) %>
+                    <% if (recipes && recipes.length > 0) { %>
+                        <% recipes.forEach(recipe => { %>
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <a href="/recipes/<%= recipe.id %>" class="text-decoration-none text-dark">
+                                    <div class="card h-100 shadow-sm">
+                                        <% if (recipe.imageUrl) { %>
+                                            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>">
+                                        <% } %>
+                                        <div class="card-body">
+                                            <h5 class="card-title"><%= recipe.title %></h5>
+                                            <p class="card-text"><%= recipe.description %></p>
+                                            <p class="text-muted"><%= recipe.calories %> calories</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-12 text-center">
+                            <p class="lead text-muted">No recipes found</p>
+                        </div>
+                    <% } %>
                 </div>
-
-                <% if (recipes.length === 0) { %>
-                    <div class="text-center py-5">
-                        <h3>No recipes found</h3>
-                        <p class="text-muted">Try adjusting your search criteria</p>
-                    </div>
-                <% } %>
             </div>
 
             <div class="col-lg-3 order-lg-1">

@@ -10,20 +10,20 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/users"><i class="bi bi-person-fill"></i> Popular Chefs</a>
+                    <a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Dashboard</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/recipes/browse"><i class="bi bi-book"></i> Browse Recipes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Dashboard</a>
+                    <a class="nav-link" href="/users"><i class="bi bi-person-fill"></i> Popular Chefs</a>
                 </li>
                 <% if (locals.user) { %>
                     <li class="nav-item">
-                        <a class="nav-link" href="/recipes/my-recipes"><i class="bi bi-file-earmark-text"></i> My Recipes</a>
+                        <a class="nav-link" href="/recipes/saved"><i class="bi bi-bookmark-fill"></i> Saved Recipes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/recipes/saved"><i class="bi bi-bookmark-fill"></i> Saved Recipes</a>
+                        <a class="nav-link" href="/recipes/my-recipes"><i class="bi bi-file-earmark-text"></i> My Recipes</a>
                     </li>
                 <% } %>
             </ul>

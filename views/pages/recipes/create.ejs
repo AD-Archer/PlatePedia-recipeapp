@@ -223,13 +223,11 @@
                 difficulty: document.getElementById('difficulty').value || 'medium', // Default to medium if not selected
                 calories: document.getElementById('calories').value,
                 categories: Array.from(document.querySelectorAll('input[name="categories[]"]:checked')).map(input => input.value),
-                imageUrl: document.getElementById('imageUrl').value
+                imageUrl: document.getElementById('imageUrl').value || 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg' // Default image URL
             };
 
             // Validate required fields
             if (!formData.title || !formData.ingredients.length || !formData.instructions || !formData.calories) {
-                alert('Please fill in all required fields (Title, Ingredients, Instructions, and Calories)');
-                this.dataset.submitting = "false"; // Reset submitting state
                 return;
             }
 

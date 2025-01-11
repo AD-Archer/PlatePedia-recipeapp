@@ -15,8 +15,10 @@
         <div class="row">
             <div class="col-md-8 mx-auto">
                 <div class="card shadow-sm">
-                    <% if (recipe.imageUrl) { %>
+                    <% if (recipe.imageUrl && recipe.imageUrl !== "") { %>
                         <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 400px; object-fit: cover;">
+                    <% } else { %>
+                        <img src="https://as2.ftcdn.net/v2/jpg/02/51/95/53/1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg" class="card-img-top" alt="Default Image" style="height: 400px; object-fit: cover;">
                     <% } %>
                     <div class="card-body p-4">
                         <h1 class="card-title mb-3"><%= recipe.title %></h1>
@@ -120,7 +122,8 @@
                         <iframe width="560" height="315" src="<%= recipe.youtubeLink.replace('watch?v=', 'embed/') %>" frameborder="0" allowfullscreen style="margin: auto;"></iframe>
                     </div>
                 </div>
-            <% } else if (recipe.image) { %>
+            <% } %>
+            <% if (recipe.image) { %>
                 <div class="row mb-4">
                     <div class="col-md-8 mx-auto">
                         <h5>Recipe Image</h5>
@@ -129,12 +132,14 @@
                 </div>
             <% } %>
         <% } else { %>
-            <div class="row mb-4">
-                <div class="col-md-8 mx-auto">
-                    <h5>No Video or Image Available</h5>
-                    <img src="https://as2.ftcdn.net/v2/jpg/02/51/95/53/1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg" class="img-fluid" alt="Default Image">
+            <% if (recipe.image && !recipe.image.startsWith('http')) { %>
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <h5>Recipe Image</h5>
+                        <img src="https://as2.ftcdn.net/v2/jpg/02/51/95/53/1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg" class="card-img-top" alt="Default Image" style="object-fit: cover;">
+                    </div>
                 </div>
-            </div>
+            <% } %>
         <% } %>
     </div>
 

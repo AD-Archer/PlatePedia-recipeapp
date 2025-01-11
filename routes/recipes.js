@@ -425,7 +425,7 @@ router.get('/browse', asyncHandler(async (req, res) => {
             {
                 model: User,
                 as: 'author',
-                attributes: ['username']
+                attributes: ['username', 'profileImage']
             },
             {
                 model: Category,
@@ -457,17 +457,19 @@ router.get('/browse', asyncHandler(async (req, res) => {
             ];
         }
 
+        // Use the same pattern as dashboard's fetchRecipes function
         const recipes = await Recipe.findAll({
-            where: whereClause,
             include: includeClause,
-            order: [['createdAt', 'DESC']]
+            where: whereClause,
+            order: [['createdAt', 'DESC']],
+            raw: false,
+            nest: true
         });
 
-        const formattedRecipes = recipes.map(formatRecipeData);
-        const recipesWithSaveStatus = await addSavedStatus(
-            formattedRecipes,
-            req.session.user?.id
-        );
+        // Add saved status using the same pattern as dashboard
+        const recipesWithSaveStatus = req.session.user?.id ? 
+            await addSavedStatus(recipes, req.session.user.id) : 
+            recipes;
 
         const categories = await Category.findAll({
             order: [['name', 'ASC']]
@@ -479,7 +481,7 @@ router.get('/browse', asyncHandler(async (req, res) => {
             searchQuery: search || '',
             selectedCategory: category || '',
             selectedDifficulty: difficulty || '',
-            selectedTags: tags || [],
+            selectedTags: Array.isArray(tags) ? tags : (tags ? [tags] : []),
             error: req.session.error,
             success: req.session.success
         });
@@ -854,7 +856,7 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
 });
 
 // 5. Save/unsave routes
-router.post('/:id/save', asyncHandler(async (req, res) => {
+router.post('/:id/save', isAuthenticated, asyncHandler(async (req, res) => {
     const recipeId = parseInt(req.params.id);
     
     try {
@@ -883,7 +885,7 @@ router.post('/:id/save', asyncHandler(async (req, res) => {
     }
 }));
 
-router.delete('/:id/save', asyncHandler(async (req, res) => {
+router.delete('/:id/save', isAuthenticated, asyncHandler(async (req, res) => {
     const recipeId = parseInt(req.params.id);
     
     try {
