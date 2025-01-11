@@ -1,0 +1,11 @@
+<!-- Suggested Users Section (Only shown to logged-in users) -->
+<% if (user && suggestedUsers && suggestedUsers.length > 0) { %>
+    <section class="mb-5">
+        <h2 class="mb-4">Suggested Users</h2>
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <% suggestedUsers.forEach(suggestedUser => { %>
+                <%- include('../../partials/userCard', { user: suggestedUser }) %>
+            <% }); %>
+        </div>
+    </section>
+<% } %>

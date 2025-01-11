@@ -101,23 +101,9 @@
         <div class="container">
             <%- include('../partials/alerts') %>
             <%- include('../partials/dashboard/popularrecipes') %>
-            <%- include('../partials/dashboard/cuisine') %>
-
-
-            <!-- Suggested Users Section (Only shown to logged-in users) -->
-            <% if (false) { %> <!-- Temporarily disabled -->
-                <section class="mb-5">
-                    <h2 class="mb-4">Suggested Users</h2>
-                    <div class="row row-cols-1 row-cols-md-4 g-4">
-                        <% suggestedUsers.forEach(suggestedUser => { %>
-                            <%- include('../partials/userCard', { user: suggestedUser }) %>
-                        <% }); %>
-                    </div>
-                </section>
-            <% } %>
-
+            <%- include('../partials/dashboard/cuisine') %>  
+            <%- include('../partials/dashboard/suggestedusers') %>
             <%- include('../partials/dashboard/recent') %>
-
         </div>
     </div>
 
@@ -126,22 +112,34 @@
     crossorigin="anonymous"></script>
     
     <script>
-    async function toggleFollow(username, button) {
-        const isFollowing = button.getAttribute('data-following') === 'true';
+    function goToUserProfile(username, event) {
+        // Don't navigate if they clicked the follow button
+        if (event.target.closest('button')) {
+            return;
+        }
+        window.location.href = `/users/${username}`;
+    }
+
+    async function toggleFollow(userId, button, event) {
+        event.stopPropagation(); // Prevent card click when following
         try {
-            const response = await fetch(`/users/${username}/follow`, {
+            const isFollowing = button.getAttribute('data-following') === 'true';
+            const response = await fetch(`/users/${userId}/follow`, {
                 method: isFollowing ? 'DELETE' : 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 button.setAttribute('data-following', !isFollowing);
-                button.textContent = isFollowing ? 'Follow' : 'Unfollow';
-                button.className = `btn btn-${isFollowing ? '' : 'outline-'}primary btn-sm follow-btn`;
+                button.innerHTML = isFollowing ? 
+                    '<i class="bi bi-person-plus"></i> Follow' : 
+                    '<i class="bi bi-person-check"></i> Following';
+                button.classList.toggle('btn-primary');
+                button.classList.toggle('btn-secondary');
             } else {
                 alert(data.error || 'Error updating follow status');
             }

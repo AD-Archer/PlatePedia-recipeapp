@@ -10,11 +10,27 @@ const router = express.Router();
 // Utility function to fetch recipes with optional saved status
 const fetchRecipes = async (orderBy, limit, userId) => {
     const recipes = await Recipe.findAll({
+        attributes: [
+            'id',
+            'title',
+            'description',
+            'imageUrl',
+            'difficulty',
+            'calories',
+            'cookingTime',
+            'userId',
+            'createdAt'
+        ],
         include: [
             {
                 model: User,
                 as: 'author',
-                attributes: ['username', 'profileImage']
+                attributes: ['id', 'username', 'profileImage']
+            },
+            {
+                model: Category,
+                as: 'Categories',
+                through: { attributes: [] }
             }
         ],
         order: [orderBy],
@@ -22,7 +38,9 @@ const fetchRecipes = async (orderBy, limit, userId) => {
         raw: false,
         nest: true
     });
-    return userId ? addSavedStatus(recipes, userId) : recipes;
+
+    // Add saved status if user is logged in
+    return userId ? await addSavedStatus(recipes, userId) : recipes;
 };
 
 // Fetch categories grouped by type
@@ -58,7 +76,8 @@ const fetchGroupedCategories = async () => {
 const fetchSuggestedUsers = async (userId) => {
     const users = await User.findAll({
         where: {
-            id: { [Op.ne]: userId }
+            id: { [Op.ne]: userId },
+            username: { [Op.ne]: 'themealdb' }
         },
         attributes: [
             'id',
@@ -71,75 +90,89 @@ const fetchSuggestedUsers = async (userId) => {
                 'recipeCount'
             ]
         ],
-        limit: 4,
+        limit: 2,
         order: sequelize.random()
     });
     return users.map(user => user.get({ plain: true }));
 };
 
 // Dashboard route
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
     try {
         const userId = req.session.user?.id;
 
-        // Fetch all recipes with authors
-        const allRecipes = await Recipe.findAll({
-            include: [{
-                model: User,
-                as: 'author',
-                attributes: ['username', 'id']
-            }],
-            order: [['createdAt', 'DESC']]
-        });
+        // Use the fetchRecipes utility function
+        const popularRecipes = await fetchRecipes(['createdAt', 'DESC'], 6, userId);
+        const latestRecipes = await fetchRecipes(['createdAt', 'DESC'], 8, userId);
 
-        // Shuffle and slice recipes for popular and latest sections
-        const shuffledRecipes = allRecipes.sort(() => Math.random() - 0.5);
-        const popularRecipes = shuffledRecipes.slice(0, 6);
-        const latestRecipes = allRecipes.slice(0, 8);
+        // Fetch suggested users if user is logged in
+        const suggestedUsers = userId ? await fetchSuggestedUsers(userId) : [];
 
-        // Fetch categories with recipe counts
-        const categories = await Category.findAll({
-            attributes: {
-                include: [
-                    [
-                        sequelize.literal(
-                            '(SELECT COUNT(*) FROM recipe_categories WHERE recipe_categories."categoryId" = "Category".id)'
-                        ),
-                        'recipeCount'
-                    ]
+        // Add themealdb user to suggested users if it exists
+        const themealdbUser = await User.findOne({
+            where: { username: 'themealdb' },
+            attributes: [
+                'id', 
+                'username', 
+                'profileImage',
+                [
+                    sequelize.literal(
+                        '(SELECT COUNT(*) FROM recipes WHERE recipes."userId" = "User"."id")'
+                    ),
+                    'recipeCount'
                 ]
-            },
-            order: [['type', 'ASC'], ['name', 'ASC']]
+            ]
         });
 
-        // Group categories by type
-        const groupedCategories = categories.reduce((acc, category) => {
-            const type = category.type || 'Other';
-            if (!acc[type]) acc[type] = [];
-            acc[type].push(category);
-            return acc;
-        }, {});
+        if (themealdbUser) {
+            const plainThemealdbUser = themealdbUser.get({ plain: true });
+            if (userId) {
+                const isFollowing = await User.findOne({
+                    where: { 
+                        id: userId,
+                        '$following.id$': themealdbUser.id 
+                    },
+                    include: [{
+                        model: User,
+                        as: 'following'
+                    }]
+                });
+                plainThemealdbUser.isFollowing = !!isFollowing;
+            }
+            suggestedUsers.push(plainThemealdbUser);
+        }
 
-        // Add saved status if user is logged in
-        const processedPopularRecipes = userId 
-            ? await addSavedStatus(popularRecipes, userId) 
-            : popularRecipes;
+        // Add isFollowing status to suggested users
+        if (userId) {
+            const userFollowings = await User.findOne({
+                where: { id: userId },
+                include: [{
+                    model: User,
+                    as: 'following',
+                    attributes: ['id']
+                }]
+            });
 
-        const processedLatestRecipes = userId 
-            ? await addSavedStatus(latestRecipes, userId) 
-            : latestRecipes;
+            const followingIds = userFollowings?.following.map(f => f.id) || [];
+            suggestedUsers.forEach(user => {
+                user.isFollowing = followingIds.includes(user.id);
+            });
+        }
 
-        // Render the dashboard view
+        // Get grouped categories
+        const groupedCategories = await fetchGroupedCategories();
+
+        // Render the dashboard
         res.render('pages/dashboard', {
             user: req.session.user,
-            popularRecipes: processedPopularRecipes,
-            latestRecipes: processedLatestRecipes,
+            popularRecipes,  // These are already processed by fetchRecipes
+            latestRecipes,   // These are already processed by fetchRecipes
             groupedCategories,
+            suggestedUsers,
             error: req.session.error,
             success: req.session.success
         });
 
-        // Clear flash messages after rendering
         delete req.session.error;
         delete req.session.success;
 
@@ -150,7 +183,7 @@ router.get('/', async (req, res) => {
             error
         });
     }
-});
+}));
 
 
 export default router;
