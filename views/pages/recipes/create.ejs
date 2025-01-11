@@ -60,7 +60,7 @@
                                 <!-- Meal Types -->
                                 <h6 class="mt-3 mb-2">Meal Type</h6>
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <% groupedCategories.meal.forEach(category => { %>
+                                    <% (groupedCategories.meal || []).forEach(category => { %>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
                                                    name="tags[]" value="<%= category.name %>" 
@@ -75,7 +75,7 @@
                                 <!-- Main Ingredients -->
                                 <h6 class="mt-3 mb-2">Main Ingredient</h6>
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <% groupedCategories.ingredient.forEach(category => { %>
+                                    <% (groupedCategories.ingredient || []).forEach(category => { %>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
                                                    name="tags[]" value="<%= category.name %>" 
@@ -90,7 +90,7 @@
                                 <!-- Course Types -->
                                 <h6 class="mt-3 mb-2">Course Type</h6>
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <% groupedCategories.course.forEach(category => { %>
+                                    <% (groupedCategories.course || []).forEach(category => { %>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
                                                    name="tags[]" value="<%= category.name %>" 
@@ -105,7 +105,7 @@
                                 <!-- Dish Types -->
                                 <h6 class="mt-3 mb-2">Dish Type</h6>
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <% groupedCategories.dish.forEach(category => { %>
+                                    <% (groupedCategories.dish || []).forEach(category => { %>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
                                                    name="tags[]" value="<%= category.name %>" 
@@ -120,7 +120,7 @@
                                 <!-- Dietary Restrictions -->
                                 <h6 class="mt-3 mb-2">Dietary</h6>
                                 <div class="d-flex flex-wrap gap-2">
-                                    <% groupedCategories.dietary.forEach(category => { %>
+                                    <% (groupedCategories.dietary || []).forEach(category => { %>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
                                                    name="tags[]" value="<%= category.name %>" 
@@ -220,10 +220,10 @@
                 instructions: document.getElementById('instructions').value,
                 cookingTime: document.getElementById('cookingTime').value,
                 servings: document.getElementById('servings').value,
-                difficulty: document.getElementById('difficulty').value || 'medium', // Default to medium if not selected
+                difficulty: document.getElementById('difficulty').value || 'medium',
                 calories: document.getElementById('calories').value,
-                categories: Array.from(document.querySelectorAll('input[name="categories[]"]:checked')).map(input => input.value),
-                imageUrl: document.getElementById('imageUrl').value || 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg' // Default image URL
+                categories: Array.from(document.querySelectorAll('input[name="tags[]"]:checked')).map(input => input.value),
+                imageUrl: document.getElementById('imageUrl').value || 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg'
             };
 
             // Validate required fields

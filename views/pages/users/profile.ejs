@@ -29,11 +29,11 @@
                                 <p class="text-muted mt-2"><%= profileUser.bio %></p>
                             <% } %>
 
-                            <% if (user && user.id !== profileUser.id) { %>
+                            <% if (user && !isOwnProfile) { %>
                                 <button 
-                                    class="btn <%= isFollowing ? 'btn-secondary' : 'btn-primary' %>"
-                                    onclick="toggleFollow('<%= profileUser.id %>', this)"
-                                    data-following="<%= isFollowing %>">
+                                    class="btn <%= isFollowing ? 'btn-primary' : 'btn-outline-primary' %>"
+                                    onclick="toggleFollow('<%= profileUser.username %>', this)"
+                                    data-following="<%= isFollowing ? 'true' : 'false' %>">
                                     <i class="bi bi-person<%= isFollowing ? '-check' : '-plus' %>"></i>
                                     <%= isFollowing ? 'Following' : 'Follow' %>
                                 </button>

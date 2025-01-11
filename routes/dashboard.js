@@ -2,6 +2,7 @@ import express from 'express';
 import { User } from '../models/TableCreation.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { Op } from 'sequelize';
+import sequelize from '../config/db.js';
 import { getCachedData } from '../utils/dataSync.js';
 
 const router = express.Router();

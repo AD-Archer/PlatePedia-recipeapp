@@ -33,9 +33,9 @@
                             
                             <% if (locals.user && locals.user.id !== user.id) { %>
                                 <button 
-                                    class="btn <%= user.isFollowing ? 'btn-secondary' : 'btn-primary' %>"
-                                    onclick="toggleFollow('<%= user.id %>', this, event)"
-                                    data-following="<%= user.isFollowing %>">
+                                    class="btn <%= user.isFollowing ? 'btn-primary' : 'btn-outline-primary' %> btn-sm"
+                                    onclick="toggleFollow('<%= user.username %>', this)"
+                                    data-following="<%= user.isFollowing ? 'true' : 'false' %>">
                                     <i class="bi bi-person<%= user.isFollowing ? '-check' : '-plus' %>"></i>
                                     <%= user.isFollowing ? 'Following' : 'Follow' %>
                                 </button>

@@ -1,12 +1,12 @@
 import express from 'express';
-import { Recipe, User, Category, SavedRecipe } from '../models/TableCreation.js';
+import { Recipe, User, Category, SavedRecipe, UserFollows } from '../models/TableCreation.js';
 import { body, validationResult } from 'express-validator';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op } from 'sequelize';
 import sequelize from 'sequelize';
 import { addSavedStatus } from '../utils/recipeUtils.js';
-import { getCachedData, getUserSavedRecipes } from '../utils/dataSync.js';
+import { getCachedData, getUserSavedRecipes, clearCache } from '../utils/dataSync.js';
 
 const router = express.Router();
 
@@ -220,17 +220,13 @@ const viewRecipe = asyncHandler(async (req, res) => {
     // Check if the logged-in user is following the recipe author
     let isFollowing = false;
     if (req.session.user && recipe.author.id !== req.session.user.id) {
-        const userFollows = await User.findOne({
-            where: { 
-                id: req.session.user.id,
-                '$following.id$': recipe.author.id 
-            },
-            include: [{
-                model: User,
-                as: 'following'
-            }]
+        const followRelation = await UserFollows.findOne({
+            where: {
+                followerId: req.session.user.id,
+                followingId: recipe.author.id
+            }
         });
-        isFollowing = !!userFollows;
+        isFollowing = !!followRelation;
     }
 
     let isSaved = false;
@@ -251,6 +247,7 @@ const viewRecipe = asyncHandler(async (req, res) => {
 
     res.render('pages/recipes/view', {
         recipe: recipeWithSave,
+        user: req.session.user,
         isFollowing,
         error: req.session.error,
         success: req.session.success
@@ -590,13 +587,22 @@ router.post('/', [
 }));
 
 // 4. Protected routes with specific paths
-router.get('/new', asyncHandler(async (req, res) => {
-    const categories = await Category.findAll({
-        order: [['name', 'ASC']]
-    });
+router.get('/new', isAuthenticated, asyncHandler(async (req, res) => {
+    const { all: categories } = getCachedData('categories');
     
+    // Group categories by type
+    const groupedCategories = categories.reduce((acc, category) => {
+        const type = category.type || 'other';
+        if (!acc[type]) {
+            acc[type] = [];
+        }
+        acc[type].push(category);
+        return acc;
+    }, {});
+
     res.render('pages/recipes/create', {
         categories,
+        groupedCategories,
         formData: {},
         error: req.session.error,
         success: req.session.success
@@ -672,21 +678,18 @@ router.get('/:id', asyncHandler(async (req, res) => {
     // Check if the logged-in user is following the recipe author
     let isFollowing = false;
     if (req.session.user && recipe.author.id !== req.session.user.id) {
-        const userFollows = await User.findOne({
-            where: { 
-                id: req.session.user.id,
-                '$following.id$': recipe.author.id 
-            },
-            include: [{
-                model: User,
-                as: 'following'
-            }]
+        const followRelation = await UserFollows.findOne({
+            where: {
+                followerId: req.session.user.id,
+                followingId: recipe.author.id
+            }
         });
-        isFollowing = !!userFollows;
+        isFollowing = !!followRelation;
     }
 
     res.render('pages/recipes/view', {
         recipe,
+        user: req.session.user,
         isFollowing,
         error: req.session.error,
         success: req.session.success
@@ -815,25 +818,24 @@ router.post('/:id/edit', isRecipeCreator, [
     }
 }));
 
-router.delete('/:id', isAuthenticated, async (req, res) => {
+router.delete('/:id', [isAuthenticated, isRecipeCreator], asyncHandler(async (req, res) => {
     try {
-        const recipeId = req.params.id;
-        const userId = req.user.id; // Ensure user is authenticated
-
-        // Find the recipe and check if the user is the owner
-        const recipe = await Recipe.findByPk(recipeId);
-        if (!recipe || recipe.userId !== userId) {
-            return res.status(403).json({ error: 'You do not have permission to delete this recipe.' });
-        }
-
-        // Delete the recipe
-        await Recipe.destroy({ where: { id: recipeId } });
-        res.json({ success: true, redirectUrl: '/recipes/my-recipes' }); // Include redirect URL
+        await req.recipe.destroy();
+        // Clear the cache for recipes after deletion
+        clearCache('recipes');
+        res.json({ 
+            success: true, 
+            message: 'Recipe deleted successfully',
+            redirectUrl: '/recipes/my-recipes'
+        });
     } catch (error) {
         console.error('Error deleting recipe:', error);
-        res.status(500).json({ error: 'An error occurred while deleting the recipe.' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error deleting recipe' 
+        });
     }
-});
+}));
 
 // 5. Save/unsave routes
 router.post('/:id/save', isAuthenticated, asyncHandler(async (req, res) => {

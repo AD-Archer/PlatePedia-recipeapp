@@ -3,7 +3,7 @@ import { User, Recipe, UserFollows, Category } from '../models/TableCreation.js'
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { Op, Sequelize } from 'sequelize';
-import { getCachedData, getUserData } from '../utils/dataSync.js';
+import { getCachedData, getUserData, clearCache } from '../utils/dataSync.js';
 const router = express.Router();
 
 // Show all users/suggested users page - Public access
@@ -148,125 +148,87 @@ router.get('/:username', asyncHandler(async (req, res) => {
     delete req.session.success;
 }));
 
-// Follow/unfollow routes
-router.post('/:id/follow', isAuthenticated, asyncHandler(async (req, res) => {
+// Follow/unfollow user
+router.post('/:username/follow', isAuthenticated, asyncHandler(async (req, res) => {
     try {
-        const followerId = parseInt(req.session.user.id);
-        const followingId = parseInt(req.params.id);
+        // Get the user to follow
+        const userToFollow = await User.findOne({
+            where: { username: req.params.username }
+        });
 
-        console.log('Attempting to follow:', { followerId, followingId }); // Debug log
-
-        // Validate IDs
-        if (!followerId || !followingId) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Invalid user IDs' 
-            });
-        }
-
-        // Don't allow following yourself
-        if (followerId === followingId) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'You cannot follow yourself' 
-            });
-        }
-
-        // Check if user exists
-        const userToFollow = await User.findByPk(followingId);
         if (!userToFollow) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'User not found' 
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
             });
         }
 
-        // Check if already following
-        const existingFollow = await UserFollows.findOne({
+        // Prevent self-following
+        if (userToFollow.id === req.session.user.id) {
+            return res.status(400).json({
+                success: false,
+                error: 'You cannot follow yourself'
+            });
+        }
+
+        const [follow, created] = await UserFollows.findOrCreate({
             where: {
-                followerId,
-                followingId
+                followerId: req.session.user.id,
+                followingId: userToFollow.id
             }
         });
 
-        if (existingFollow) {
-            return res.json({ 
-                success: true, 
-                following: true,
-                message: 'Already following user'
-            });
-        }
+        // Clear the cache for users after follow/unfollow
+        clearCache('users');
 
-        // Create new follow relationship with explicit values
-        const newFollow = await UserFollows.create({
-            followerId: followerId,
-            followingId: followingId,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }, {
-            fields: ['followerId', 'followingId', 'createdAt', 'updatedAt']
-        });
-
-        console.log('Created follow relationship:', newFollow); // Debug log
-
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             following: true,
-            message: 'Successfully followed user'
+            message: created ? 'Successfully followed user' : 'Already following user'
         });
     } catch (error) {
-        console.error('Error following user:', error);
-        console.error('Error details:', {
-            followerId: req.session.user?.id,
-            followingId: req.params.id,
-            error: error.message
-        });
-        res.status(500).json({ 
-            success: false, 
-            error: 'Error following user' 
+        console.error('Follow error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error following user'
         });
     }
 }));
 
-router.delete('/:id/follow', isAuthenticated, asyncHandler(async (req, res) => {
+router.delete('/:username/follow', isAuthenticated, asyncHandler(async (req, res) => {
     try {
-        const followerId = parseInt(req.session.user.id);
-        const followingId = parseInt(req.params.id);
+        // Get the user to unfollow
+        const userToUnfollow = await User.findOne({
+            where: { username: req.params.username }
+        });
 
-        // Validate IDs
-        if (!followerId || !followingId) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Invalid user IDs' 
-            });
-        }
-
-        // Check if user exists
-        const userToUnfollow = await User.findByPk(followingId);
         if (!userToUnfollow) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'User not found' 
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
             });
         }
 
         const deleted = await UserFollows.destroy({
             where: {
-                followerId: followerId,
-                followingId: followingId
+                followerId: req.session.user.id,
+                followingId: userToUnfollow.id
             }
         });
 
-        res.json({ 
-            success: true, 
+        // Clear the cache for users after unfollow
+        clearCache('users');
+
+        res.json({
+            success: true,
             following: false,
             message: deleted ? 'Successfully unfollowed user' : 'Not following user'
         });
     } catch (error) {
         console.error('Error unfollowing user:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Error unfollowing user' 
+        res.status(500).json({
+            success: false,
+            error: 'Error unfollowing user'
         });
     }
 }));

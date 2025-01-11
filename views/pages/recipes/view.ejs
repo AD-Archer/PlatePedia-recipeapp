@@ -32,9 +32,9 @@
                                 <small class="text-muted">Created on <%= new Date(recipe.createdAt).toLocaleDateString() %></small>
                                 <% if (user && user.id !== recipe.author.id) { %>
                                     <button 
-                                        class="btn <%= isFollowing ? 'btn-secondary' : 'btn-primary' %> btn-sm ms-2"
+                                        class="btn <%= isFollowing ? 'btn-primary' : 'btn-outline-primary' %> btn-sm ms-2"
                                         onclick="toggleFollow('<%= recipe.author.username %>', this)"
-                                        data-following="<%= isFollowing %>">
+                                        data-following="<%= isFollowing ? 'true' : 'false' %>">
                                         <i class="bi bi-person<%= isFollowing ? '-check' : '-plus' %>"></i>
                                         <%= isFollowing ? 'Following' : 'Follow' %>
                                     </button>

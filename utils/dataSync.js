@@ -96,16 +96,20 @@ const syncMethods = {
 
     async users() {
         const popularUsers = await User.findAll({
-            attributes: {
-                include: [
-                    [sequelize.literal(`(
+            attributes: [
+                'id',
+                'username',
+                'profileImage',
+                [
+                    sequelize.literal(`(
                         SELECT COUNT(*)
                         FROM recipes
                         WHERE recipes."userId" = "User".id
-                    )`), 'recipeCount']
+                    )`),
+                    'recipeCount'
                 ]
-            },
-            order: [[sequelize.literal('recipeCount'), 'DESC']],
+            ],
+            order: [[sequelize.literal('"recipeCount"'), 'DESC']],
             limit: 10
         });
 
