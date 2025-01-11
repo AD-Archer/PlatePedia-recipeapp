@@ -1,7 +1,7 @@
 {
-  "name": "food-finder-recipeapp",
+  "name": "PlatePedia",
   "version": "1.0.0",
-  "description": "Food Finder - A Recipe Management Application",
+  "description": "PlatePedia - A Recipe Management Application",
   "main": "server.js",
   "type": "module",
   "scripts": {

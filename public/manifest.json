@@ -1,11 +1,11 @@
 {
-    "name": "Food Finder",
-    "short_name": "FoodFinder",
+    "name": "PlatePedia - Recipe Videos & Cooking Tutorials",
+    "short_name": "PlatePedia",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
-    "description": "Food Finder is your go-to platform for discovering delicious recipes and connecting with fellow food enthusiasts.",
+    "description": "PlatePedia is your ultimate cooking companion, featuring video tutorials, step-by-step recipes, and a vibrant community of food enthusiasts. Learn from expert chefs, discover global cuisines, and master cooking techniques with our comprehensive collection of video-guided recipes.",
     "icons": [
         {
             "src": "/images/burger.svg",

@@ -50,12 +50,20 @@ async function initializeDatabase() {
     }
 }
 
-app.enable('trust proxy');
-
 // Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Bypass authentication for public files
+app.use((req, res, next) => {
+    if (req.path === '/manifest.json' || 
+        req.path.startsWith('/images/') || 
+        req.path === '/robots.txt') {
+        return next();
+    }
+    next();
+});
 
 // Session configuration
 app.use(session({
@@ -63,7 +71,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: false,
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     },
@@ -128,8 +136,51 @@ app.get('/dashboard', (req, res) => { // i make the mistake of redirecting to th
 
 // SEO routes
 app.get('/manifest.json', (req, res) => {
-    res.type('application/json');
-    res.sendFile(path.join(__dirname, '/public/manifest.json'));
+    // Ensure no auth required
+    res.set({
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=3600'
+    });
+
+    const manifest = {
+        "name": "PlatePedia - Recipe Videos & Cooking Tutorials",
+        "short_name": "PlatePedia",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#ffffff",
+        "description": "PlatePedia is your ultimate cooking companion, featuring video tutorials, step-by-step recipes, and a vibrant community of food enthusiasts. Learn from expert chefs, discover global cuisines, and master cooking techniques with our comprehensive collection of video-guided recipes.",
+        "icons": [
+            {
+                "src": "/images/burger.svg",
+                "sizes": "any",
+                "type": "image/svg+xml"
+            },
+            {
+                "src": "/images/burger.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            },
+            {
+                "src": "/images/burger.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": "/images/burger.png",
+                "sizes": "32x32",
+                "type": "image/png"
+            },
+            {
+                "src": "/images/burger.png",
+                "sizes": "16x16",
+                "type": "image/png"
+            }
+        ]
+    };
+
+    res.status(200).json(manifest);
 });
 
 function escapeXML(str) {
@@ -168,7 +219,7 @@ app.get('/sitemap.xml', async (req, res) => {
         // Add homepage
         sitemap += `
     <url>
-        <loc>https://food-finder-sepia.vercel.app/</loc>
+        <loc>https://platepedia.vercel.app/</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>1.00</priority>
         <mobile:mobile>yes</mobile:mobile>
@@ -185,7 +236,7 @@ app.get('/sitemap.xml', async (req, res) => {
 
             sitemap += `
     <url>
-        <loc>https://food-finder-sepia.vercel.app/recipes/${safeTitle}</loc>
+        <loc>https://platepedia.vercel.app/recipes/${safeTitle}</loc>
         <lastmod>${new Date(recipe.updatedAt || new Date()).toISOString()}</lastmod>
         <priority>0.80</priority>
         <mobile:mobile>yes</mobile:mobile>
@@ -201,7 +252,7 @@ app.get('/sitemap.xml', async (req, res) => {
 
             sitemap += `
     <url>
-        <loc>https://food-finder-sepia.vercel.app/recipes/browse?category=${safeName}</loc>
+        <loc>https://platepedia.vercel.app/recipes/browse?category=${safeName}</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>0.70</priority>
         <mobile:mobile>yes</mobile:mobile>
@@ -237,20 +288,19 @@ app.use((req, res) => {
 // Error handler must be last
 app.use(errorHandler);
 
-// Start server based on environment
-if (!process.env.VERCEL) {
-    const PORT = process.env.PORT || 2555;
-    // Initialize database and start server
-    try {
-        await initializeDatabase();
+// Initialize database
+try {
+    await initializeDatabase();
+    
+    // Start server if not in Vercel
+    if (!process.env.VERCEL) {
+        const PORT = process.env.PORT || 2555;
         app.listen(PORT, () => {
-            console.log(`Server running on http://${url}:${PORT}`);
-            console.log(`Environment: ${process.env.NODE_ENV}`);
+            console.log(`Server running on port ${PORT}`);
         });
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
     }
+} catch (error) {
+    console.error('Failed to initialize database:', error);
 }
 
 export default app;

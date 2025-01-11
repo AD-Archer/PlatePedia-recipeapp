@@ -1,5 +1,20 @@
 User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://platepedia.vercel.app/sitemap.xml
+
+# Main sections
+Allow: /recipes
+Allow: /users
+Allow: /profile
+
+# Disallow admin and private areas
 Disallow: /admin/
 Disallow: /private/
+Disallow: /api/
 
-Sitemap: https://food-finder-sepia.vercel.app/sitemap.xml
+# Optimize crawling
+Crawl-delay: 10
+
+Host: https://platepedia.vercel.app

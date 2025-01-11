@@ -5,21 +5,54 @@
       "src": "server.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["config/**", "models/**", "routes/**", "middleware/**", "views/**"]
+        "includeFiles": [
+          "config/**",
+          "models/**",
+          "routes/**",
+          "middleware/**",
+          "views/**",
+          "public/**"
+        ]
       }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/server.js"
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/public/images/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "server.js",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "server.js",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/images/burger.png"
+    },
+    {
+      "src": "/((?!.*\\.).*)",
+      "dest": "server.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 } 

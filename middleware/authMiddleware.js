@@ -20,8 +20,7 @@ export const isAuthenticated = (req, res, next) => {
 // Middleware to check if user is NOT logged in (for login/signup pages)
 export const isNotAuthenticated = (req, res, next) => {
     if (!req.session.user) {
-        next();
-    } else {
-        res.redirect('/dashboard');
+        req.flash('error', 'Please log in to access PlatePedia features');
+        return res.redirect('/login');
     }
 }; 
