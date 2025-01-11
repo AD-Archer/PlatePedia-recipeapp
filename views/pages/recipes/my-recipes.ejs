@@ -101,7 +101,7 @@
                                     <div class="btn-group w-100 w-md-auto">
                                         <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary btn-sm">View</a>
                                         <a href="/recipes/<%= recipe.id %>/edit" class="btn btn-outline-secondary btn-sm">Edit</a>
-                                        <button onclick="deleteRecipe(<%= recipe.id %>)" class="btn btn-outline-danger btn-sm">Delete</button>
+                                        <button class="btn btn-outline-danger" onclick="deleteRecipe(<%= recipe.id %>, '/recipes/my-recipes')">Delete</button>
                                     </div>
                                 </div>
                             </div>

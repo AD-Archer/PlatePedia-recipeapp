@@ -833,15 +833,25 @@ router.post('/:id/edit', isRecipeCreator, [
     }
 }));
 
-router.delete('/:id', isRecipeCreator, asyncHandler(async (req, res) => {
-    await req.recipe.destroy();
-    req.session.success = 'Recipe deleted successfully';
-    res.json({ 
-        success: true, 
-        message: 'Recipe deleted successfully',
-        redirectUrl: '/dashboard'
-    });
-}));
+router.delete('/:id', isAuthenticated, async (req, res) => {
+    try {
+        const recipeId = req.params.id;
+        const userId = req.user.id; // Ensure user is authenticated
+
+        // Find the recipe and check if the user is the owner
+        const recipe = await Recipe.findByPk(recipeId);
+        if (!recipe || recipe.userId !== userId) {
+            return res.status(403).json({ error: 'You do not have permission to delete this recipe.' });
+        }
+
+        // Delete the recipe
+        await Recipe.destroy({ where: { id: recipeId } });
+        res.json({ success: true, redirectUrl: '/recipes/my-recipes' }); // Include redirect URL
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
+        res.status(500).json({ error: 'An error occurred while deleting the recipe.' });
+    }
+});
 
 // 5. Save/unsave routes
 router.post('/:id/save', asyncHandler(async (req, res) => {

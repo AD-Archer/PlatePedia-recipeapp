@@ -96,7 +96,7 @@
                             <% if (user && user.id === recipe.author.id) { %>
                                 <div>
                                     <a href="/recipes/<%= recipe.id %>/edit" class="btn btn-outline-primary me-2">Edit</a>
-                                    <button class="btn btn-outline-danger" onclick="deleteRecipe(<%= recipe.id %>)">Delete</button>
+                                    <button class="btn btn-outline-danger" onclick="deleteRecipe(<%= recipe.id %>, '/recipes/my-recipes')">Delete</button>
                                 </div>
                             <% } else if (user) { %>
                                 <button 
@@ -142,14 +142,19 @@
 
     <% if (user && user.id === recipe.author.id) { %>
         <script>
-            function deleteRecipe(recipeId) {
+            function deleteRecipe(recipeId, redirectUrl) {
                 if (confirm('Are you sure you want to delete this recipe?')) {
                     fetch(`/recipes/${recipeId}`, {
                         method: 'DELETE',
                     }).then(response => {
                         if (response.ok) {
-                            window.location.href = '/recipes/my-recipes';
+                            window.location.href = redirectUrl;
+                        } else {
+                            alert('Error deleting recipe');
                         }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        alert('Error deleting recipe');
                     });
                 }
             }
