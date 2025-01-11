@@ -11,6 +11,7 @@ import sequelize from './config/db.js'; // Updated to import sequelize from db.j
 import { flashMiddleware } from './middleware/flashMiddleware.js';
 import { User, Recipe, Category, UserFollows, SavedRecipe, RecipeCategory } from './models/TableCreation.js';
 import flash from 'connect-flash';
+import cache from 'memory-cache'; // Import memory-cache
 
 // Import routes
 import signup from './routes/signup.js';
@@ -126,16 +127,30 @@ app.get('/manifest.json', (req, res) => {
 // Serve the sitemap.xml file dynamically
 app.get('/sitemap.xml', async (req, res) => {
     try {
-        // Fetch all recipes from the database
-        const recipes = await Recipe.findAll();
-        // Fetch all categories from the database
-        const categories = await Category.findAll();
+        // Check if recipes and categories are cached
+        let recipes = cache.get('recipes');
+        let categories = cache.get('categories');
+
+        // If not cached, fetch from the database
+        if (!recipes) {
+            recipes = await Recipe.findAll();
+            cache.put('recipes', recipes, 1000 * 60 * 5); // Cache for 5 minutes
+        }
+
+        if (!categories) {
+            categories = await Category.findAll();
+            cache.put('categories', categories, 1000 * 60 * 5); // Cache for 5 minutes
+        }
 
         // Start building the sitemap XML
         let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.w3.org/2001/XMLSchema-instance">
+`;
 
-        // Add the homepage
+        // Add the homepage URL
         sitemap += `
     <url>
         <loc>https://food-finder-sepia.vercel.app/</loc>
@@ -160,6 +175,24 @@ app.get('/sitemap.xml', async (req, res) => {
         <loc>https://food-finder-sepia.vercel.app/recipes/browse?category=${category.id}</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <priority>0.70</priority>
+    </url>`;
+        });
+
+        // Add other important URLs, like users, login, etc.
+        const additionalUrls = [
+            { loc: '/users', priority: '0.70' },
+            { loc: '/recipes/browse', priority: '0.90' },
+            { loc: '/login', priority: '0.80' },
+            { loc: '/signup', priority: '0.80' },
+            { loc: '/users/themealdb', priority: '0.80' },
+        ];
+
+        additionalUrls.forEach(page => {
+            sitemap += `
+    <url>
+        <loc>https://food-finder-sepia.vercel.app${page.loc}</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <priority>${page.priority}</priority>
     </url>`;
         });
 
