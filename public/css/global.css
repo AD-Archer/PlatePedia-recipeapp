@@ -1,0 +1,101 @@
+/* Variables */
+:root {
+  --primary-color: #0056b3;          
+  --primary-hover: #003d80;          
+  --text-dark: #212529;              
+  --text-light: #f8f9fa;             
+  --text-muted: #495057;             
+  --link-color: #0056b3;             
+  --link-hover: #003d80;             
+  --navbar-bg: #1a237e;              
+  --card-bg: #ffffff;                
+  --danger: #dc3545;                 
+  --success: #198754;                
+  --warning: #cc8a00;                
+  --info: #0dcaf0;                   
+  --border-color: #dee2e6;          
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --border-radius: 8px;
+  --border-radius-sm: 6px;
+  --border-radius-lg: 12px;
+}
+
+/* Global Styles */
+body {
+  color: var(--text-dark);
+  background-color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Navigation */
+.navbar {
+  background-color: var(--navbar-bg);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light) !important;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Common Components */
+.container {
+  max-width: 1280px;
+  padding: 0 1.5rem;
+}
+
+/* Common Utilities */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 100%;
+  }
+}
+
+/* Common Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Common Elements */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+}

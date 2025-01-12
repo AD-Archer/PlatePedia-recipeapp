@@ -1,0 +1,20 @@
+/* Spacing */
+.mt-auto { margin-top: auto; }
+.mb-auto { margin-bottom: auto; }
+
+/* Text */
+.text-muted { color: var(--text-muted) !important; }
+.text-dark { color: var(--text-dark) !important; }
+.text-light { color: var(--text-light) !important; }
+
+/* Backgrounds */
+.bg-primary { background-color: var(--primary-color) !important; }
+.bg-light { background-color: var(--card-bg) !important; }
+
+/* Borders */
+.border { border: 1px solid var(--border-color) !important; }
+.rounded { border-radius: var(--border-radius) !important; }
+
+/* Shadows */
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+.shadow-lg { box-shadow: var(--shadow-lg) !important; } 

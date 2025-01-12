@@ -14,7 +14,7 @@
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow-sm">
+                <div class="card auth-card">
                     <div class="card-body p-4">
                         <h1 class="text-center mb-4">Create Account</h1>
                         
@@ -24,7 +24,7 @@
                             </div>
                         <% } %>
 
-                        <form action="/signup" method="POST" class="needs-validation" enctype="application/x-www-form-urlencoded" novalidate>
+                        <form action="/signup" method="POST" class="auth-form needs-validation" enctype="application/x-www-form-urlencoded" novalidate>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <input 
@@ -38,7 +38,7 @@
                                     maxlength="30"
                                     pattern="[a-zA-Z0-9_-]+"
                                 >
-                                <div class="form-text">
+                                <div class="form-text text-dark mt-2">
                                     Username must be 3-30 characters and can only contain letters, numbers, underscores, and hyphens.
                                 </div>
                                 <div class="invalid-feedback">
@@ -71,7 +71,7 @@
                                     required
                                     minlength="8"
                                 >
-                                <div class="form-text">
+                                <div class="form-text text-dark mt-2">
                                     Password must be at least 8 characters long and contain:
                                     <ul class="mb-0">
                                         <li>One uppercase letter</li>
@@ -94,11 +94,11 @@
                             </div>
 
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Create Account</button>
+                                <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
                             </div>
                         </form>
 
-                        <div class="text-center mt-3">
+                        <div class="auth-links">
                             <p>Already have an account? <a href="/login">Log in</a></p>
                         </div>
                     </div>

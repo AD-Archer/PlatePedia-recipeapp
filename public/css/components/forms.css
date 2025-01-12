@@ -1,0 +1,48 @@
+/* Form Controls */
+.form-control {
+  border: 2px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+}
+
+/* Form Labels */
+.form-label {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Form Check */
+.form-check {
+  padding-left: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-check-input {
+  border: 2px solid #cbd5e1;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Form Validation */
+.invalid-feedback {
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.form-text {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+} 

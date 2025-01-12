@@ -14,103 +14,86 @@
     <div class="container py-5">
         <%- include('../../partials/alerts') %>
         
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow-sm">
-                    <div class="card-body p-4">
-                        <h1 class="text-center mb-4">Edit Profile</h1>
-                        
-                        <form action="/profile/edit" method="POST" class="needs-validation" id="profileForm" novalidate>
-                            <!-- Profile Image -->
-                            <div class="mb-4 text-center">
-                                <% if (user.profileImage) { %>
-                                    <img src="<%= user.profileImage %>" alt="Profile" 
-                                         class="rounded-circle mb-3" 
-                                         style="width: 150px; height: 150px; object-fit: cover;"
-                                         onerror="this.onerror=null; this.src='/images/default-profile.png';">
-                                <% } else { %>
-                                    <div class="bg-secondary rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
-                                         style="width: 150px; height: 150px;">
-                                        <span class="text-white display-4">
-                                            <%= user.username.charAt(0).toUpperCase() %>
-                                        </span>
-                                    </div>
-                                <% } %>
-                                
-                                <div class="mb-3">
-                                    <label for="profileImage" class="form-label">Profile Image URL</label>
-                                    <div class="input-group">
-                                        <input 
-                                            type="url" 
-                                            class="form-control" 
-                                            id="profileImage" 
-                                            name="profileImage" 
-                                            value="<%= user.profileImage ? user.profileImage : '' %>"
-                                            placeholder="https://example.com/your-image.jpg"
-                                        >
-                                        <% if (user.profileImage) { %>
-                                            <button 
-                                                type="button" 
-                                                class="btn btn-outline-danger" 
-                                                onclick="clearProfileImage()"
-                                                title="Remove image"
-                                            >
-                                                <i class="bi bi-x"></i>
-                                            </button>
-                                        <% } %>
-                                    </div>
-                                    <div class="form-text">Enter a valid image URL starting with http:// or https://</div>
-                                    <div id="profileImageFeedback" class="invalid-feedback"></div>
-                                </div>
+        <div class="profile-section">
+            <div class="profile-section-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="profile-section-title">Edit Profile</h1>
+                    <a href="/profile" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Profile
+                    </a>
+                </div>
+            </div>
+            <div class="profile-section-content">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <!-- Profile Image Section -->
+                        <div class="profile-image-section">
+                            <img src="<%= user.profileImage || '/images/default-avatar.png' %>" 
+                                 alt="Current Profile Picture" 
+                                 class="profile-avatar mb-3">
+                            <div class="profile-image-upload">
+                                <label for="profileImage" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-camera"></i> Change Photo
+                                </label>
+                                <input type="file" id="profileImage" name="profileImage" 
+                                       class="d-none" accept="image/*">
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Username -->
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username*</label>
+                    <div class="col-md-8">
+                        <!-- Profile Form -->
+                        <form action="/profile/update" method="POST" class="profile-edit-form">
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-bold">Username</label>
                                 <input type="text" 
-                                       class="form-control" 
-                                       id="username" 
-                                       name="username" 
+                                       class="form-control form-control-lg" 
                                        value="<%= user.username %>" 
-                                       required
-                                       pattern="[a-zA-Z0-9_]+"
-                                       minlength="3"
-                                       maxlength="30">
-                                <div class="invalid-feedback">
-                                    Username must be between 3 and 30 characters and can only contain letters, numbers, and underscores.
-                                </div>
+                                       readonly>
+                                <small class="text-muted">Username cannot be changed</small>
                             </div>
 
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email*</label>
-                                <input type="email" 
-                                       class="form-control" 
-                                       id="email" 
-                                       name="email" 
-                                       value="<%= user.email %>" 
-                                       required>
-                                <div class="invalid-feedback">
-                                    Please enter a valid email address.
-                                </div>
+                            <div class="form-group mb-4">
+                                <label for="name" class="form-label fw-bold">Display Name</label>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       id="name" 
+                                       name="name" 
+                                       value="<%= user.name || '' %>"
+                                       placeholder="Enter your display name">
                             </div>
 
-                            <!-- Bio -->
-                            <div class="mb-3">
-                                <label for="bio" class="form-label">Bio</label>
+                            <div class="form-group mb-4">
+                                <label for="bio" class="form-label fw-bold">Bio</label>
                                 <textarea class="form-control" 
                                           id="bio" 
                                           name="bio" 
-                                          rows="3" 
-                                          maxlength="500"><%= user.bio || '' %></textarea>
-                                <div class="form-text">
-                                    Maximum 500 characters
-                                </div>
+                                          rows="4" 
+                                          placeholder="Tell us about yourself"><%= user.bio || '' %></textarea>
                             </div>
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                                <a href="/profile" class="btn btn-outline-secondary">Cancel</a>
+                            <div class="form-group mb-4">
+                                <label for="email" class="form-label fw-bold">Email</label>
+                                <input type="email" 
+                                       class="form-control form-control-lg" 
+                                       id="email" 
+                                       name="email" 
+                                       value="<%= user.email %>"
+                                       required>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    Save Changes
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteAccountModal">
+                                    Delete Account
+                                </button>
                             </div>
                         </form>
                     </div>

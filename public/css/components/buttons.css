@@ -1,0 +1,49 @@
+/* Button Base */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+/* Primary Button */
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(0, 86, 179, 0.25);
+}
+
+/* Secondary Button */
+.btn-outline-secondary {
+  border: 2px solid #94a3b8;
+  color: var(--text-muted);
+  font-weight: 500;
+  background: #ffffff;
+}
+
+.btn-outline-secondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: var(--text-dark);
+}
+
+/* Danger Button */
+.btn-outline-danger {
+  border: 2px solid #ef4444;
+  color: var(--danger);
+  font-weight: 600;
+  background: #fff1f2;
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: white;
+} 

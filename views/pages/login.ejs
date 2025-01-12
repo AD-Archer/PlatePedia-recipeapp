@@ -14,7 +14,7 @@
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow-sm">
+                <div class="card auth-card">
                     <div class="card-body p-4">
                         <h1 class="text-center mb-4">Login</h1>
                         
@@ -30,13 +30,13 @@
                             </div>
                         <% } %>
 
-                        <div class="text-end mb-3">
+                        <div class="text-end mb-4">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
                                 Forgot Password?
                             </a>
                         </div>
 
-                        <form id="loginForm" class="needs-validation" novalidate>
+                        <form id="loginForm" class="auth-form needs-validation" novalidate>
                             <div class="mb-3">
                                 <label for="login" class="form-label">Username or Email</label>
                                 <input 
@@ -49,7 +49,7 @@
                                 >
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="password" class="form-label">Password</label>
                                 <input 
                                     type="password" 
@@ -60,7 +60,7 @@
                                 >
                             </div>
 
-                            <div class="mb-3 form-check">
+                            <div class="mb-4 form-check">
                                 <input 
                                     type="checkbox" 
                                     class="form-check-input" 
@@ -75,7 +75,7 @@
                             </div>
                         </form>
 
-                        <div class="text-center mt-3">
+                        <div class="auth-links">
                             <p>Don't have an account? <a href="/signup">Sign up</a></p>
                         </div>
                     </div>
