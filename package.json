@@ -1,7 +1,7 @@
 {
-  "name": "PlatePedia",
+  "name": "platepedia",
   "version": "1.0.0",
-  "description": "PlatePedia - A Recipe Management Application",
+  "description": "A recipe sharing platform with video tutorials",
   "main": "server.js",
   "type": "module",
   "scripts": {

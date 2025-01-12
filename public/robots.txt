@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://platepedia.vercel.app/sitemap.xml
+Sitemap: https://platepedia.vercel.app/sitemap
 
 # Main sections
 Allow: /recipes

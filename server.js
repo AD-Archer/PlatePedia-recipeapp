@@ -278,6 +278,14 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 
+app.get('/sitemap', function (req, res) {
+    res.sendFile(path.join(__dirname, 'views', 'pages', 'sitemap.xml'), {
+        headers: {
+            'Content-Type': 'application/xml',
+            'Cache-Control': 'public, max-age=3600'
+        }
+    });
+});
 
 app.get('/robots.txt', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
