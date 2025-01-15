@@ -16,5 +16,3 @@ Disallow: /api/
 
 # Optimize crawling
 Crawl-delay: 10
-
-Host: https://platepedia.vercel.app
