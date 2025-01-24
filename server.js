@@ -14,6 +14,9 @@ import flash from 'connect-flash';
 import cache from 'memory-cache'; // Import memory-cache
 import './utils/dataSync.js';  // Initialize data sync
 import { Op } from 'sequelize';
+import { inject } from "@vercel/analytics"
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
 
 // Import routes
 import signup from './routes/signup.js';
@@ -23,6 +26,9 @@ import logout from './routes/logout.js';
 import recipesRouter from './routes/recipes.js';
 import usersRouter from './routes/users.js';
 import profileRouter from './routes/profile.js';
+
+inject();
+injectSpeedInsights();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
