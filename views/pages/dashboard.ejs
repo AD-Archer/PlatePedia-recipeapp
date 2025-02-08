@@ -39,6 +39,11 @@
                                                                  class="card-img-top" 
                                                                  alt="<%= category.name %>"
                                                                  style="height: 120px; object-fit: cover;">
+                                                        <% } else { %>
+                                                            <img src="<%= category.getDefaultImage() %>" 
+                                                                 class="card-img-top" 
+                                                                 alt="<%= category.name %>"
+                                                                 style="height: 120px; object-fit: cover;">
                                                         <% } %>
                                                         <div class="card-body">
                                                             <h6 class="card-title text-center mb-1">

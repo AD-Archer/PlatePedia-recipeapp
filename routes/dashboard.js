@@ -4,6 +4,8 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { Op } from 'sequelize';
 import sequelize from '../config/db.js';
 import { getCachedData } from '../utils/dataSync.js';
+import { Category } from '../models/Category.js';
+import { cuisineDefaultImages } from '../utils/cuisineDefaultImages.js';
 
 const router = express.Router();
 
@@ -11,6 +13,13 @@ router.get('/', asyncHandler(async (req, res) => {
     try {
         // Get cached data
         const { popularRecipes, recentRecipes, categories } = getCachedData();
+
+        // Add default images for categories without images
+        categories.forEach(category => {
+            if (!category.imageUrl) {
+                category.imageUrl = cuisineDefaultImages[category.name.toLowerCase()] || cuisineDefaultImages.default;
+            }
+        });
 
         // Group categories by type
         const groupedCategories = categories.reduce((acc, category) => {
