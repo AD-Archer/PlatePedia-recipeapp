@@ -7,6 +7,14 @@
     <%- include('../../partials/meta') %>
 
     <%- include('../../partials/bootstrap') %>
+
+    <style>
+        .video-responsive {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+        }
+    </style>
 </head>
 <body>
     <%- include('../../partials/header') %>
@@ -55,7 +63,7 @@
                         <div class="row mb-4">
                             <div class="col-sm-4">
                                 <h6>Cooking Time</h6>
-                                <p><%= recipe.cookingTime ? `${recipe.cookingTime} minutes` : 'Not specified' %></p>
+                                <p><%= recipe.cookingTime ? recipe.cookingTime + ' minutes' : 'Not specified' %></p>
                             </div>
                             <div class="col-sm-4">
                                 <h6>Servings</h6>
@@ -119,7 +127,7 @@
                 <div class="row mb-4">
                     <div class="col-md-8 mx-auto text-center">
                         <h5>Watch the Video</h5>
-                        <iframe width="560" height="315" src="<%= recipe.youtubeLink.replace('watch?v=', 'embed/') %>" frameborder="0" allowfullscreen style="margin: auto;"></iframe>
+                        <iframe class="video-responsive" width="560" height="315" src="<%= recipe.youtubeLink.replace('watch?v=', 'embed/') %>" frameborder="0" allowfullscreen style="margin: auto;"></iframe>
                     </div>
                 </div>
             <% } %>
