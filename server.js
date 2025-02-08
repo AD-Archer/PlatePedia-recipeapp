@@ -16,6 +16,7 @@ import './utils/dataSync.js';  // Initialize data sync
 import { Op } from 'sequelize';
 import { inject } from "@vercel/analytics"
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { clearCache } from './utils/dataSync.js';
 
 
 // Import routes
@@ -112,34 +113,50 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use(storePreviousUrl);
 
-// API routes first
-app.get('/api/healthcheck', async (req, res) => {
-    try {
-        await sequelize.authenticate();
-        res.status(200).json({ status: 'healthy' });
-    } catch (error) {
-        res.status(500).json({ status: 'unhealthy', error: error.message });
-    }
-});
-
-// Main routes
+// Main routes first
+app.use('/', dashboard);
 app.use('/signup', signup);
 app.use('/login', login);
 app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);
 app.use('/profile', profileRouter);
-app.use('/', dashboard);
+
+app.get('/clear-cache', async (req, res) => {
+    try {
+        // Clear both caches
+        clearCache();  // Clear our custom cache
+        cache.clear(); // Clear memory-cache
+
+        // Force update categories
+        const categories = await Category.findAll({
+            order: [['type', 'ASC'], ['name', 'ASC']]
+        });
+
+        console.log('Updating category images...');
+        for (const category of categories) {
+            const defaultImage = category.getDefaultImage();
+            console.log(`Category: ${category.name}, Current Image: ${category.imageUrl}, Default Image: ${defaultImage}`);
+            if (!category.imageUrl) {
+                category.imageUrl = defaultImage;
+                await category.save();
+                console.log(`Updated ${category.name} with image: ${category.imageUrl}`);
+            }
+        }
+
+        console.log('All caches cleared and categories updated at:', new Date().toISOString());
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error clearing caches:', error);
+        res.status(500).send('Error clearing caches');
+    }
+});
 
 // Debug middleware
 app.use((req, res, next) => {
     console.log('Request URL:', req.url);
     console.log('Session user:', req.session.user);
     next();
-});
-
-app.get('/dashboard', (req, res) => { // i make the mistake of redirecting to the dashboard route, which doesnt exist anymore so i need this
-    res.redirect('/');
 });
 
 // SEO routes
@@ -304,8 +321,7 @@ app.get('/ads.txt', (req, res) => {
     res.send('google.com, pub-9831610369524751, DIRECT, f08c47fec0942fa0');
 });
 
-
-// 404 handler
+// 404 handler should be last before error handler
 app.use((req, res) => {
     console.log('404 - Not Found:', req.url);
     res.status(404).render('pages/error', {

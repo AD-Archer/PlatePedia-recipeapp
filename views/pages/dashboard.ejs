@@ -27,26 +27,25 @@
                         <% Object.entries(groupedCategories).forEach(([type, categories]) => { %>
                             <% if (categories.length > 0) { %>
                                 <div class="col-12 mb-4">
-                                    <h3 class="h5 mb-3 text-muted text-capitalize fw-bold"><%= type %></h3>
+                                    <h3 class="h5 mb-3 text-muted text-capitalize fw-bold">
+                                        <%= type === 'cuisine' ? 'Cuisines' : 
+                                           type === 'meal' ? 'Meal Types' : 
+                                           type === 'diet' ? 'Dietary Preferences' : type %>
+                                    </h3>
                                     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
                                         <% categories.forEach(category => { %>
                                             <div class="col">
                                                 <a href="/recipes/browse?category=<%= category.id %>" 
                                                    class="text-decoration-none">
-                                                    <div class="card category-card h-100">
-                                                        <% if (category.imageUrl) { %>
-                                                            <img src="<%= category.imageUrl %>" 
-                                                                 class="card-img-top" 
-                                                                 alt="<%= category.name %>"
-                                                                 style="height: 120px; object-fit: cover;">
-                                                        <% } else { %>
-                                                            <img src="<%= category.getDefaultImage() %>" 
-                                                                 class="card-img-top" 
-                                                                 alt="<%= category.name %>"
-                                                                 style="height: 120px; object-fit: cover;">
-                                                        <% } %>
+                                                    <div class="card category-card h-100 shadow-sm">
+                                                        <img src="<%= category.imageUrl || category.getDefaultImage() %>" 
+                                                             class="card-img-top" 
+                                                             alt="<%= category.name %>"
+                                                             loading="lazy"
+                                                             onerror="this.src='<%= category.getDefaultImage() %>'" 
+                                                             style="height: 120px; object-fit: cover;">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-center mb-1">
+                                                            <h6 class="card-title text-center mb-1 text-capitalize">
                                                                 <%= category.name %>
                                                             </h6>
                                                             <p class="text-muted text-center small mb-0">

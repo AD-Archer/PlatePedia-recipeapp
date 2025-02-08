@@ -28,6 +28,13 @@ let cache = {
     savedStatuses: new Map(), // Map of userId -> Set of saved recipe IDs
 };
 
+// Add cache duration settings
+const CACHE_DURATION = {
+    dashboard: 5 * 60 * 1000, // 5 minutes
+    categories: 60 * 60 * 1000, // 1 hour
+    recipes: 15 * 60 * 1000 // 15 minutes
+};
+
 // Sync specific data types
 const syncMethods = {
     async dashboard() {
@@ -283,4 +290,19 @@ export const addSavedStatus = async (recipes, userId) => {
             isSaved: savedRecipeIds.has(plainRecipe.id)
         };
     });
-}; 
+};
+
+// Update cache check logic
+function isCacheValid(type) {
+    return cache[type].lastSync && 
+           (Date.now() - cache[type].lastSync) < CACHE_DURATION[type];
+}
+
+// Add cache headers to response
+router.get('/', asyncHandler(async (req, res) => {
+    res.set({
+        'Cache-Control': 'public, max-age=300', // 5 minutes
+        'Surrogate-Control': 'public, max-age=3600' // 1 hour
+    });
+    // ... rest of the handler
+})); 

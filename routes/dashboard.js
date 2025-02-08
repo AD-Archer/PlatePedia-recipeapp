@@ -73,7 +73,12 @@ router.get('/', asyncHandler(async (req, res) => {
             groupedCategories,
             categories,
             suggestedUsers,
-            path: '/'
+            path: '/',
+            criticalCSS: `
+                .category-card { transition: transform 0.2s; }
+                .category-card:hover { transform: translateY(-3px); }
+                .card-img-top { background-color: #f8f9fa; }
+            `
         });
     } catch (error) {
         console.error('Dashboard error:', error);

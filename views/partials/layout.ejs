@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="/js/bootstrap.bundle.min.js" as="script">
+    
+    <!-- Critical CSS -->
+    <style>
+        <%= criticalCSS %>
+    </style>
+    
+    <!-- Defer non-critical CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" media="print" onload="this.media='all'">
+    
+    <!-- Preconnect to image domain -->
+    <link rel="preconnect" href="https://images.unsplash.com">
+</head>
+<body>
+    <%- body %>
+    
+    <!-- Defer JavaScript -->
+    <script src="/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/js/app.js" defer></script>
+</body>
+</html> 
