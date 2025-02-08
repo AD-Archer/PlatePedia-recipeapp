@@ -17,6 +17,7 @@ import { Op } from 'sequelize';
 import { inject } from "@vercel/analytics"
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import { clearCache } from './utils/dataSync.js';
+import dataSyncRouter from './utils/dataSync.js';
 
 
 // Import routes
@@ -121,6 +122,9 @@ app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);
 app.use('/profile', profileRouter);
+
+// Add the router
+app.use('/data-sync', dataSyncRouter);
 
 app.get('/clear-cache', async (req, res) => {
     try {

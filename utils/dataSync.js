@@ -1,5 +1,13 @@
 import { Recipe, User, Category, SavedRecipe } from '../models/TableCreation.js';
 import sequelize from '../config/db.js';
+import express from 'express';
+
+const router = express.Router();
+
+// Add asyncHandler helper
+const asyncHandler = fn => (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 // Expanded cache structure
 let cache = {
@@ -298,11 +306,13 @@ function isCacheValid(type) {
            (Date.now() - cache[type].lastSync) < CACHE_DURATION[type];
 }
 
-// Add cache headers to response
+// Update the route handler
 router.get('/', asyncHandler(async (req, res) => {
     res.set({
         'Cache-Control': 'public, max-age=300', // 5 minutes
         'Surrogate-Control': 'public, max-age=3600' // 1 hour
     });
-    // ... rest of the handler
-})); 
+    res.json({ success: true });
+}));
+
+export default router; 
