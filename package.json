@@ -5,8 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "setup": "node scripts/setupJsonData.js",
+    "start": "npm run setup && node server.js",
+    "dev": "npm run setup && nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "vercel-build": "npm install pg pg-hstore && echo hello"
   },
@@ -31,7 +32,7 @@
     "sql": "^0.78.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
+    "nodemon": "^3.1.9",
     "sequelize-cli": "^6.6.2"
   },
   "engines": {

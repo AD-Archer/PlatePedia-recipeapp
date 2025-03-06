@@ -1,4 +1,19 @@
-# FoodFinder-Recipeapp 🍳
+# This is a Demostration version of Platepedia, a recipe management application.
+The original project used a neon postgres database, this version uses a json file to simulate a database. the orignal project's repo can be found [here](https://github.com/AD-Archer/PlatePedia-recipeapp/tree/Retired)
+
+# Features
+The features will remain the same, minus the following mechanics:
+- User authentication
+- User profiles
+- User follow mechanics
+- User recipe collections
+
+# Unique Instation Requirements
+- Scripts, we now have a npm run setup to run the setup script that will create the json file if it doesn't exist, and populate the database with the data.
+- You will need to run the python script to populate the json file, this can be found in the root of the repo. then place it inside the data folder(I have done this already so technically you don't need to worry about this unless you want to use different data)
+
+
+# Platepedia-Recipeapp 🍳
 
 A modern recipe management application that lets users discover, create, and share recipes. Built with Node.js, Express, and PostgreSQL.
 
@@ -61,17 +76,7 @@ Or import sample recipes from MealDB:
 node seedMealDB.js
 ```
 
-## Project Structure 📁
-```plaintext
-FoodFinder-Recipeapp/
-├── config/          # Database and app configuration
-├── models/          # Sequelize models
-├── routes/          # Express routes
-├── views/           # EJS templates
-├── public/          # Static assets
-├── seeders/         # Database seeders note: seedMealDB is placed in root to ensure that it is not used by accident 
-└── server.js        # Application entry point
-```
+
 
 ## License 📝
 

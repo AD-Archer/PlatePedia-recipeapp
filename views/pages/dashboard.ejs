@@ -42,14 +42,14 @@
                                                              class="card-img-top" 
                                                              alt="<%= category.name %>"
                                                              loading="lazy"
-                                                             onerror="this.src='<%= category.getDefaultImage() %>'" 
+                                                             onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836'" 
                                                              style="height: 120px; object-fit: cover;">
                                                         <div class="card-body">
                                                             <h6 class="card-title text-center mb-1 text-capitalize">
                                                                 <%= category.name %>
                                                             </h6>
                                                             <p class="text-muted text-center small mb-0">
-                                                                <%= category.dataValues.recipeCount || 0 %> recipes
+                                                                <%= category.recipeCount || 0 %> recipes
                                                             </p>
                                                         </div>
                                                     </div>

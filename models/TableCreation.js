@@ -1,84 +1,40 @@
-import User from './User.js';
-import Recipe from './Recipe.js';
-import Category from './Category.js';
-import SavedRecipe from './SavedRecipe.js';
-import RecipeCategory from './RecipeCategory.js';
-import UserFollows from './UserFollows.js';
+// Mock models for JSON-only version
 
-//table creation
+// Base mock model with common methods
+class MockModel {
+  static findAll() { return Promise.resolve([]); }
+  static findOne() { return Promise.resolve(null); }
+  static findByPk() { return Promise.resolve(null); }
+  static create() { return Promise.resolve({}); }
+  static update() { return Promise.resolve([0]); }
+  static destroy() { return Promise.resolve(0); }
+  static bulkCreate() { return Promise.resolve([]); }
+  static count() { return Promise.resolve(0); }
+}
 
-// Define associations
-Recipe.belongsTo(User, {
-    foreignKey: 'userId',
-    as: 'author'
-});
+// Mock User model
+export class User extends MockModel {
+  static associate() {}
+}
 
-User.hasMany(Recipe, {
-    foreignKey: 'userId',
-    as: 'recipes'
-});
+// Mock Recipe model
+export class Recipe extends MockModel {
+  static associate() {}
+}
 
-// Recipe-Category associations
-Recipe.belongsToMany(Category, {
-    through: RecipeCategory,
-    foreignKey: 'recipeId',
-    otherKey: 'categoryId',
-    as: 'Categories'
-});
+// Mock Category model
+export class Category extends MockModel {
+  static associate() {}
+}
 
-Category.belongsToMany(Recipe, {
-    through: RecipeCategory,
-    foreignKey: 'categoryId',
-    otherKey: 'recipeId',
-    as: 'Recipes'
-});
+// Mock SavedRecipe model
+export class SavedRecipe extends MockModel {
+  static associate() {}
+}
 
-// User-Recipe (Saved) associations
-User.belongsToMany(Recipe, {
-    through: SavedRecipe,
-    foreignKey: 'user_id',
-    otherKey: 'recipe_id',
-    as: 'savedRecipes'
-});
+// Mock UserFollows model
+export class UserFollows extends MockModel {
+  static associate() {}
+}
 
-Recipe.belongsToMany(User, {
-    through: SavedRecipe,
-    foreignKey: 'recipe_id',
-    otherKey: 'user_id',
-    as: 'savedByUsers'
-});
-
-// User-User (Follows) associations - Fixed aliases
-User.belongsToMany(User, {
-    through: UserFollows,
-    as: 'followedUsers',
-    foreignKey: 'follower_id',
-    otherKey: 'following_id'
-});
-
-User.belongsToMany(User, {
-    through: UserFollows,
-    as: 'followerUsers',
-    foreignKey: 'following_id',
-    otherKey: 'follower_id'
-});
-
-// Add direct associations for SavedRecipe
-SavedRecipe.belongsTo(User, {
-    foreignKey: 'user_id',
-    as: 'user'
-});
-
-SavedRecipe.belongsTo(Recipe, {
-    foreignKey: 'recipe_id',
-    as: 'recipe'
-});
-
-export {
-    User,
-    Recipe,
-    Category,
-    SavedRecipe,
-    RecipeCategory,
-    UserFollows
-};
+console.log('Using mock models (JSON-only mode)');

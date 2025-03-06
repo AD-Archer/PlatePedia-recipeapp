@@ -1,10 +1,10 @@
 import express from 'express';
-import { User } from '../models/TableCreation.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { Op } from 'sequelize';
-import sequelize from '../config/db.js';
-import { getCachedData } from '../utils/dataSync.js';
-import Category from '../models/Category.js';
+import { 
+  getRandomRecipes, 
+  getRecentRecipes, 
+  getAllCategories 
+} from '../utils/jsonDataService.js';
 
 const router = express.Router();
 
@@ -32,61 +32,61 @@ const cuisineDefaultImages = {
 };
 
 router.get('/', asyncHandler(async (req, res) => {
-    try {
-        // Get cached data
-        const { popularRecipes, recentRecipes, categories } = getCachedData();
-
-        // Add default images for categories without images
-        categories.forEach(category => {
-            if (!category.imageUrl) {
-                category.imageUrl = cuisineDefaultImages[category.name.toLowerCase()] || cuisineDefaultImages.default;
-            }
-        });
-
-        // Group categories by type
-        const groupedCategories = categories.reduce((acc, category) => {
-            const type = category.type || 'Other';
-            if (!acc[type]) {
-                acc[type] = [];
-            }
-            acc[type].push(category);
-            return acc;
-        }, {});
-
-        // Get suggested users if logged in
-        let suggestedUsers = [];
-        if (req.session.user) {
-            suggestedUsers = await User.findAll({
-                where: {
-                    id: { [Op.ne]: req.session.user.id },
-                    username: { [Op.ne]: 'themealdb' }
-                },
-                limit: 3,
-                order: sequelize.random()
-            });
-        }
-
-        res.render('pages/dashboard', {
-            user: req.session.user,
-            recipes: recentRecipes,
-            popularRecipes,
-            groupedCategories,
-            categories,
-            suggestedUsers,
-            path: '/',
-            criticalCSS: `
-                .category-card { transition: transform 0.2s; }
-                .category-card:hover { transform: translateY(-3px); }
-                .card-img-top { background-color: #f8f9fa; }
-            `
-        });
-    } catch (error) {
-        console.error('Dashboard error:', error);
-        res.status(500).render('pages/error', {
-            error: 'Error loading dashboard',
-            path: '/'
-        });
-    }
+  try {
+    // Get data from JSON
+    const [popularRecipes, recentRecipes, categories] = await Promise.all([
+      getRandomRecipes(6),
+      getRecentRecipes(6),
+      getAllCategories()
+    ]);
+    
+    // Format recipes to match expected structure
+    const formatRecipe = recipe => ({
+      id: recipe.id,
+      title: recipe.title,
+      description: `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
+      imageUrl: recipe.thumbnail,
+      author: { username: 'themealdb', id: '1', profileImage: 'https://www.themealdb.com/images/logo-small.png' }
+    });
+    
+    const formattedPopular = popularRecipes.map(formatRecipe);
+    const formattedRecent = recentRecipes.map(formatRecipe);
+    
+    // Add default images for categories
+    categories.forEach(category => {
+      if (!category.imageUrl) {
+        category.imageUrl = cuisineDefaultImages[category.name.toLowerCase()] || cuisineDefaultImages.default;
+      }
+    });
+    
+    // Group categories by type
+    const groupedCategories = categories.reduce((acc, category) => {
+      const type = category.type || 'Other';
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(category);
+      return acc;
+    }, {});
+    
+    res.render('pages/dashboard', {
+      user: req.session?.user,
+      recipes: formattedRecent,
+      popularRecipes: formattedPopular,
+      groupedCategories,
+      categories,
+      suggestedUsers: [],
+      path: '/',
+      criticalCSS: `
+        .category-card { transition: transform 0.2s; }
+        .category-card:hover { transform: translateY(-3px); }
+        .card-img-top { background-color: #f8f9fa; }
+      `
+    });
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+    res.status(500).send('Error loading dashboard');
+  }
 }));
 
 export default router;

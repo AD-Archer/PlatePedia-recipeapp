@@ -11,35 +11,28 @@ import { Sequelize } from 'sequelize';
 import 'dotenv/config';
 import pg from 'pg';
 
-
-const dbUrl = process.env.DATABASE_URL;
-if (!dbUrl) {
-    throw new Error('DATABASE_URL environment variable is not set');
-}
-
-const sequelize = new Sequelize(dbUrl, {
-    dialect: 'postgres',
-    dialectModule: pg,
-    ssl: true,
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
-    }
-});
-
-
-export const getDb = () => {
-    if (!sequelize) {
-        sequelize = new Sequelize(process.env.DATABASE_URL, {
-            dialect: 'postgres',
-            protocol: 'postgres',
-            logging: false, // Disable logging; default: console.log
-        });
-    }
-    return sequelize;
+// Mock database configuration for JSON-only version
+const sequelize = {
+  // Mock methods that might be used
+  define: () => ({}),
+  sync: async () => ({}),
+  authenticate: async () => ({}),
+  transaction: async (callback) => callback({ commit: async () => {}, rollback: async () => {} }),
+  
+  // Mock Sequelize operators and functions
+  Op: Sequelize.Op,
+  fn: () => ({}),
+  col: (name) => name,
+  where: (...args) => args,
+  literal: (text) => text,
+  or: (...args) => args,
+  
+  // Mock query methods
+  query: async () => [[]],
+  
+  // Add any other methods/properties that might be used
 };
 
-export { sequelize };
+console.log('Using mock database configuration (JSON-only mode)');
+
 export default sequelize;

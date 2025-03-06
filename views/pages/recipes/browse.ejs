@@ -31,14 +31,18 @@
                         >
                         <select class="form-select" name="category" id="categoryFilter">
                             <option value="">All Categories</option>
-                            <% categories.forEach(category => { %>
+                            <% 
+                            // Flatten the grouped categories for the dropdown
+                            const allCategories = Object.values(groupedCategories || {}).flat();
+                            allCategories.forEach(category => { 
+                            %>
                                 <option 
                                     value="<%= category.id %>" 
                                     <%= locals.selectedCategory == category.id ? 'selected' : '' %>
                                 >
                                     <%= category.name %>
                                 </option>
-                            <% }) %>
+                            <% }); %>
                         </select>
                         <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
                             Clear Filters
