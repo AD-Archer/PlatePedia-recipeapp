@@ -1,10 +1,7 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import { User, Recipe } from '../models/TableCreation.js';
-import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { Op } from 'sequelize';
-import { getUserData } from '../utils/dataSync.js';
 import { getRandomRecipes } from '../utils/jsonDataService.js';
 
 const router = express.Router();

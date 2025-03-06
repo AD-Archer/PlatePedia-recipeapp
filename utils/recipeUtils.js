@@ -1,6 +1,5 @@
 // This file is used to save recipes to the user's table 
 
-import { SavedRecipe } from '../models/TableCreation.js';
 
 /**
  * Add saved status to recipes

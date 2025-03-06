@@ -6,107 +6,299 @@
     <title>PlatePedia - Browse Recipes</title>
     <%- include('../../partials/meta') %>
     <%- include('../../partials/bootstrap') %>
- 
+    <style>
+        .browse-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+        
+        .search-box {
+            background-color: #2563eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: white;
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            border: none;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+        }
+        
+        .category-select {
+            min-width: 180px;
+            border: none;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.5rem;
+        }
+        
+        .filter-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .filter-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .filter-body {
+            padding: 1rem;
+        }
+        
+        .filter-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c3e50;
+        }
+        
+        .recipe-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+            border: none;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recipe-img {
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .recipe-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .recipe-category {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        .recipe-author {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        .btn-view {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .btn-view:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .btn-clear {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .btn-clear:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-search {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-text {
+            color: #6c757d;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
 </head>
 <body>
     <%- include('../../partials/header') %>
     
-    <div class="container py-4">
-        <h1 class="mb-4">Browse Recipes</h1>
-
-        <!-- Search and Filter Section -->
-        <div class="row g-4">
-            <div class="col-lg-9 order-lg-2">
-                <!-- Search Form -->
-                <div class="search-section">
-                    <h2 class="h5 mb-3">Search Recipes</h2>
-                    <form class="search-form" id="searchForm">
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            placeholder="Search recipes..." 
-                            id="searchInput"
-                            name="search"
-                            value="<%= locals.searchQuery || '' %>"
-                        >
-                        <select class="form-select" name="category" id="categoryFilter">
-                            <option value="">All Categories</option>
-                            <% 
-                            // Flatten the grouped categories for the dropdown
-                            const allCategories = Object.values(groupedCategories || {}).flat();
-                            allCategories.forEach(category => { 
-                            %>
-                                <option 
-                                    value="<%= category.id %>" 
-                                    <%= locals.selectedCategory == category.id ? 'selected' : '' %>
-                                >
-                                    <%= category.name %>
-                                </option>
-                            <% }); %>
-                        </select>
-                        <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
-                            Clear Filters
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Results Section -->
-                <div class="recipe-grid">
-                    <% if (recipes && recipes.length > 0) { %>
-                        <% recipes.forEach(recipe => { %>
-                            <%- include('../../partials/recipe-card', { recipe }) %>
-                        <% }) %>
-                    <% } else { %>
-                        <div class="col-12 text-center">
-                            <p class="lead text-muted">No recipes found matching your criteria</p>
-                        </div>
-                    <% } %>
-                </div>
-            </div>
-
-            <div class="col-lg-3 order-lg-1">
-                <div class="filters-card">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Filters</h5>
+    <div class="browse-container">
+        <h1 class="page-title">Browse Recipes</h1>
+        
+        <div class="row">
+            <div class="col-md-3">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        Filter By Category
+                    </div>
+                    <div class="filter-body">
                         <form action="/recipes/browse" method="GET">
-                            <div class="filter-section">
-                                <label class="form-label">Meal Types</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <% categories.filter(cat => cat.type === 'meal').forEach(category => { %>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   name="tags[]" value="<%= category.name %>" 
-                                                   id="tag<%= category.name %>"
-                                                   <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
-                                            <label class="form-check-label" for="tag<%= category.name %>">
-                                                <%= category.name %>
-                                            </label>
+                            <% Object.entries(groupedCategories || {}).forEach(([type, categories]) => { %>
+                                <% if (categories.length > 0) { %>
+                                    <div class="filter-section">
+                                        <div class="filter-title">
+                                            <%= type === 'cuisine' ? 'Cuisines' : 
+                                               type === 'meal' ? 'Meal Types' : 
+                                               type === 'diet' ? 'Dietary Preferences' : type %>
                                         </div>
-                                    <% }); %>
-                                </div>
-                            </div>
-                            <div class="filter-section">
-                                <label class="form-label">Main Ingredients</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <% categories.filter(cat => cat.type === 'ingredient').forEach(category => { %>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   name="tags[]" value="<%= category.name %>" 
-                                                   id="tag<%= category.name %>"
-                                                   <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
-                                            <label class="form-check-label" for="tag<%= category.name %>">
-                                                <%= category.name %>
-                                            </label>
+                                        <div class="d-flex flex-column gap-2">
+                                            <% categories.forEach(category => { %>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           name="tags[]" value="<%= category.name %>" 
+                                                           id="tag<%= category.id %>"
+                                                           <%= selectedTags?.includes(category.name) ? 'checked' : '' %>>
+                                                    <label class="form-check-label" for="tag<%= category.id %>">
+                                                        <%= category.name %>
+                                                    </label>
+                                                </div>
+                                            <% }); %>
                                         </div>
-                                    <% }); %>
-                                </div>
-                            </div>
-                            <div class="d-grid mt-3">
-                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    </div>
+                                <% } %>
+                            <% }); %>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-search">Apply Filters</button>
                             </div>
                         </form>
                     </div>
                 </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="search-box">
+                    <h2 class="h5 text-white mb-3">Search Recipes</h2>
+                    <form id="searchForm" action="/recipes/browse" method="GET">
+                        <div class="search-form">
+                            <input 
+                                type="text" 
+                                class="search-input" 
+                                placeholder="Search recipes..." 
+                                id="searchInput"
+                                name="search"
+                                value="<%= search || '' %>"
+                            >
+                            <select class="category-select" name="category" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <% 
+                                const allCategories = Object.values(groupedCategories || {}).flat();
+                                allCategories.forEach(category => { 
+                                %>
+                                    <option 
+                                        value="<%= category.id %>" 
+                                        <%= selectedCategory == category.id ? 'selected' : '' %>
+                                    >
+                                        <%= category.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <button type="submit" class="btn btn-search">Search</button>
+                        </div>
+                    </form>
+                    <div class="text-end mt-2">
+                        <button type="button" class="btn btn-clear" onclick="clearFilters()">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <h2 class="h4 mb-4">Recipe Results</h2>
+                
+                <% if (recipes && recipes.length > 0) { %>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        <% recipes.forEach(recipe => { %>
+                            <div class="col">
+                                <div class="recipe-card">
+                                    <img 
+                                        src="<%= recipe.imageUrl || recipe.thumbnail %>" 
+                                        class="recipe-img w-100" 
+                                        alt="<%= recipe.title %>"
+                                        loading="lazy"
+                                        onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836'"
+                                    >
+                                    <div class="p-3">
+                                        <h3 class="recipe-title">
+                                            <%= recipe.title %>
+                                        </h3>
+                                        <p class="recipe-category mb-3">
+                                            <%= recipe.category || recipe.area || 'Recipe' %>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="recipe-author">
+                                                By <%= recipe.author ? recipe.author.username : 'TheMealDB' %>
+                                            </span>
+                                            <button class="btn btn-view" onclick="goToRecipe('<%= recipe.id %>')">
+                                                View Recipe
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="bi bi-search empty-icon"></i>
+                        <p class="empty-text">No recipes found matching your criteria</p>
+                        <button class="btn btn-search" onclick="clearFilters()">
+                            Clear Filters
+                        </button>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
@@ -115,12 +307,19 @@
 
     <script>
         function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('searchForm').submit();
+            window.location.href = '/recipes/browse';
         }
 
-        // Debounce function to limit how often the search is performed
+        function goToRecipe(id) {
+            window.location.href = `/recipes/${id}`;
+        }
+
+        // Auto-submit form when filters change
+        document.getElementById('categoryFilter').addEventListener('change', () => {
+            document.getElementById('searchForm').submit();
+        });
+
+        // Debounce function for search input
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -132,11 +331,6 @@
                 timeout = setTimeout(later, wait);
             };
         }
-
-        // Auto-submit form when filters change
-        document.getElementById('categoryFilter').addEventListener('change', () => {
-            document.getElementById('searchForm').submit();
-        });
 
         // Debounced search input
         const searchInput = document.getElementById('searchInput');

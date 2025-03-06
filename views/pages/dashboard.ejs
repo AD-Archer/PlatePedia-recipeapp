@@ -6,9 +6,65 @@
     <title>PlatePedia - Discover Video Recipes & Cooking Tutorials</title>
     <%- include('../partials/meta') %>
     <%- include('../partials/bootstrap') %>
+    <style>
+        /* Demo notification styles */
+        .demo-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            max-width: 350px;
+            background-color: #fff;
+            border-left: 4px solid #17a2b8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            padding: 15px;
+            z-index: 1050;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .demo-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .demo-notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .demo-notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 576px) {
+            .demo-notification {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <%- include('../partials/header') %>
+
+    <!-- Demo Notification -->
+    <div id="demoNotification" class="demo-notification">
+        <div class="demo-notification-header">
+            <h5 class="mb-0">📢 Demo Version</h5>
+            <button type="button" class="demo-notification-close" onclick="closeDemoNotification()">×</button>
+        </div>
+        <p class="mb-2">You're viewing a demo version of what PlatePedia previously looked like. This version runs on static JSON data.</p>
+        <p class="mb-0">The original source code is available on <a href="https://github.com/AD-Archer/PlatePedia-recipeapp/tree/Retired" target="_blank" class="fw-bold">GitHub in the Retired branch</a>.</p>
+    </div>
 
     <div class="container py-5">
         <%- include('../partials/alerts') %>
@@ -83,6 +139,38 @@
     <script>
         function goToRecipe(id) {
             window.location.href = `/recipes/${id}`;
+        }
+        
+        // Demo notification functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show notification after a short delay
+            setTimeout(function() {
+                const notification = document.getElementById('demoNotification');
+                notification.classList.add('show');
+            }, 1000);
+            
+            // Store notification state in localStorage
+            const hasSeenNotification = localStorage.getItem('platepedia_demo_notification');
+            if (hasSeenNotification) {
+                // If user has seen notification before, show it minimized
+                document.getElementById('demoNotification').style.opacity = '0.7';
+                document.getElementById('demoNotification').style.transform = 'scale(0.95)';
+            }
+        });
+        
+        function closeDemoNotification() {
+            // Hide notification
+            const notification = document.getElementById('demoNotification');
+            notification.classList.remove('show');
+            notification.style.opacity = '0';
+            
+            // Remember that user has seen the notification
+            localStorage.setItem('platepedia_demo_notification', 'true');
+            
+            // Remove from DOM after animation completes
+            setTimeout(function() {
+                notification.style.display = 'none';
+            }, 300);
         }
     </script>
 </body>
