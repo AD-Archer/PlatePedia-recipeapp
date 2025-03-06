@@ -76,7 +76,9 @@ Or import sample recipes from MealDB:
 node seedMealDB.js
 ```
 
+## Troubleshooting
 
+If recipe images don't load properly, it might be due to CORS restrictions. The application uses images from TheMealDB API, which may be blocked by some browsers. Try using a browser extension that disables CORS restrictions for development purposes.
 
 ## License 📝
 

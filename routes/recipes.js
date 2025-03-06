@@ -467,6 +467,18 @@ router.get('/browse', asyncHandler(async (req, res) => {
       recipes = await getAllRecipes();
     }
     
+    // Format recipes to ensure they have imageUrl property
+    const formattedRecipes = recipes.map(recipe => ({
+      id: recipe.id,
+      title: recipe.title,
+      category: recipe.category,
+      area: recipe.area,
+      description: recipe.description || `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
+      imageUrl: recipe.thumbnail, // Ensure imageUrl is set from thumbnail
+      thumbnail: recipe.thumbnail,
+      author: { username: 'themealdb', id: '1' }
+    }));
+    
     // Get all categories for the filter sidebar
     const allCategories = await getAllCategories();
     
@@ -480,10 +492,13 @@ router.get('/browse', asyncHandler(async (req, res) => {
       return acc;
     }, {});
     
+    // Add this before rendering the template
+    console.log('Sample recipe image URLs:', formattedRecipes.slice(0, 3).map(r => r.imageUrl || r.thumbnail));
+    
     res.render('pages/recipes/browse', {
-      recipes,
-      categories: allCategories, // Pass all categories as a flat array
-      groupedCategories,        // Also pass grouped categories
+      recipes: formattedRecipes, // Use formatted recipes
+      categories: allCategories,
+      groupedCategories,
       search: search || '',
       selectedCategory: category || '',
       selectedTags: tags ? (Array.isArray(tags) ? tags : [tags]) : [],

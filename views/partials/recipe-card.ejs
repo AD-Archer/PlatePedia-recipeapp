@@ -1,8 +1,12 @@
 <div class="col">
-    <div class="card h-100">
-        <% if (recipe.imageUrl) { %>
-            <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
-        <% } %>
+    <div class="card recipe-card h-100 shadow-sm">
+        <img 
+            src="<%= recipe.imageUrl || recipe.thumbnail %>" 
+            class="card-img-top" 
+            alt="<%= recipe.title %>"
+            loading="lazy"
+            onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836'"
+            style="height: 200px; object-fit: cover;">
         <div class="card-body">
             <h5 class="card-title">
                 <a href="/recipes/<%= recipe.id %>" class="text-decoration-none"><%= recipe.title %></a>
