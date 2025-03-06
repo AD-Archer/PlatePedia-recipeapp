@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Base URL for the site - will be used in the sitemap
-const BASE_URL = process.env.BASE_URL || 'https://platepedia.vercel.app';
+const BASE_URL = process.env.BASE_URL || 'https://platepedia.adarcher.app';
 
 /**
  * Generates the sitemap XML content
