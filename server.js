@@ -20,6 +20,8 @@ import recipesRouter from './routes/recipes.js';
 import usersRouter from './routes/users.js';
 import profileRouter from './routes/profile.js';
 
+// Import sitemap generator
+import { generateSitemap, serveSitemap } from './utils/sitemapGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,6 +82,8 @@ app.use(addUserToLocals);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.get('/sitemap.xml', serveSitemap);
+
 // Routes
 app.use('/', dashboard);
 app.use('/signup', signup);
@@ -88,6 +92,8 @@ app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);
 app.use('/profile', profileRouter);
+
+// Sitemap route
 
 // Error handling
 app.use(errorHandler);
@@ -104,6 +110,13 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://${url}:${PORT}`);
+  
+  // Generate sitemap on server start
+  import('./utils/sitemapGenerator.js').then(({ generateSitemap }) => {
+    generateSitemap().catch(err => {
+      console.error('Failed to generate sitemap:', err);
+    });
+  });
 });
 
 export default app;
