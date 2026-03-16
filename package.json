@@ -9,7 +9,7 @@
     "start": "npm run setup && node server.js",
     "dev": "npm run setup && nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "npm install pg pg-hstore && echo hello"
+    "vercel-build": "echo \"skip build\""
   },
   "dependencies": {
     "@vercel/analytics": "^1.4.1",
