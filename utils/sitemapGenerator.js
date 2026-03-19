@@ -6,13 +6,13 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getAllRecipes, getAllCategories } from './jsonDataService.js';
+import { getAllRecipes, getAllCategories, addSlugsToRecipes } from './jsonDataService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Base URL for the site - will be used in the sitemap
-const BASE_URL = process.env.BASE_URL || 'https://platepedia.adarcher.app';
+const BASE_URL = process.env.BASE_URL || 'https://platepedia.vercel.app';
 
 /**
  * Generates the sitemap XML content
@@ -35,7 +35,8 @@ export async function generateSitemapXml() {
       { url: '/', priority: '1.0', changefreq: 'daily' },
       { url: '/recipes/browse', priority: '0.9', changefreq: 'daily' },
       { url: '/users', priority: '0.8', changefreq: 'weekly' },
-      { url: '/login', priority: '0.5', changefreq: 'monthly' },
+      { url: '/signin', priority: '0.5', changefreq: 'monthly' },
+      { url: '/login', priority: '0.3', changefreq: 'monthly' },
       { url: '/signup', priority: '0.5', changefreq: 'monthly' }
     ];
 
@@ -48,10 +49,11 @@ export async function generateSitemapXml() {
       xml += '  </url>\n';
     });
 
-    // Add recipe pages
-    recipes.forEach(recipe => {
+    // Add recipe pages (title-based slugs)
+    const recipesWithSlugs = await addSlugsToRecipes(recipes);
+    recipesWithSlugs.forEach(recipe => {
       xml += '  <url>\n';
-      xml += `    <loc>${BASE_URL}/recipes/${recipe.id}</loc>\n`;
+      xml += `    <loc>${BASE_URL}/recipes/${recipe.slug}</loc>\n`;
       xml += '    <changefreq>monthly</changefreq>\n';
       xml += '    <priority>0.7</priority>\n';
       xml += '  </url>\n';

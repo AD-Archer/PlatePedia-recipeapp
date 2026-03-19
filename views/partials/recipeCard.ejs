@@ -12,7 +12,7 @@
         
         <div class="card-body">
             <h5 class="card-title">
-                <a href="/recipes/<%= recipe.id %>" class="text-decoration-none text-dark">
+                <a href="/recipes/<%= recipe.slug || recipe.id %>" class="text-decoration-none text-dark">
                     <%= recipe.title %>
                 </a>
             </h5>

@@ -54,18 +54,22 @@
 <meta name="author" content="Antonio Archer" />
 
 <!-- Google Tags -->
+<% if (!locals.disableAds) { %>
 <meta name="google-adsense-account" content="ca-pub-9831610369524751" />
+<% } %>
 
 <meta
   name="google-site-verification"
   content="A9Gw-kE0rnXWjdybzQ_A20xfoJXMJsib2d1uRZIiFL0"
 />
 
+<% if (!locals.disableAds) { %>
 <script
   async
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9831610369524751"
   crossorigin="anonymous"
 ></script>
+<% } %>
 
 <!-- Bing Tags -->
 <meta name="msvalidate.01" content="DD6ED1D1000765CCF5FE18EC771871C3" />

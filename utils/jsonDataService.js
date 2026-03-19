@@ -12,6 +12,64 @@ const dataFilePath = path.join(__dirname, '..', 'data', 'mealdb_recipes.json');
 let recipesCache = null;
 let lastCacheTime = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+let slugIndexCache = null;
+let slugIndexCacheTime = null;
+
+/**
+ * Creates URL-friendly slugs from recipe titles
+ * @param {string} title - Recipe title
+ * @returns {string} URL-friendly slug
+ */
+export function slugifyRecipeTitle(title) {
+  const normalized = String(title || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return normalized || 'recipe';
+}
+
+/**
+ * Builds deterministic unique slugs for all recipes
+ * @param {Array} recipes - Array of recipes
+ * @returns {{ idToSlug: Map<string, string>, slugToRecipe: Map<string, Object> }}
+ */
+function buildRecipeSlugIndex(recipes) {
+  const slugCounts = new Map();
+  const idToSlug = new Map();
+  const slugToRecipe = new Map();
+
+  recipes.forEach(recipe => {
+    const baseSlug = slugifyRecipeTitle(recipe.title);
+    const count = slugCounts.get(baseSlug) || 0;
+    const nextCount = count + 1;
+    slugCounts.set(baseSlug, nextCount);
+
+    const slug = count === 0 ? baseSlug : `${baseSlug}-${nextCount}`;
+    idToSlug.set(String(recipe.id), slug);
+    slugToRecipe.set(slug, recipe);
+  });
+
+  return { idToSlug, slugToRecipe };
+}
+
+/**
+ * Returns a cached slug index
+ * @returns {Promise<{ idToSlug: Map<string, string>, slugToRecipe: Map<string, Object> }>}
+ */
+async function getRecipeSlugIndex() {
+  const data = await loadRecipeData();
+
+  if (!slugIndexCache || slugIndexCacheTime !== lastCacheTime) {
+    slugIndexCache = buildRecipeSlugIndex(data.recipes || []);
+    slugIndexCacheTime = lastCacheTime;
+  }
+
+  return slugIndexCache;
+}
 
 /**
  * Loads recipe data from the JSON file
@@ -57,6 +115,40 @@ export async function getRecipeById(id) {
 }
 
 /**
+ * Gets a recipe by its slug
+ * @param {string} slug - The recipe slug
+ * @returns {Promise<Object|null>} The recipe or null if not found
+ */
+export async function getRecipeBySlug(slug) {
+  const index = await getRecipeSlugIndex();
+  return index.slugToRecipe.get(String(slug)) || null;
+}
+
+/**
+ * Gets the slug for a recipe ID
+ * @param {string|number} id - The recipe ID
+ * @returns {Promise<string|null>} The slug or null if not found
+ */
+export async function getRecipeSlugById(id) {
+  const index = await getRecipeSlugIndex();
+  return index.idToSlug.get(String(id)) || null;
+}
+
+/**
+ * Adds slug properties to recipes
+ * @param {Array} recipes - Array of recipes
+ * @returns {Promise<Array>} Recipes with slug property
+ */
+export async function addSlugsToRecipes(recipes = []) {
+  const index = await getRecipeSlugIndex();
+
+  return recipes.map(recipe => ({
+    ...recipe,
+    slug: recipe.slug || index.idToSlug.get(String(recipe.id)) || slugifyRecipeTitle(recipe.title)
+  }));
+}
+
+/**
  * Searches recipes by title, ingredients, or category
  * @param {string} query - The search query
  * @returns {Promise<Array>} Array of matching recipes
@@ -92,7 +184,12 @@ export async function searchRecipes(query) {
  */
 export async function getRecipesByCategory(category) {
   const data = await loadRecipeData();
-  return data.recipes.filter(recipe => recipe.category === category);
+  const normalizedCategory = String(category || '').toLowerCase();
+
+  return data.recipes.filter(recipe => {
+    if (recipe.category === category) return true;
+    return slugifyRecipeTitle(recipe.category) === normalizedCategory;
+  });
 }
 
 /**

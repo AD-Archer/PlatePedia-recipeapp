@@ -67,6 +67,14 @@
       }
     },
     {
+      "src": "/google6c5e132af881b671.html",
+      "dest": "/public/google6c5e132af881b671.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
       "src": "/((?!.*\\.).*)",
       "dest": "server.js"
     }

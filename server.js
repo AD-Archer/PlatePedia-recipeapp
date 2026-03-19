@@ -88,6 +88,7 @@ app.get('/sitemap.xml', serveSitemap);
 app.use('/', dashboard);
 app.use('/signup', signup);
 app.use('/login', login);
+app.use('/signin', login);
 app.use('/logout', logout);
 app.use('/recipes', recipesRouter);
 app.use('/users', usersRouter);

@@ -281,7 +281,7 @@
                                             <span class="recipe-author">
                                                 By <%= recipe.author ? recipe.author.username : 'TheMealDB' %>
                                             </span>
-                                            <button class="btn btn-view" onclick="goToRecipe('<%= recipe.id %>')">
+                                            <button class="btn btn-view" onclick="goToRecipe('<%= recipe.slug || recipe.id %>')">
                                                 View Recipe
                                             </button>
                                         </div>
@@ -310,8 +310,8 @@
             window.location.href = '/recipes/browse';
         }
 
-        function goToRecipe(id) {
-            window.location.href = `/recipes/${id}`;
+        function goToRecipe(slug) {
+            window.location.href = `/recipes/${slug}`;
         }
 
         // Auto-submit form when filters change

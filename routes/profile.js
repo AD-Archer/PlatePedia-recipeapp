@@ -2,7 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { Op } from 'sequelize';
-import { getRandomRecipes } from '../utils/jsonDataService.js';
+import { getRandomRecipes, addSlugsToRecipes } from '../utils/jsonDataService.js';
 
 const router = express.Router();
 
@@ -15,10 +15,12 @@ router.get('/', asyncHandler(async (req, res) => {
   
   // Get some random recipes to display as user's recipes
   const recipes = await getRandomRecipes(6);
+  const recipesWithSlugs = await addSlugsToRecipes(recipes);
   
   // Format recipes to match expected structure
-  const formattedRecipes = recipes.map(recipe => ({
+  const formattedRecipes = recipesWithSlugs.map(recipe => ({
     id: recipe.id,
+    slug: recipe.slug,
     title: recipe.title,
     description: `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
     imageUrl: recipe.thumbnail,

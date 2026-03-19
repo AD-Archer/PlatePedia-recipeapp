@@ -9,7 +9,7 @@
             style="height: 200px; object-fit: cover;">
         <div class="card-body">
             <h5 class="card-title">
-                <a href="/recipes/<%= recipe.id %>" class="text-decoration-none"><%= recipe.title %></a>
+                <a href="/recipes/<%= recipe.slug || recipe.id %>" class="text-decoration-none"><%= recipe.title %></a>
             </h5>
             <% if (recipe.author) { %>
                 <p class="card-text text-muted">by <%= recipe.author.username %></p>
@@ -18,7 +18,7 @@
                 <p class="card-text"><%= recipe.description %></p>
             <% } %>
             <div class="d-flex justify-content-between align-items-center">
-                <a href="/recipes/<%= recipe.id %>" class="btn btn-outline-primary">View Recipe</a>
+                <a href="/recipes/<%= recipe.slug || recipe.id %>" class="btn btn-outline-primary">View Recipe</a>
                 <% if (locals.user) { %>
                     <button 
                         class="btn btn-outline-secondary btn-sm save-recipe-btn"

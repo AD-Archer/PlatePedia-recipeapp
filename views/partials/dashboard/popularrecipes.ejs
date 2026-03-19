@@ -4,7 +4,7 @@
         <% if (locals.popularRecipes && popularRecipes.length > 0) { %>
             <% popularRecipes.forEach(recipe => { %>
                 <div class="col">
-                    <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.id %>')">
+                    <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.slug || recipe.id %>')">
                         <% if (recipe.imageUrl) { %>
                             <img src="<%= recipe.imageUrl %>" 
                                  class="card-img-top" 

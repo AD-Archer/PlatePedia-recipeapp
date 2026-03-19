@@ -11,6 +11,7 @@ router.get('/', asyncHandler(async (req, res) => {
   }
   
   res.render('pages/signup', {
+    disableAds: true,
     error: req.session.error,
     success: req.session.success
   });

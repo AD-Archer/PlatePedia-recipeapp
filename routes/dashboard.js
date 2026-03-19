@@ -3,7 +3,8 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { 
   getRandomRecipes, 
   getRecentRecipes, 
-  getAllCategories 
+  getAllCategories,
+  addSlugsToRecipes
 } from '../utils/jsonDataService.js';
 
 const router = express.Router();
@@ -43,14 +44,20 @@ router.get('/', asyncHandler(async (req, res) => {
     // Format recipes to match expected structure
     const formatRecipe = recipe => ({
       id: recipe.id,
+      slug: recipe.slug,
       title: recipe.title,
       description: `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
       imageUrl: recipe.thumbnail,
       author: { username: 'themealdb', id: '1', profileImage: 'https://www.themealdb.com/images/logo-small.png' }
     });
     
-    const formattedPopular = popularRecipes.map(formatRecipe);
-    const formattedRecent = recentRecipes.map(formatRecipe);
+    const [popularWithSlugs, recentWithSlugs] = await Promise.all([
+      addSlugsToRecipes(popularRecipes),
+      addSlugsToRecipes(recentRecipes)
+    ]);
+
+    const formattedPopular = popularWithSlugs.map(formatRecipe);
+    const formattedRecent = recentWithSlugs.map(formatRecipe);
     
     // Add default images for categories
     categories.forEach(category => {

@@ -16,9 +16,14 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/login</loc>
+    <loc>https://platepedia.vercel.app/signin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://platepedia.vercel.app/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://platepedia.vercel.app/signup</loc>
@@ -26,1512 +31,1512 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52768</loc>
+    <loc>https://platepedia.vercel.app/recipes/apple-frangipan-tart</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52893</loc>
+    <loc>https://platepedia.vercel.app/recipes/apple-blackberry-crumble</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53049</loc>
+    <loc>https://platepedia.vercel.app/recipes/apam-balik</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53050</loc>
+    <loc>https://platepedia.vercel.app/recipes/ayam-percik</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52767</loc>
+    <loc>https://platepedia.vercel.app/recipes/bakewell-tart</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52792</loc>
+    <loc>https://platepedia.vercel.app/recipes/bread-and-butter-pudding</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52803</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-wellington</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52807</loc>
+    <loc>https://platepedia.vercel.app/recipes/baingan-bharta</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52812</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-brisket-pot-roast</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52824</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-sunday-roast</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52826</loc>
+    <loc>https://platepedia.vercel.app/recipes/braised-beef-chilli</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52834</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-stroganoff</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52842</loc>
+    <loc>https://platepedia.vercel.app/recipes/broccoli-stilton-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52848</loc>
+    <loc>https://platepedia.vercel.app/recipes/bean-sausage-hotpot</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52855</loc>
+    <loc>https://platepedia.vercel.app/recipes/banana-pancakes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52873</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-dumpling-stew</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52874</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-and-mustard-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52878</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-and-oyster-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52891</loc>
+    <loc>https://platepedia.vercel.app/recipes/blackberry-fool</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52894</loc>
+    <loc>https://platepedia.vercel.app/recipes/battenberg-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52904</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-bourguignon</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52913</loc>
+    <loc>https://platepedia.vercel.app/recipes/brie-wrapped-in-prosciutto-brioche</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52914</loc>
+    <loc>https://platepedia.vercel.app/recipes/boulangre-potatoes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52928</loc>
+    <loc>https://platepedia.vercel.app/recipes/beavertails</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52940</loc>
+    <loc>https://platepedia.vercel.app/recipes/brown-stew-chicken</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52952</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-lo-mein</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52959</loc>
+    <loc>https://platepedia.vercel.app/recipes/baked-salmon-with-fennel-tomatoes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52961</loc>
+    <loc>https://platepedia.vercel.app/recipes/budino-di-ricotta</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52965</loc>
+    <loc>https://platepedia.vercel.app/recipes/breakfast-potatoes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52979</loc>
+    <loc>https://platepedia.vercel.app/recipes/bitterballen-dutch-meatballs</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52995</loc>
+    <loc>https://platepedia.vercel.app/recipes/bbq-pork-sloppy-joes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52997</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-banh-mi-bowls-with-sriracha-mayo-carrot-pickled-cucumber</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53013</loc>
+    <loc>https://platepedia.vercel.app/recipes/big-mac</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53018</loc>
+    <loc>https://platepedia.vercel.app/recipes/bigos-hunters-stew</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53036</loc>
+    <loc>https://platepedia.vercel.app/recipes/boxty-breakfast</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53053</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-rendang</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53060</loc>
+    <loc>https://platepedia.vercel.app/recipes/burek</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53068</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-mechado</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53069</loc>
+    <loc>https://platepedia.vercel.app/recipes/bistek</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53070</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-caldereta</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53071</loc>
+    <loc>https://platepedia.vercel.app/recipes/beef-asado</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53076</loc>
+    <loc>https://platepedia.vercel.app/recipes/bread-omelette</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53078</loc>
+    <loc>https://platepedia.vercel.app/recipes/beetroot-soup-borscht</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53080</loc>
+    <loc>https://platepedia.vercel.app/recipes/blini-pancakes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52765</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-enchilada-casserole</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52776</loc>
+    <loc>https://platepedia.vercel.app/recipes/chocolate-gateau</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52779</loc>
+    <loc>https://platepedia.vercel.app/recipes/cream-cheese-tart</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52788</loc>
+    <loc>https://platepedia.vercel.app/recipes/christmas-pudding-flapjack</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52795</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-handi</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52796</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-alfredo-primavera</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52818</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-fajita-mac-and-cheese</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52819</loc>
+    <loc>https://platepedia.vercel.app/recipes/cajun-spiced-fish-tacos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52830</loc>
+    <loc>https://platepedia.vercel.app/recipes/crock-pot-chicken-baked-tacos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52831</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-karaage</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52832</loc>
+    <loc>https://platepedia.vercel.app/recipes/coq-au-vin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52839</loc>
+    <loc>https://platepedia.vercel.app/recipes/chilli-prawn-linguine</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52840</loc>
+    <loc>https://platepedia.vercel.app/recipes/clam-chowder</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52841</loc>
+    <loc>https://platepedia.vercel.app/recipes/creamy-tomato-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52846</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-mushroom-hotpot</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52850</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-couscous</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52853</loc>
+    <loc>https://platepedia.vercel.app/recipes/chocolate-avocado-mousse</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52856</loc>
+    <loc>https://platepedia.vercel.app/recipes/choc-chip-pecan-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52860</loc>
+    <loc>https://platepedia.vercel.app/recipes/chocolate-raspberry-brownies</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52870</loc>
+    <loc>https://platepedia.vercel.app/recipes/chickpea-fajitas</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52875</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-ham-and-leek-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52879</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-parmentier</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52897</loc>
+    <loc>https://platepedia.vercel.app/recipes/carrot-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52898</loc>
+    <loc>https://platepedia.vercel.app/recipes/chelsea-buns</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52905</loc>
+    <loc>https://platepedia.vercel.app/recipes/chocolate-souffle</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52910</loc>
+    <loc>https://platepedia.vercel.app/recipes/chinon-apple-tarts</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52920</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-marengo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52923</loc>
+    <loc>https://platepedia.vercel.app/recipes/canadian-butter-tarts</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52934</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-basquaise</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52939</loc>
+    <loc>https://platepedia.vercel.app/recipes/callaloo-jamaican-style</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52956</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-congee</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52966</loc>
+    <loc>https://platepedia.vercel.app/recipes/chocolate-caramel-crispy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52969</loc>
+    <loc>https://platepedia.vercel.app/recipes/chakchouka</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52976</loc>
+    <loc>https://platepedia.vercel.app/recipes/cashew-ghoriba-biscuits</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52977</loc>
+    <loc>https://platepedia.vercel.app/recipes/corba</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52988</loc>
+    <loc>https://platepedia.vercel.app/recipes/classic-christmas-pudding</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52989</loc>
+    <loc>https://platepedia.vercel.app/recipes/christmas-pudding-trifle</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52990</loc>
+    <loc>https://platepedia.vercel.app/recipes/christmas-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52998</loc>
+    <loc>https://platepedia.vercel.app/recipes/corned-beef-and-cabbage</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52999</loc>
+    <loc>https://platepedia.vercel.app/recipes/crispy-sausages-and-greens</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53011</loc>
+    <loc>https://platepedia.vercel.app/recipes/chicken-quinoa-greek-salad</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53016</loc>
+    <loc>https://platepedia.vercel.app/recipes/chick-fil-a-sandwich</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53037</loc>
+    <loc>https://platepedia.vercel.app/recipes/coddled-pork-with-cider</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53055</loc>
+    <loc>https://platepedia.vercel.app/recipes/cevapi-sausages</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53056</loc>
+    <loc>https://platepedia.vercel.app/recipes/croatian-lamb-peka</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53058</loc>
+    <loc>https://platepedia.vercel.app/recipes/croatian-bean-stew</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53063</loc>
+    <loc>https://platepedia.vercel.app/recipes/chivito-uruguayo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53072</loc>
+    <loc>https://platepedia.vercel.app/recipes/crispy-eggplant</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53077</loc>
+    <loc>https://platepedia.vercel.app/recipes/cabbage-soup-shchi</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52785</loc>
+    <loc>https://platepedia.vercel.app/recipes/dal-fry</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52899</loc>
+    <loc>https://platepedia.vercel.app/recipes/dundee-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52907</loc>
+    <loc>https://platepedia.vercel.app/recipes/duck-confit</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52791</loc>
+    <loc>https://platepedia.vercel.app/recipes/eton-mess</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52888</loc>
+    <loc>https://platepedia.vercel.app/recipes/eccles-cakes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52895</loc>
+    <loc>https://platepedia.vercel.app/recipes/english-breakfast</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52944</loc>
+    <loc>https://platepedia.vercel.app/recipes/escovitch-fish</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52955</loc>
+    <loc>https://platepedia.vercel.app/recipes/egg-drop-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53031</loc>
+    <loc>https://platepedia.vercel.app/recipes/egyptian-fatteh</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53073</loc>
+    <loc>https://platepedia.vercel.app/recipes/eggplant-adobo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52802</loc>
+    <loc>https://platepedia.vercel.app/recipes/fish-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52815</loc>
+    <loc>https://platepedia.vercel.app/recipes/french-lentils-with-garlic-and-thyme</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52835</loc>
+    <loc>https://platepedia.vercel.app/recipes/fettucine-alfredo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52896</loc>
+    <loc>https://platepedia.vercel.app/recipes/full-english-breakfast</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52903</loc>
+    <loc>https://platepedia.vercel.app/recipes/french-onion-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52906</loc>
+    <loc>https://platepedia.vercel.app/recipes/flamiche</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52915</loc>
+    <loc>https://platepedia.vercel.app/recipes/french-omelette</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52918</loc>
+    <loc>https://platepedia.vercel.app/recipes/fish-stew-with-rouille</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52919</loc>
+    <loc>https://platepedia.vercel.app/recipes/fennel-dauphinoise</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52957</loc>
+    <loc>https://platepedia.vercel.app/recipes/fruit-and-cream-cheese-breakfast-pastries</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52996</loc>
+    <loc>https://platepedia.vercel.app/recipes/french-onion-chicken-with-roasted-carrots-mashed-potatoes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53025</loc>
+    <loc>https://platepedia.vercel.app/recipes/ful-medames</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53030</loc>
+    <loc>https://platepedia.vercel.app/recipes/feteer-meshaltet</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53043</loc>
+    <loc>https://platepedia.vercel.app/recipes/fish-fofos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53061</loc>
+    <loc>https://platepedia.vercel.app/recipes/fresh-sardines</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53064</loc>
+    <loc>https://platepedia.vercel.app/recipes/fettuccine-alfredo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53079</loc>
+    <loc>https://platepedia.vercel.app/recipes/fish-soup-ukha</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52764</loc>
+    <loc>https://platepedia.vercel.app/recipes/garides-saganaki</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52829</loc>
+    <loc>https://platepedia.vercel.app/recipes/grilled-mac-and-cheese-sandwich</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52951</loc>
+    <loc>https://platepedia.vercel.app/recipes/general-tsos-chicken</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53012</loc>
+    <loc>https://platepedia.vercel.app/recipes/gigantes-plaki</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53021</loc>
+    <loc>https://platepedia.vercel.app/recipes/golabki-cabbage-roll</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53041</loc>
+    <loc>https://platepedia.vercel.app/recipes/grilled-portuguese-sardines</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53074</loc>
+    <loc>https://platepedia.vercel.app/recipes/grilled-eggplant-with-coconut-milk</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52773</loc>
+    <loc>https://platepedia.vercel.app/recipes/honey-teriyaki-salmon</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52787</loc>
+    <loc>https://platepedia.vercel.app/recipes/hot-chocolate-fudge</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52954</loc>
+    <loc>https://platepedia.vercel.app/recipes/hot-and-sour-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52967</loc>
+    <loc>https://platepedia.vercel.app/recipes/home-made-mandazi</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52993</loc>
+    <loc>https://platepedia.vercel.app/recipes/honey-balsamic-chicken-with-crispy-broccoli-potatoes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53007</loc>
+    <loc>https://platepedia.vercel.app/recipes/honey-yogurt-cheesecake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53035</loc>
+    <loc>https://platepedia.vercel.app/recipes/ham-hock-colcannon</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52781</loc>
+    <loc>https://platepedia.vercel.app/recipes/irish-stew</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52890</loc>
+    <loc>https://platepedia.vercel.app/recipes/jam-roly-poly</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52937</loc>
+    <loc>https://platepedia.vercel.app/recipes/jerk-chicken-with-rice-peas</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52938</loc>
+    <loc>https://platepedia.vercel.app/recipes/jamaican-beef-patties</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53033</loc>
+    <loc>https://platepedia.vercel.app/recipes/japanese-gohan-rice</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53034</loc>
+    <loc>https://platepedia.vercel.app/recipes/japanese-katsudon</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52769</loc>
+    <loc>https://platepedia.vercel.app/recipes/kapsalon</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52813</loc>
+    <loc>https://platepedia.vercel.app/recipes/kentucky-fried-chicken</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52820</loc>
+    <loc>https://platepedia.vercel.app/recipes/katsu-chicken-curry</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52859</loc>
+    <loc>https://platepedia.vercel.app/recipes/key-lime-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52868</loc>
+    <loc>https://platepedia.vercel.app/recipes/kidney-bean-curry</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52887</loc>
+    <loc>https://platepedia.vercel.app/recipes/kedgeree</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52945</loc>
+    <loc>https://platepedia.vercel.app/recipes/kung-pao-chicken</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52946</loc>
+    <loc>https://platepedia.vercel.app/recipes/kung-po-prawns</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52971</loc>
+    <loc>https://platepedia.vercel.app/recipes/kafteji</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52974</loc>
+    <loc>https://platepedia.vercel.app/recipes/keleya-zaara</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52978</loc>
+    <loc>https://platepedia.vercel.app/recipes/kumpir</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53015</loc>
+    <loc>https://platepedia.vercel.app/recipes/krispy-kreme-donut</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53027</loc>
+    <loc>https://platepedia.vercel.app/recipes/koshari</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52782</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-tomato-and-sweet-spices</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52805</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-biryani</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52808</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-rogan-josh</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52821</loc>
+    <loc>https://platepedia.vercel.app/recipes/laksa-king-prawn-noodles</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52843</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-tagine</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52844</loc>
+    <loc>https://platepedia.vercel.app/recipes/lasagne</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52877</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-and-potato-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52884</loc>
+    <loc>https://platepedia.vercel.app/recipes/lancashire-hotpot</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52973</loc>
+    <loc>https://platepedia.vercel.app/recipes/leblebi-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52987</loc>
+    <loc>https://platepedia.vercel.app/recipes/lasagna-sandwiches</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53009</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-and-lemon-souvlaki</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53010</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-tzatziki-burgers</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53083</loc>
+    <loc>https://platepedia.vercel.app/recipes/lamb-pilaf-plov</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52777</loc>
+    <loc>https://platepedia.vercel.app/recipes/mediterranean-pasta-salad</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52827</loc>
+    <loc>https://platepedia.vercel.app/recipes/massaman-beef-curry</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52864</loc>
+    <loc>https://platepedia.vercel.app/recipes/mushroom-chestnut-rotolo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52865</loc>
+    <loc>https://platepedia.vercel.app/recipes/matar-paneer</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52876</loc>
+    <loc>https://platepedia.vercel.app/recipes/minced-beef-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52880</loc>
+    <loc>https://platepedia.vercel.app/recipes/mcsinghs-scotch-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52900</loc>
+    <loc>https://platepedia.vercel.app/recipes/madeira-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52927</loc>
+    <loc>https://platepedia.vercel.app/recipes/montreal-smoked-meat</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52947</loc>
+    <loc>https://platepedia.vercel.app/recipes/ma-po-tofu</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52968</loc>
+    <loc>https://platepedia.vercel.app/recipes/mbuzi-choma-roasted-goat</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52991</loc>
+    <loc>https://platepedia.vercel.app/recipes/mince-pies</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53006</loc>
+    <loc>https://platepedia.vercel.app/recipes/moussaka</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53029</loc>
+    <loc>https://platepedia.vercel.app/recipes/mulukhiyah</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53038</loc>
+    <loc>https://platepedia.vercel.app/recipes/mustard-champ</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53047</loc>
+    <loc>https://platepedia.vercel.app/recipes/moroccan-carrot-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53048</loc>
+    <loc>https://platepedia.vercel.app/recipes/mee-goreng-mamak</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53059</loc>
+    <loc>https://platepedia.vercel.app/recipes/mushroom-soup-with-buckwheat</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53086</loc>
+    <loc>https://platepedia.vercel.app/recipes/migas</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52851</loc>
+    <loc>https://platepedia.vercel.app/recipes/nutty-chicken-curry</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52858</loc>
+    <loc>https://platepedia.vercel.app/recipes/new-york-cheesecake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52924</loc>
+    <loc>https://platepedia.vercel.app/recipes/nanaimo-bars</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53051</loc>
+    <loc>https://platepedia.vercel.app/recipes/nasi-lemak</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52810</loc>
+    <loc>https://platepedia.vercel.app/recipes/osso-buco-alla-milanese</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52943</loc>
+    <loc>https://platepedia.vercel.app/recipes/oxtail-with-broad-beans</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52774</loc>
+    <loc>https://platepedia.vercel.app/recipes/pad-see-ew</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52780</loc>
+    <loc>https://platepedia.vercel.app/recipes/potato-gratin-with-chicken</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52804</loc>
+    <loc>https://platepedia.vercel.app/recipes/poutine</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52837</loc>
+    <loc>https://platepedia.vercel.app/recipes/pilchard-puttanesca</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52847</loc>
+    <loc>https://platepedia.vercel.app/recipes/pork-cassoulet</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52854</loc>
+    <loc>https://platepedia.vercel.app/recipes/pancakes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52857</loc>
+    <loc>https://platepedia.vercel.app/recipes/pumpkin-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52861</loc>
+    <loc>https://platepedia.vercel.app/recipes/peanut-butter-cheesecake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52862</loc>
+    <loc>https://platepedia.vercel.app/recipes/peach-blueberry-grunt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52902</loc>
+    <loc>https://platepedia.vercel.app/recipes/parkin-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52916</loc>
+    <loc>https://platepedia.vercel.app/recipes/pear-tarte-tatin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52921</loc>
+    <loc>https://platepedia.vercel.app/recipes/provenal-omelette-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52922</loc>
+    <loc>https://platepedia.vercel.app/recipes/prawn-fennel-bisque</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52930</loc>
+    <loc>https://platepedia.vercel.app/recipes/pate-chinois</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52932</loc>
+    <loc>https://platepedia.vercel.app/recipes/pouding-chomeur</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52958</loc>
+    <loc>https://platepedia.vercel.app/recipes/peanut-butter-cookies</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53014</loc>
+    <loc>https://platepedia.vercel.app/recipes/pizza-express-margherita</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53017</loc>
+    <loc>https://platepedia.vercel.app/recipes/paszteciki-polish-pasties</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53019</loc>
+    <loc>https://platepedia.vercel.app/recipes/pierogi-polish-dumplings</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53022</loc>
+    <loc>https://platepedia.vercel.app/recipes/polskie-nalesniki-polish-pancakes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53039</loc>
+    <loc>https://platepedia.vercel.app/recipes/piri-piri-chicken-and-slaw</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53042</loc>
+    <loc>https://platepedia.vercel.app/recipes/portuguese-prego-with-green-piri-piri</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53044</loc>
+    <loc>https://platepedia.vercel.app/recipes/portuguese-barbecued-pork-febras-assadas</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53045</loc>
+    <loc>https://platepedia.vercel.app/recipes/portuguese-fish-stew-caldeirada-de-peixe</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53046</loc>
+    <loc>https://platepedia.vercel.app/recipes/portuguese-custard-tarts</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53081</loc>
+    <loc>https://platepedia.vercel.app/recipes/potato-salad-olivier-salad</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52783</loc>
+    <loc>https://platepedia.vercel.app/recipes/rigatoni-with-fennel-sausage-sauce</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52786</loc>
+    <loc>https://platepedia.vercel.app/recipes/rocky-road-fudge</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52809</loc>
+    <loc>https://platepedia.vercel.app/recipes/recheado-masala-fish</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52811</loc>
+    <loc>https://platepedia.vercel.app/recipes/ribollita</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52816</loc>
+    <loc>https://platepedia.vercel.app/recipes/roasted-eggplant-with-tahini-pine-nuts-and-lentils</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52901</loc>
+    <loc>https://platepedia.vercel.app/recipes/rock-cakes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52908</loc>
+    <loc>https://platepedia.vercel.app/recipes/ratatouille</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52933</loc>
+    <loc>https://platepedia.vercel.app/recipes/rappie-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52941</loc>
+    <loc>https://platepedia.vercel.app/recipes/red-peas-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52942</loc>
+    <loc>https://platepedia.vercel.app/recipes/roast-fennel-and-aubergine-paella</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53020</loc>
+    <loc>https://platepedia.vercel.app/recipes/rosol-polish-chicken-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53024</loc>
+    <loc>https://platepedia.vercel.app/recipes/rogaliki-polish-croissant-cookies</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53052</loc>
+    <loc>https://platepedia.vercel.app/recipes/roti-john</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52770</loc>
+    <loc>https://platepedia.vercel.app/recipes/spaghetti-bolognese</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52771</loc>
+    <loc>https://platepedia.vercel.app/recipes/spicy-arrabiata-penne</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52784</loc>
+    <loc>https://platepedia.vercel.app/recipes/smoky-lentil-chili-with-squash</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52793</loc>
+    <loc>https://platepedia.vercel.app/recipes/sticky-toffee-pudding-ultimate</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52797</loc>
+    <loc>https://platepedia.vercel.app/recipes/spicy-north-african-potato-salad</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52817</loc>
+    <loc>https://platepedia.vercel.app/recipes/stovetop-eggplant-with-harissa-chickpeas-and-cumin-yogurt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52823</loc>
+    <loc>https://platepedia.vercel.app/recipes/salmon-prawn-risotto</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52833</loc>
+    <loc>https://platepedia.vercel.app/recipes/salted-caramel-cheescake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52836</loc>
+    <loc>https://platepedia.vercel.app/recipes/seafood-fideu</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52849</loc>
+    <loc>https://platepedia.vercel.app/recipes/spinach-ricotta-cannelloni</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52866</loc>
+    <loc>https://platepedia.vercel.app/recipes/squash-linguine</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52872</loc>
+    <loc>https://platepedia.vercel.app/recipes/spanish-tortilla</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52881</loc>
+    <loc>https://platepedia.vercel.app/recipes/steak-and-kidney-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52883</loc>
+    <loc>https://platepedia.vercel.app/recipes/sticky-toffee-pudding</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52886</loc>
+    <loc>https://platepedia.vercel.app/recipes/spotted-dick</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52889</loc>
+    <loc>https://platepedia.vercel.app/recipes/summer-pudding</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52911</loc>
+    <loc>https://platepedia.vercel.app/recipes/summer-pistou</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52925</loc>
+    <loc>https://platepedia.vercel.app/recipes/split-pea-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52931</loc>
+    <loc>https://platepedia.vercel.app/recipes/sugar-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52935</loc>
+    <loc>https://platepedia.vercel.app/recipes/steak-diane</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52936</loc>
+    <loc>https://platepedia.vercel.app/recipes/saltfish-and-ackee</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52949</loc>
+    <loc>https://platepedia.vercel.app/recipes/sweet-and-sour-pork</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52950</loc>
+    <loc>https://platepedia.vercel.app/recipes/szechuan-beef</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52953</loc>
+    <loc>https://platepedia.vercel.app/recipes/shrimp-chow-fun</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52960</loc>
+    <loc>https://platepedia.vercel.app/recipes/salmon-avocado-salad</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52962</loc>
+    <loc>https://platepedia.vercel.app/recipes/salmon-eggs-eggs-benedict</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52963</loc>
+    <loc>https://platepedia.vercel.app/recipes/shakshuka</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52964</loc>
+    <loc>https://platepedia.vercel.app/recipes/smoked-haddock-kedgeree</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52980</loc>
+    <loc>https://platepedia.vercel.app/recipes/stamppot</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52981</loc>
+    <loc>https://platepedia.vercel.app/recipes/snert-dutch-split-pea-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52982</loc>
+    <loc>https://platepedia.vercel.app/recipes/spaghetti-alla-carbonara</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52992</loc>
+    <loc>https://platepedia.vercel.app/recipes/soy-glazed-meatloaves-with-wasabi-mashed-potatoes-roasted-carrots</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52994</loc>
+    <loc>https://platepedia.vercel.app/recipes/skillet-apple-pork-chops-with-roasted-sweet-potatoes-zucchini</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53005</loc>
+    <loc>https://platepedia.vercel.app/recipes/strawberry-rhubarb-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53008</loc>
+    <loc>https://platepedia.vercel.app/recipes/stuffed-lamb-tomatoes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53023</loc>
+    <loc>https://platepedia.vercel.app/recipes/sledz-w-oleju-polish-herrings</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53028</loc>
+    <loc>https://platepedia.vercel.app/recipes/shawarma</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53040</loc>
+    <loc>https://platepedia.vercel.app/recipes/spring-onion-and-prawn-empanadas</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53054</loc>
+    <loc>https://platepedia.vercel.app/recipes/seri-muka-kuih</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53065</loc>
+    <loc>https://platepedia.vercel.app/recipes/sushi</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53067</loc>
+    <loc>https://platepedia.vercel.app/recipes/stuffed-bell-peppers-with-quinoa-and-black-beans</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53082</loc>
+    <loc>https://platepedia.vercel.app/recipes/strawberries-romanoff</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52772</loc>
+    <loc>https://platepedia.vercel.app/recipes/teriyaki-chicken-casserole</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52806</loc>
+    <loc>https://platepedia.vercel.app/recipes/tandoori-chicken</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52814</loc>
+    <loc>https://platepedia.vercel.app/recipes/thai-green-curry</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52822</loc>
+    <loc>https://platepedia.vercel.app/recipes/toad-in-the-hole</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52845</loc>
+    <loc>https://platepedia.vercel.app/recipes/turkey-meatloaf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52852</loc>
+    <loc>https://platepedia.vercel.app/recipes/tuna-nicoise</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52869</loc>
+    <loc>https://platepedia.vercel.app/recipes/tahini-lentils</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52882</loc>
+    <loc>https://platepedia.vercel.app/recipes/three-fish-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52892</loc>
+    <loc>https://platepedia.vercel.app/recipes/treacle-tart</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52909</loc>
+    <loc>https://platepedia.vercel.app/recipes/tarte-tatin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52912</loc>
+    <loc>https://platepedia.vercel.app/recipes/three-cheese-souffles</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52926</loc>
+    <loc>https://platepedia.vercel.app/recipes/tourtiere</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52929</loc>
+    <loc>https://platepedia.vercel.app/recipes/timbits</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52970</loc>
+    <loc>https://platepedia.vercel.app/recipes/tunisian-orange-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52972</loc>
+    <loc>https://platepedia.vercel.app/recipes/tunisian-lamb-soup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52975</loc>
+    <loc>https://platepedia.vercel.app/recipes/tuna-and-egg-briks</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53026</loc>
+    <loc>https://platepedia.vercel.app/recipes/tamiya</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53032</loc>
+    <loc>https://platepedia.vercel.app/recipes/tonkatsu-pork</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53057</loc>
+    <loc>https://platepedia.vercel.app/recipes/traditional-croatian-goulash</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53075</loc>
+    <loc>https://platepedia.vercel.app/recipes/tortang-talong</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52775</loc>
+    <loc>https://platepedia.vercel.app/recipes/vegan-lasagna</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52794</loc>
+    <loc>https://platepedia.vercel.app/recipes/vegan-chocolate-cake</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52828</loc>
+    <loc>https://platepedia.vercel.app/recipes/vietnamese-grilled-pork-bun-thit-nuong</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52838</loc>
+    <loc>https://platepedia.vercel.app/recipes/venetian-duck-ragu</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52863</loc>
+    <loc>https://platepedia.vercel.app/recipes/vegetarian-casserole</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52867</loc>
+    <loc>https://platepedia.vercel.app/recipes/vegetarian-chilli</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53000</loc>
+    <loc>https://platepedia.vercel.app/recipes/vegetable-shepherds-pie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52917</loc>
+    <loc>https://platepedia.vercel.app/recipes/white-chocolate-creme-brulee</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52948</loc>
+    <loc>https://platepedia.vercel.app/recipes/wontons</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/53062</loc>
+    <loc>https://platepedia.vercel.app/recipes/walnut-roll-guvara</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://platepedia.vercel.app/recipes/52871</loc>
+    <loc>https://platepedia.vercel.app/recipes/yaki-udon</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

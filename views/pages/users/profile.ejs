@@ -81,7 +81,7 @@
                             <div class="row row-cols-1 row-cols-md-2 g-4">
                                 <% recipes.forEach(recipe => { %>
                                     <div class="col">
-                                        <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe(<%= recipe.id %>, event)">
+                                        <div class="card h-100" style="cursor: pointer;" onclick="goToRecipe('<%= recipe.slug || recipe.id %>', event)">
                                             <% if (recipe.imageUrl) { %>
                                                 <img src="<%= recipe.imageUrl %>" class="card-img-top" alt="<%= recipe.title %>" style="height: 200px; object-fit: cover;">
                                             <% } %>
@@ -114,12 +114,12 @@
 
     <script src="/js/followToggle.js"></script>
     <script>
-        function goToRecipe(recipeId, event) {
+        function goToRecipe(recipeSlug, event) {
             // Don't navigate if they clicked the save button
             if (event.target.closest('button')) {
                 return;
             }
-            window.location.href = `/recipes/${recipeId}`;
+            window.location.href = `/recipes/${recipeSlug}`;
         }
 
         async function toggleSave(recipeId, button, event) {

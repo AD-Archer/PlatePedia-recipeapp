@@ -7,9 +7,13 @@ import { getCachedData, getUserSavedRecipes, clearCache } from '../utils/dataSyn
 import { 
   getAllRecipes, 
   getRecipeById, 
+  getRecipeBySlug,
+  getRecipeSlugById,
   searchRecipes, 
   getRecipesByCategory,
-  getAllCategories
+  getAllCategories,
+  getRandomRecipes,
+  addSlugsToRecipes
 } from '../utils/jsonDataService.js';
 
 const router = express.Router();
@@ -370,10 +374,12 @@ router.get('/saved', isAuthenticated, asyncHandler(async (req, res) => {
   try {
     // Get some random recipes to display as saved recipes
     const recipes = await getRandomRecipes(8);
+    const recipesWithSlugs = await addSlugsToRecipes(recipes);
     
     // Format recipes to match expected structure
-    const formattedRecipes = recipes.map(recipe => ({
+    const formattedRecipes = recipesWithSlugs.map(recipe => ({
       id: recipe.id,
+      slug: recipe.slug,
       title: recipe.title,
       description: `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
       imageUrl: recipe.thumbnail,
@@ -402,10 +408,12 @@ router.get('/my-recipes', isAuthenticated, asyncHandler(async (req, res) => {
   try {
     // Get some random recipes to display as user's recipes
     const recipes = await getRandomRecipes(6);
+    const recipesWithSlugs = await addSlugsToRecipes(recipes);
     
     // Format recipes to match expected structure
-    const formattedRecipes = recipes.map(recipe => ({
+    const formattedRecipes = recipesWithSlugs.map(recipe => ({
       id: recipe.id,
+      slug: recipe.slug,
       title: recipe.title,
       description: `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
       imageUrl: recipe.thumbnail,
@@ -467,9 +475,12 @@ router.get('/browse', asyncHandler(async (req, res) => {
       recipes = await getAllRecipes();
     }
     
+    const recipesWithSlugs = await addSlugsToRecipes(recipes);
+
     // Format recipes to ensure they have imageUrl property
-    const formattedRecipes = recipes.map(recipe => ({
+    const formattedRecipes = recipesWithSlugs.map(recipe => ({
       id: recipe.id,
+      slug: recipe.slug,
       title: recipe.title,
       category: recipe.category,
       area: recipe.area,
@@ -521,20 +532,34 @@ router.get('/browse', asyncHandler(async (req, res) => {
   }
 }));
 
-// View a single recipe
-router.get('/:id', asyncHandler(async (req, res) => {
+// View a single recipe by title slug
+router.get('/:slug', asyncHandler(async (req, res) => {
   try {
-    const recipeId = req.params.id;
-    const recipe = await getRecipeById(recipeId);
+    const requestedSlug = String(req.params.slug || '').trim();
+    let recipe = await getRecipeBySlug(requestedSlug);
+
+    // Backward compatibility: redirect old /recipes/:id URLs to slug URLs.
+    if (!recipe && /^\d+$/.test(requestedSlug)) {
+      const recipeById = await getRecipeById(requestedSlug);
+      if (recipeById) {
+        const canonicalSlug = await getRecipeSlugById(recipeById.id);
+        if (canonicalSlug) {
+          return res.redirect(301, `/recipes/${canonicalSlug}`);
+        }
+      }
+    }
     
     if (!recipe) {
       if (req.session) req.session.error = 'Recipe not found';
       return res.redirect('/recipes/browse');
     }
+
+    const recipeSlug = await getRecipeSlugById(recipe.id);
     
     // Format recipe for display
     const formattedRecipe = {
       id: recipe.id,
+      slug: recipeSlug,
       title: recipe.title,
       description: recipe.description || `${recipe.title} - A delicious ${recipe.category} recipe from ${recipe.area} cuisine.`,
       ingredients: recipe.ingredients.map(i => `${i.measure} ${i.ingredient}`).join('\n'),
@@ -549,7 +574,8 @@ router.get('/:id', asyncHandler(async (req, res) => {
         { name: recipe.category },
         { name: recipe.area }
       ],
-      isSaved: false // Default value since we don't have user-specific data
+      isSaved: false, // Default value since we don't have user-specific data
+      url: `${req.protocol}://${req.get('host')}/recipes/${recipeSlug}`
     };
     
     res.render('pages/recipes/view', {
